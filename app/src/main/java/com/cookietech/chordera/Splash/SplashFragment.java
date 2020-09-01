@@ -27,6 +27,8 @@ import com.cookietech.chordera.databinding.FragmentSplashBinding;
  */
 public class SplashFragment extends Fragment {
 
+    // starting of the project //
+
     FragmentSplashBinding binding;
 
     public static SplashFragment newInstance() {
