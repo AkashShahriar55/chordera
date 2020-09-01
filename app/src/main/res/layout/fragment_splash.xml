@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splashBackgroundColor"
+    tools:context=".Splash.SplashFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/splashBackgroundColor">
+
+        <com.alphamovie.lib.AlphaMovieView
+            android:id="@+id/videoView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:alphaColor="@color/splashBackgroundColor"
+            app:accuracy="0.9"
+            android:layout_centerInParent="true" />
+        <LinearLayout
+            android:background="@color/splashBackgroundColor"
+            android:orientation="vertical"
+            android:id="@+id/hide_screen"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            />
+    </RelativeLayout>
+</FrameLayout>
