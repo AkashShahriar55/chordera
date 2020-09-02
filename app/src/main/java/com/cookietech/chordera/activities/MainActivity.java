@@ -1,4 +1,4 @@
-package com.cookietech.chordera;
+package com.cookietech.chordera.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
