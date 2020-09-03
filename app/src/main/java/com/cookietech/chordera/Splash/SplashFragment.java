@@ -19,21 +19,21 @@ import android.view.ViewGroup;
 import com.alphamovie.lib.AlphaMovieView;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentSplashBinding;
+import com.cookietech.chordera.fragments.ChorderaFragment;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SplashFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SplashFragment extends Fragment {
+public class SplashFragment extends ChorderaFragment {
 
     // starting of the project //
 
     FragmentSplashBinding binding;
 
     public static SplashFragment newInstance() {
-        SplashFragment fragment = new SplashFragment();
-        return fragment;
+        return new SplashFragment();
     }
 
     @Override
@@ -60,35 +60,54 @@ public class SplashFragment extends Fragment {
 
 
         Uri video = Uri.parse("android.resource://" + getContext().getPackageName() + "/"
-                + R.raw.chordera_animation);
+                + R.raw.chordera_splash);
 
-        binding.videoView.setLooping(true);
-        binding.videoView.setVideoFromUri(getContext(),video);
-        binding.videoView.setOnVideoStartedListener(new AlphaMovieView.OnVideoStartedListener() {
+        binding.splashVideoView.setBackgroundColor(Color.WHITE);
+        binding.splashVideoView.setZOrderOnTop(true);
+        binding.splashVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onVideoStarted() {
-                Log.d("akash_debug", "onVideoStarted: ");
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            public void onPrepared(MediaPlayer mp) {
+                mp.setLooping(true);
+                mp.start();
+                mp.setOnInfoListener(new MediaPlayer.OnInfoListener() {
                     @Override
-                    public void run() {
-                        binding.hideScreen.setVisibility(View.INVISIBLE);
+                    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                        if(what==MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START){
+                            binding.splashVideoView.setBackgroundColor(Color.TRANSPARENT);
+                            return true;
+                        }
+                        return false;
                     }
-                },1000);
+                });
 
             }
-        });
+            });
+
+
+        binding.splashVideoView.setVideoURI(video);
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        binding.videoView.onResume();
+
+        if(!binding.splashVideoView.isPlaying()){
+            binding.splashVideoView.start();
+            binding.splashVideoView.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        binding.videoView.onPause();
+        if(binding.splashVideoView.isPlaying()){
+            binding.splashVideoView.pause();
+            binding.splashVideoView.stopPlayback();
+            binding.splashVideoView.setBackgroundColor(requireActivity().getResources().getColor(R.color.splashBackgroundColor));
+        }
+
     }
+
+
 }
