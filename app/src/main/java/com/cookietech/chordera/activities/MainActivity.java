@@ -1,22 +1,28 @@
 package com.cookietech.chordera.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.view.View;
 
+import com.cookietech.chordera.Landing.LandingFragment;
 import com.cookietech.chordera.Splash.SplashFragment;
+import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
 
     SplashFragment splashFragment;
-    FragmentManager fragmentManager;
+    LandingFragment landingFragment;
     ActivityMainBinding binding;
+    CookieTechFragmentManager cookieTechFragmentManager;
+    MainViewModel mainViewModel;
+    Observer<String> navigationObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +31,32 @@ public class MainActivity extends AppCompatActivity {
         View root = binding.getRoot();
         setContentView(root);
 
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+
+        navigationObserver = new Observer<String>() {
+            @Override
+            public void onChanged(String tag) {
+                navigateTo(tag);
+            }
+        };
+
+        mainViewModel.getNavigation().observe(this,navigationObserver);
+
+        cookieTechFragmentManager = CookieTechFragmentManager.getInstance();
         splashFragment = SplashFragment.newInstance();
-        fragmentManager = getSupportFragmentManager();
-        addFragmentToBackStack(splashFragment,splashFragment.getTag(),binding.mainFragmentHolder.getId());
+        landingFragment = LandingFragment.newInstance();
+        cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
+        cookieTechFragmentManager.addFragmentToBackStack(landingFragment, NavigatorTags.LANDING_FRAGMENT,binding.mainFragmentHolder.getId());
+        cookieTechFragmentManager.addFragmentToBackStack(splashFragment, NavigatorTags.SPLASH_FRAGMENT,binding.mainFragmentHolder.getId());
+
     }
 
-    public void addFragmentToBackStack(Fragment fragment, String tag, int containerViewId) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(binding.mainFragmentHolder.getId(), fragment);
-        fragmentTransaction.commit();
+    private void navigateTo(String tag) {
+        cookieTechFragmentManager.popFragmentExclusive(tag);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 }

@@ -1,23 +1,21 @@
 package com.cookietech.chordera.Splash;
-
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.alphamovie.lib.AlphaMovieView;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSplashBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 
@@ -31,6 +29,8 @@ public class SplashFragment extends ChorderaFragment {
     // starting of the project //
 
     FragmentSplashBinding binding;
+    int timeOut = 15000;
+    MainViewModel mainViewModel;
 
     public static SplashFragment newInstance() {
         return new SplashFragment();
@@ -39,6 +39,7 @@ public class SplashFragment extends ChorderaFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -46,10 +47,7 @@ public class SplashFragment extends ChorderaFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentSplashBinding.inflate(getLayoutInflater(),container,false);
-        View root = binding.getRoot();
-
-
-        return root;
+        return binding.getRoot();
     }
 
 
@@ -85,6 +83,14 @@ public class SplashFragment extends ChorderaFragment {
 
 
         binding.splashVideoView.setVideoURI(video);
+
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT);
+            }
+        },timeOut);
     }
 
 
