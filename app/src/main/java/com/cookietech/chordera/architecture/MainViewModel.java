@@ -15,4 +15,5 @@ public class MainViewModel extends ViewModel {
     public void setNavigation(String navigateTo){
         navigation.setValue(navigateTo);
     }
+
 }
