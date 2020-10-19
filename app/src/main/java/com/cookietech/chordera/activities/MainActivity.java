@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
     MainViewModel mainViewModel;
     Observer<String> navigationObserver;
 
+
+    //skifjoaisdhjfo
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
