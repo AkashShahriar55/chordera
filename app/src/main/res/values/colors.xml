@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimary">#23374D</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#3495FF</color>
 
 
     <color name="splashBackgroundColor">#22374C</color>
+    <color name="text_color_light">#3A5470</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="button_bg_light">#345776</color>
+    <color name="text_color_highlight">#3495FF</color>
 </resources>

@@ -87,4 +87,6 @@ public abstract class ChorderaFragment extends Fragment {
             fragmentLifecycleOwner = null;
         }
     }
+
+
 }

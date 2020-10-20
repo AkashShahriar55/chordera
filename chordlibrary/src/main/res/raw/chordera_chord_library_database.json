@@ -1,0 +1,192 @@
+{
+	"A":[
+		{
+			"class": "major",
+			"chords":[
+				{
+					"name": "A maj",
+					"start_fret": 2,
+					"thumb": "test2",
+					"notes": [-1,0,2,2,2,0],
+					"positions":[
+						{
+							"fret":2,
+							"finger":4,
+							"string":2
+						},
+						{
+							"fret":2,
+							"finger":3,
+							"string":3
+						},
+						{
+							"fret":2,
+							"finger":2,
+							"string":4
+						}
+					],
+					"bars":[
+					],
+					"mute_strings":[6]
+				},
+				{
+					"name": "A maj",
+					"start_fret": 2,
+					"thumb": "test2",
+					"notes": [5,4,2,2,2,5],
+					"positions":[
+						{
+							"fret":5,
+							"finger":3,
+							"string":6
+						},
+						{
+							"fret":4,
+							"finger":2,
+							"string":5
+						},
+						{
+							"fret":5,
+							"finger":4,
+							"string":1
+						}
+					],
+					"bars":[
+						{
+							"fret":2,
+							"start_string":6,
+							"end_string":1,
+							"finger":1
+						}
+					],
+					"mute_strings":[]
+				},
+				{
+					"name": "A maj",
+					"start_fret": 5,
+					"thumb": "test2",
+					"positions":[
+						{
+							"fret":6,
+							"finger":2,
+							"string":3
+						},
+						{
+							"fret":7,
+							"finger":4,
+							"string":4
+						},
+						{
+							"fret":7,
+							"finger":3,
+							"string":5
+						}
+					],
+					"bars":[
+						{
+							"fret":5,
+							"start_string":6,
+							"end_string":1,
+							"finger":1
+						}
+					],
+					"mute_strings":[]
+				},
+				{
+					"name": "A maj",
+					"start_fret": 7,
+					"thumb": "test2",
+					"positions":[
+						{
+							"fret":7,
+							"finger":1,
+							"string":4
+						},
+						{
+							"fret":9,
+							"finger":2,
+							"string":3
+						},
+						{
+							"fret":9,
+							"finger":3,
+							"string":1
+						},
+						{
+							"fret":10,
+							"finger":4,
+							"string":2
+						}
+					],
+					"bars":[
+					],
+					"mute_strings":[6]
+				},
+				{
+					"name": "A maj",
+					"start_fret": 9,
+					"thumb": "test2",
+					"positions":[
+						{
+							"fret":10,
+							"finger":2,
+							"string":2
+						},
+						{
+							"fret":11,
+							"finger":3,
+							"string":4
+						},
+						{
+							"fret":12,
+							"finger":4,
+							"string":5
+						}
+			
+					],
+					"bars":[
+						{
+							"fret":9,
+							"start_string":6,
+							"end_string":1,
+							"finger":1
+						}
+					],
+					"mute_strings":[]
+				},
+				{
+					"name": "A maj",
+					"start_fret": 12,
+					"thumb": "test2",
+					"positions":[
+						{
+							"fret":14,
+							"finger":4,
+							"string":2
+						},
+						{
+							"fret":14,
+							"finger":3,
+							"string":3
+						},
+						{
+							"fret":14,
+							"finger":2,
+							"string":4
+						}
+					],
+					"bars":[
+						{
+							"fret":12,
+							"start_string":6,
+							"end_string":1,
+							"finger":1
+						}
+					],
+					"mute_strings":[6]
+				}
+
+			]
+		}
+	]
+}

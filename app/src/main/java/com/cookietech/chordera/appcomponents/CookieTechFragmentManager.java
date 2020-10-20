@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.fragment.app.ListFragment;
 
 import java.util.ArrayList;
 
@@ -29,11 +28,24 @@ public class CookieTechFragmentManager {
             }
         });
     }
+    public void addFragmentToBackStack(FragmentManager manager,Fragment fragment, String tag, int containerViewId) {
+        this.manager = manager;
+        addFragmentToBackStack(fragment,tag,containerViewId);
+    }
 
     public void addFragmentToBackStack(Fragment fragment, String tag, int containerViewId) {
         FragmentTransaction fragmentTransaction = manager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
         fragmentTransaction.add(containerViewId, fragment,tag);
+        fragmentTransaction.addToBackStack(tag);
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
+    public void addFragmentToBackStackWithAnimation(Fragment fragment, String tag, int containerViewId,int enter,int exit,int popEnter,int popExit) {
+        FragmentTransaction fragmentTransaction = manager.beginTransaction();
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.setCustomAnimations(enter,exit,popEnter,popExit);
+        fragmentTransaction.replace(containerViewId, fragment,tag);
         fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commitAllowingStateLoss();
     }
@@ -67,5 +79,9 @@ public class CookieTechFragmentManager {
             fragmentList.add(manager.getBackStackEntryAt(i).getName());
         }
         return fragmentList;
+    }
+
+    public boolean getIsFragmentAvailable(String tag) {
+        return manager.findFragmentByTag(tag) != null;
     }
 }
