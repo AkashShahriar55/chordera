@@ -1,2 +1,4 @@
+include ':MidiDriver-1.14'
+include ':chordlibrary'
 include ':app'
 rootProject.name = "Chordera"

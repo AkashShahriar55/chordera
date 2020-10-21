@@ -29,7 +29,7 @@ public class SplashFragment extends ChorderaFragment {
     // starting of the project //
 
     FragmentSplashBinding binding;
-    int timeOut = 15000;
+    int timeOut = 5000;
     MainViewModel mainViewModel;
 
     public static SplashFragment newInstance() {
@@ -114,6 +114,7 @@ public class SplashFragment extends ChorderaFragment {
         }
 
     }
+
 
 
 }

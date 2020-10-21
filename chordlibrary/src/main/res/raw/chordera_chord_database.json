@@ -1,0 +1,195 @@
+{
+	"A":[
+		{
+			"class": "major",
+			"chords":[
+				{
+					"name": "A maj",
+					"notes": [-1,0,2,2,2,0],
+					"fingers": [0,0,2,3,4,0]
+				},
+				{
+					"name": "A maj",
+					"notes": [5,7,7,6,5,5],
+					"fingers": [1,3,4,2,1,1]
+				},
+				{
+					"name": "A maj",
+					"notes": [5,4,2,2,2,5],
+					"fingers": [3,2,1,1,1,4]
+				},
+				{
+					"name": "A maj",
+					"notes": [-1,12,11,9,10,9],
+					"fingers": [0,4,3,1,2,1]
+				},
+				{
+					"name": "A maj",
+					"notes": [-1,-1,7,9,10,9],
+					"fingers": [0,0,1,2,4,3]
+				},
+				{
+					"name": "A maj",
+					"notes": [5,0,7,6,5,0],
+					"fingers": [1,0,4,3,2,0]
+				},
+				{
+					"name": "A maj",
+					"notes": [9,0,11,9,10,0],
+					"fingers": [1,0,4,2,3,0]
+				},
+				{
+					"name": "A maj",
+					"notes": [-1,0,11,9,-1,-1],
+					"fingers": [0,0,3,1,0,0]
+				},
+				{
+					"name": "A maj",
+					"notes": [9,0,7,9,-1,-1],
+					"fingers": [3,0,1,4,0,0]
+				}
+			]
+		},
+		{
+			"class": "minor",
+			"chords": [
+				{
+					"name": "A min",
+					"notes": [-1,0,2,2,1,0],
+					"fingers": [0,0,2,3,1,0]
+				},
+				{
+					"name": "A min",
+					"notes": [5,7,7,5,5,5],
+					"fingers": [1,3,4,1,1,1]
+				},
+				{
+					"name": "A min",
+					"notes": [-1,0,7,5,5,5],
+					"fingers": [0,0,3,1,1,1]
+				},
+				{
+					"name": "A min",
+					"notes": [-1,-1,7,5,5,0],
+					"fingers": [0,0,3,1,1,0]
+				},
+				{
+					"name": "A min",
+					"notes": [-1,-1,7,5,5,-1],
+					"fingers": [0,0,3,1,1,0]
+				},
+				{
+					"name": "A min",
+					"notes": [8,0,10,9,10,0],
+					"fingers": [1,0,3,2,4,0]
+				},
+				{
+					"name": "A min",
+					"notes": [-1,0,10,9,10,8],
+					"fingers": [0,0,3,2,4,1]
+				},
+				{
+					"name": "A min",
+					"notes": [-1,0,10,9,-1,-1],
+					"fingers": [0,0,2,1,0,0]
+				}
+			]
+		}
+	],
+	"Bb": [
+		{
+			"class": "major",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		},
+		{
+			"class": "minor",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		}
+	],
+	"B": [
+		{
+			"class": "major",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		},
+		{
+			"class": "minor",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		}
+	],
+	"C": [
+		{
+			"class": "major",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		},
+		{
+			"class": "minor",
+			"chords": [
+				{
+					"name": "Bb maj",
+					"notes": [-1,1,3,3,3,1],
+					"fingers": [0,1,3,3,3,1]
+				},
+				{
+					"name": "Bb maj",
+					"notes": [6,8,8,7,6,6],
+					"fingers": [1,3,4,2,1,1]
+				}
+			]
+		}
+	]
+}

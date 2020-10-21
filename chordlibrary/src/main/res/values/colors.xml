@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bar_color">#CC1089FF</color>
+    <color name="dot_color">#1089FF</color>
+    <color name="chordLibraryBackground">#22374C</color>
+    <color name="rippleEffectColor">#3C22374C</color>
+    <color name="deepTextColor">#22374C</color>
+    <color name="toolbarBackground">#325981</color>
+    <color name="highlightedTextColor">#325981</color>
+    <color name="text_glow">#53A6F6</color>
+    <color name="string_color">#b9b9b9</color>
+    <color name="chord_info_notes_color">#53A6F6</color>
+</resources>
