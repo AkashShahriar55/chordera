@@ -9,14 +9,22 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Util.ViewUtils;
+import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 
@@ -32,6 +40,8 @@ public class LandingFragment extends ChorderaFragment {
     private FragmentLandingBinding binding;
     private NewItemAdapter newItemAdapter;
     private CollectionItemAdapter collectionItemAdapter;
+    private CookieTechFragmentManager fragmentManager;
+    private SearchSuggestionFragment searchSuggestionFragment;
 
     public LandingFragment() {
         // Required empty public constructor
@@ -58,6 +68,8 @@ public class LandingFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        fragmentManager = CookieTechFragmentManager.getInstance();
+        searchSuggestionFragment = new SearchSuggestionFragment();
         initializeViews();
         adJustViews();
         initializeClickEvents();
@@ -73,11 +85,56 @@ public class LandingFragment extends ChorderaFragment {
                 mainViewModel.setNavigation(NavigatorTags.CHORD_LIBRARY_FRAGMENT);
             }
         });
+
+       binding.edtSearchBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+           @Override
+           public void onFocusChange(View v, boolean hasFocus) {
+
+               if(hasFocus){
+                   binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
+                   showSearchSuggestionFragment();
+               }else{
+                   binding.ivCancelSearchButton.setVisibility(View.GONE);
+                   removeSearchSuggestionFragment();
+               }
+           }
+       });
+
+       binding.ivCancelSearchButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               binding.edtSearchBox.clearFocus();
+               v.setVisibility(View.GONE);
+               ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+           }
+       });
+
+        binding.edtSearchBox.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    Log.i("akash_debug","Enter pressed");
+                    ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+                    mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
+                    binding.edtSearchBox.setText("");
+                }
+                return false;
+            }
+        });
+    }
+
+    private void removeSearchSuggestionFragment() {
+        fragmentManager.popFragment("search_fragment");
+    }
+
+    private void showSearchSuggestionFragment() {
+        fragmentManager.addFragmentToBackStack(searchSuggestionFragment,"search_fragment",binding.searchFragmentContainer.getId());
     }
 
     private void initializeViews() {
         initializeNewRecyclerView();
         initializeCollectionRecyclerView();
+        mainViewModel.bindSearchBox(binding.edtSearchBox);
     }
 
     private void initializeCollectionRecyclerView() {
@@ -95,6 +152,8 @@ public class LandingFragment extends ChorderaFragment {
         binding.rvNewItems.setAdapter(newItemAdapter);
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvNewItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
+
+
 
     private void adJustViews() {
 

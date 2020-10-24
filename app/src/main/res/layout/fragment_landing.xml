@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     tools:context=".Landing.LandingFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -14,6 +16,18 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.01" />
+
+    <ImageView
+        android:id="@+id/iv_cancel_search_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_15sdp"
+        android:src="@drawable/cancel_search"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/topbar"
+        app:layout_constraintEnd_toStartOf="@+id/right_padding"
+        app:layout_constraintTop_toTopOf="@+id/top_padding" />
 
     <ImageView
         android:id="@+id/iv_chordera_icon"
@@ -33,13 +47,14 @@
         android:drawableStart="@drawable/search_icon"
         android:drawablePadding="10dp"
         android:hint="@string/search_hint"
-        android:inputType="textPersonName"
+        android:inputType="textWebEditText|textAutoComplete|textAutoCorrect"
+        android:imeOptions="actionSend"
         android:paddingStart="10dp"
         android:textColor="@color/color_white"
         android:textColorHint="@color/text_color_light"
         android:textSize="@dimen/_10ssp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_chordera_icon"
-        app:layout_constraintEnd_toStartOf="@+id/right_padding"
+        app:layout_constraintEnd_toStartOf="@+id/iv_cancel_search_button"
         app:layout_constraintStart_toEndOf="@+id/iv_chordera_icon"
         app:layout_constraintTop_toTopOf="@+id/top_padding" />
 
@@ -366,5 +381,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/search_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/topbar">
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
