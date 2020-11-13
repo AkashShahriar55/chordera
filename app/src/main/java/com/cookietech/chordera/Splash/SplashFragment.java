@@ -32,6 +32,9 @@ public class SplashFragment extends ChorderaFragment {
     int timeOut = 5000;
     MainViewModel mainViewModel;
 
+    public SplashFragment() {
+    }
+
     public static SplashFragment newInstance() {
         return new SplashFragment();
     }

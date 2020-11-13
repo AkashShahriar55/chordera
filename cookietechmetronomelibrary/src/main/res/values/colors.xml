@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="metronomeColorPrimary">#23374D</color>
+    <color name="metronomeColorPrimaryDark">#15273B</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="toolbar_color">#325981</color>
+    <color name="dialog_background">#3A608B</color>
+    <color name="active_color">#00D49A</color>
+    <color name="subdivision_top">#9915273B</color>
+    <color name="subdivision_center">#00000000</color>
+    <color name="subdivision_bottom">#9915273B</color>
+    <color name="shadow">#3495FF</color>
+
+</resources>

@@ -86,6 +86,14 @@ public class LandingFragment extends ChorderaFragment {
             }
         });
 
+        binding.cvMetronomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("akash_debug", "onClick: ");
+                mainViewModel.setNavigation(NavigatorTags.METRONOME_FRAGMENT);
+            }
+        });
+
        binding.edtSearchBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
            @Override
            public void onFocusChange(View v, boolean hasFocus) {

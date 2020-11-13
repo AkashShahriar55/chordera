@@ -1,3 +1,4 @@
+include ':cookietechmetronomelibrary'
 include ':MidiDriver-1.14'
 include ':chordlibrary'
 include ':app'

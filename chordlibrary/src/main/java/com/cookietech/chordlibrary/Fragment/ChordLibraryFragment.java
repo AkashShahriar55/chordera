@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,8 +72,12 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     int dy;
 
-    public static ChordLibraryFragment newInstance() {
-        return new ChordLibraryFragment();
+    public static ChordLibraryFragment newInstance(long testTime) {
+        ChordLibraryFragment fragment = new ChordLibraryFragment();
+        Bundle arguments = new Bundle();
+        arguments.putLong("test_time",testTime);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
@@ -95,6 +100,13 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if(getArguments() != null){
+            long testTime = getArguments().getLong("test_time");
+            Log.d("akash_test_debug", "onViewCreated: " + testTime + " current time " + System.currentTimeMillis());
+        }
+
+
 
         // Instantiate the driver.
         midiDriver = new MidiDriver();
