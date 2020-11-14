@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         chordLibraryFragment = ChordLibraryFragment.newInstance();
         searchResultFragment = SearchResultFragment.newInstance();
         topSongListFragment = TopSongListFragment.newInstance();
+
         collectionSongListShowFragment = CollectionSongListShowFragment.newInstance();
         cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
         navigateTo(NavigatorTags.LANDING_FRAGMENT);
@@ -88,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
             }else if(tag.equals(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(searchResultFragment,NavigatorTags.SEARCH_RESULT_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
-            else if(tag.equals(NavigatorTags.SONG_LIST_FRAGMENT)){
-                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionSongListShowFragment,NavigatorTags.SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            else if(tag.equals(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionSongListShowFragment,NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.TOP_SONG_LIST_FRAGMENT)){
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(topSongListFragment,NavigatorTags.TOP_SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);

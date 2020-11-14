@@ -45,7 +45,7 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new ViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result_collection_row_layout, parent, false));
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.collection_row_view, parent, false));
             case VIEW_TYPE_LOADING:
                 return new ProgressHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
@@ -124,7 +124,7 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
         public ViewHolder(View v) {
             super(v);
             name = v.findViewById(R.id.txt_collection_name);
-            view = v.findViewById(R.id.txt_collection_view);
+            view = v.findViewById(R.id.views_count);
             rowLayout = v.findViewById(R.id.rowLayout);
 
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();

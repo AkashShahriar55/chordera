@@ -55,6 +55,9 @@ public class SongDiffUtilCallback extends DiffUtil.Callback {
         if(!newSong.getBandName().equals (oldSong.getBandName())){
             diff.putString("band", newSong.getBandName());
         }
+        if(!newSong.getTotalView().equals (oldSong.getTotalView())){
+            diff.putString("view", newSong.getTotalView());
+        }
         if (diff.size()==0){
             return null;
         }

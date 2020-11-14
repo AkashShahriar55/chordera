@@ -1,26 +1,19 @@
 package com.cookietech.chordera.featureSongList.top10;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.cookietech.chordera.appcomponents.NavigatorTags;
-import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
-import com.cookietech.chordera.featureSearchResult.SearchResultSongListFragmet;
+import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
-import com.cookietech.chordera.featureSearchResult.utilities.song.SongListShowingAdapter;
-import com.cookietech.chordera.featureSongList.collection.CollectionSongListShowFragment;
+import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Song;
 
@@ -29,10 +22,10 @@ import java.util.ArrayList;
 import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
 
 public class TopSongListFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
-    FragmentTopSongListBinding binding;
+    FragmentSongListAnythingBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     RecyclerView recyclerView;
-    TopSongListShowingAdapter adapter;
+    SongListShowingAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     int currentPage = PAGE_START;
     boolean isLastPage = false;
@@ -53,7 +46,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentTopSongListBinding.inflate(getLayoutInflater(),container,false);
+        binding = FragmentSongListAnythingBinding.inflate(getLayoutInflater(),container,false);
         return binding.getRoot();
     }
 
@@ -67,12 +60,14 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     private void initializeVariable() {
         currentPage = PAGE_START;
         isLastPage = false;
-        totalPage = 10;
+        totalPage = 5;
         isLoading = false;
         itemCount = 0;
     }
 
     private void initialize() {
+        binding.headerTittle.setText("Top 10");
+        binding.collectionName.setVisibility(View.GONE);
         recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefresh;
 
@@ -80,7 +75,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new TopSongListShowingAdapter(new ArrayList<Song>(), binding);
+        adapter = new SongListShowingAdapter(new ArrayList<Song>(), binding);
         getData();
         recyclerView.setAdapter(adapter);
 
@@ -111,6 +106,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
             Song song = new Song();
             song.setTittle("Koshto" + itemCount);
             song.setBandName("Avoid Rafa");
+            song.setTotalView("120");
             items.add(song);
         }
         /**

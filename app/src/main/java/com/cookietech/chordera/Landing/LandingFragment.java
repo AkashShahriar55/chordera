@@ -78,7 +78,7 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.e("sohan debug","top ten pressed");
-                mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT);
+                mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT);
             }
         });
     }

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -18,10 +17,8 @@ import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSearchResult.utilities.collection.CollectionListShowingAdapter;
-import com.cookietech.chordera.featureSearchResult.utilities.song.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Collection;
-import com.cookietech.chordera.models.Song;
 
 import java.util.ArrayList;
 
@@ -49,7 +46,16 @@ public class SearchResultCollectionFragment extends ChorderaFragment implements 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initializeVariable();
         initializeView();
+    }
+
+    private void initializeVariable() {
+        currentPage = PAGE_START;
+        isLastPage = false;
+        totalPage = 10;
+        isLoading = false;
+        itemCount = 0;
     }
 
     private void initializeView() {
@@ -61,8 +67,8 @@ public class SearchResultCollectionFragment extends ChorderaFragment implements 
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        getData();
         adapter = new CollectionListShowingAdapter(new ArrayList<Collection>(),binding);
+        getData();
         adapter.setOnclickItemListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -89,38 +95,31 @@ public class SearchResultCollectionFragment extends ChorderaFragment implements 
     }
 
     private void getData() {
-        final ArrayList<Collection> items = new ArrayList<>();
-        new Handler().postDelayed(new Runnable() {
+        ArrayList<Collection> items = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            itemCount++;
+            Collection collection = new Collection();
+            collection.setName("Avoid Rafa" + itemCount);
+            collection.setView("150");
+            items.add(collection);
+        }
+        /**
+         * manage progress view
+         */
+        if (currentPage != PAGE_START) adapter.removeLoading();
+        //adapter.addItems(items);
+        ArrayList<Collection> allData = new ArrayList<Collection>(adapter.getData());
+        allData.addAll(items);
+        adapter.onNewData(allData);
+        swipeRefreshLayout.setRefreshing(false);
 
-            @Override
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    itemCount++;
-                    Collection collection = new Collection();
-                    collection.setName("Avoid Rafa" + itemCount);
-                    collection.setView("100");
-                    items.add(collection);
-                }
-                /**
-                 * manage progress view
-                 */
-                if (currentPage != PAGE_START) adapter.removeLoading();
-                //adapter.addItems(items);
-                ArrayList<Collection> allData = new ArrayList<Collection>(adapter.getData());
-                allData.addAll(items);
-                adapter.onNewData(allData);
-                swipeRefreshLayout.setRefreshing(false);
-
-                // check weather is last page or not
-                if (currentPage < totalPage) {
-                    adapter.addLoading();
-                } else {
-                    isLastPage = true;
-                }
-                isLoading = false;
-
-            }
-        }, 1500);
+        // check weather is last page or not
+        if (currentPage < totalPage) {
+            adapter.addLoading();
+        } else {
+            isLastPage = true;
+        }
+        isLoading = false;
     }
 
     @Override
@@ -135,6 +134,6 @@ public class SearchResultCollectionFragment extends ChorderaFragment implements 
     @Override
     public void onItemClick(String id) {
         Log.d("sohan_debug", "onItemClick: " + id);
-        mainViewModel.setNavigation(NavigatorTags.SONG_LIST_FRAGMENT);
+        mainViewModel.setNavigation(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT);
     }
 }

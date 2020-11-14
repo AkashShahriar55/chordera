@@ -2,8 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clickable="true"
-    android:foreground="?selectableItemBackground"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true">
@@ -11,33 +10,46 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rowLayout"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?selectableItemBackground"
+        android:minHeight="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/txt_song_tittle"
+            android:id="@+id/txt_collection_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ei obelay"
-            android:textColor="@color/color_white"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/green"
             android:textSize="@dimen/_11ssp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/txt_artist"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txt_artist"
+        <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shironamhin"
-            android:textColor="@color/color_white"
-            android:textSize="@dimen/_10ssp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/viewed_icon"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_song_tittle" />
+            app:layout_constraintEnd_toStartOf="@+id/views_count"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/views_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:textSize="@dimen/_10sdp"
+            android:textColor="@color/color_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

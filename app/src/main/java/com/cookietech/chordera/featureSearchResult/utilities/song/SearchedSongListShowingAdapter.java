@@ -1,13 +1,10 @@
 package com.cookietech.chordera.featureSearchResult.utilities.song;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -17,13 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
-import com.cookietech.chordera.models.Collection;
 import com.cookietech.chordera.models.Song;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private ArrayList<Song> mDataset;
     private static final int VIEW_TYPE_LOADING = 0;
     private static final int VIEW_TYPE_NORMAL = 1;
@@ -31,7 +27,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     FragmentSearchResultRecyclerViewBinding binding;
     private List<Song> songList;
 
-    public SongListShowingAdapter(ArrayList<Song> songList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
+    public SearchedSongListShowingAdapter(ArrayList<Song> songList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
         this.binding = fragmentSearchResultRecyclerViewBinding;
         this.songList = songList;
     }
@@ -44,7 +40,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new ViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result_song_row_view, parent, false));
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.song_row_view, parent, false));
             case VIEW_TYPE_LOADING:
                 return new ProgressHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
@@ -122,14 +118,14 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     }
 
     public class ViewHolder extends BaseViewHolder {
-        public TextView tittle, band;
+        public TextView tittle, band, view;
         public ConstraintLayout rowLayout;
         public ViewHolder(View v) {
             super(v);
             tittle = v.findViewById(R.id.txt_song_tittle);
             band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
-
+            view = v.findViewById(R.id.views_count);
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
             //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
             params.height = (int) (binding.recyclerView.getWidth()/7.2);
@@ -148,6 +144,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
             tittle.setText(item.getTittle());
             band.setText(item.getBandName());
+            view.setText(item.getTotalView());
         }
         public void onBind(int position, List<Object> payloads)
         {
@@ -158,6 +155,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
                 tittle.setText(item.getTittle());
                 band.setText(item.getBandName());
+                view.setText(item.getTotalView());
             }
             else {
 
@@ -170,6 +168,10 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
                     if(key.equals("band")){
                         //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
                         band.setText(songList.get(position).getBandName());
+                    }
+                    if(key.equals("view")){
+                        //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
+                        view.setText(songList.get(position).getTotalView());
                     }
                 }
             }

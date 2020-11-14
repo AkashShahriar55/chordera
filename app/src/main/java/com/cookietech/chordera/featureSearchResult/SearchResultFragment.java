@@ -22,11 +22,8 @@ import com.google.android.material.tabs.TabLayout;
 
 public class SearchResultFragment extends ChorderaFragment {
     private FragmentSearchResultBinding binding;
-    private TabAdapter adapter;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    FragmentManager fragmentManager;
-
+    SearchResultSongListFragmet searchResultSongListFragmet = new SearchResultSongListFragmet();
+    SearchResultCollectionFragment searchResultCollectionListFragment = new SearchResultCollectionFragment();
     public SearchResultFragment(){};
 
     public static SearchResultFragment newInstance(){return new SearchResultFragment();}
@@ -50,13 +47,11 @@ public class SearchResultFragment extends ChorderaFragment {
     }
 
     private void initialize() {
-        viewPager = binding.pager;
-        tabLayout = binding.tabLayout;
-        adapter = new TabAdapter(getChildFragmentManager());
-        SearchResultSongListFragmet searchResultSongListFragmet = new SearchResultSongListFragmet();
-        SearchResultCollectionFragment searchResultCollectionListFragment = new SearchResultCollectionFragment();
-        adapter.addFragment(searchResultSongListFragmet, "Song");
-        adapter.addFragment(searchResultCollectionListFragment, "Collection");
+        ViewPager viewPager = binding.pager;
+        TabLayout tabLayout = binding.tabLayout;
+        TabAdapter adapter = new TabAdapter(getChildFragmentManager());
+        adapter.addFragment(searchResultSongListFragmet, "Songs");
+        adapter.addFragment(searchResultCollectionListFragment, "Collections");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }

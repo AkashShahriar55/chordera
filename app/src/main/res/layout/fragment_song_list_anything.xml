@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -47,33 +46,30 @@
         app:layout_constraintTop_toTopOf="@+id/top_padding" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/header_tittle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Search results"
         android:textColor="@color/color_white"
         android:textSize="@dimen/_11sdp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/search_key"
+        app:layout_constraintBottom_toTopOf="@+id/collection_name"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
         app:layout_constraintTop_toTopOf="@+id/top_padding" />
 
     <TextView
-        android:id="@+id/search_key"
+        android:id="@+id/collection_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="'avoid rafa'"
         android:textColor="@color/color_white"
         android:textSize="@dimen/_10ssp"
-        app:layout_constraintBottom_toTopOf="@+id/pager"
+        app:layout_constraintBottom_toTopOf="@+id/topbar"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/header_tittle" />
 
-
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/pager"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorPrimary"
@@ -82,17 +78,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/topbar">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
-            android:background="@color/colorAccent"
-            app:tabIndicatorColor="@color/indicator_color"
-            app:layout_constraintTop_toTopOf="@+id/topbar"
-            app:tabGravity="fill"
-            app:tabSelectedTextColor="@color/color_white"
-            app:tabTextColor="@color/colorPrimary"/>
-    </androidx.viewpager.widget.ViewPager>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

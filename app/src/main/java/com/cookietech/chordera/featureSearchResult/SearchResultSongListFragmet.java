@@ -13,14 +13,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
-import com.cookietech.chordera.featureSearchResult.utilities.song.SongListShowingAdapter;
+import com.cookietech.chordera.featureSearchResult.utilities.song.SearchedSongListShowingAdapter;
 import com.cookietech.chordera.models.Song;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
 
@@ -29,7 +27,7 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
     FragmentSearchResultRecyclerViewBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     RecyclerView recyclerView;
-    SongListShowingAdapter adapter;
+    SearchedSongListShowingAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     int currentPage = PAGE_START;
     boolean isLastPage = false;
@@ -47,9 +45,16 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initializeVariable();
         initializeView();
     }
-
+    private void initializeVariable() {
+        currentPage = PAGE_START;
+        isLastPage = false;
+        totalPage = 10;
+        isLoading = false;
+        itemCount = 0;
+    }
     private void initializeView() {
         //binding.tabId.setText("Song List Tab");
         recyclerView = binding.recyclerView;
@@ -59,8 +64,8 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        adapter = new SearchedSongListShowingAdapter(new ArrayList<Song>(), binding);
         getData();
-        adapter = new SongListShowingAdapter(new ArrayList<Song>(), binding);
         recyclerView.setAdapter(adapter);
 
         recyclerView.addOnScrollListener(new PaginationListener(layoutManager) {
@@ -85,38 +90,32 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
     }
 
     private void getData() {
-         final ArrayList<Song> items = new ArrayList<>();
-        new Handler().postDelayed(new Runnable() {
+        ArrayList<Song> items = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            itemCount++;
+            Song song = new Song();
+            song.setTittle("Koshto" + itemCount);
+            song.setBandName("Avoid Rafa");
+            song.setTotalView("120");
+            items.add(song);
+        }
+        /**
+         * manage progress view
+         */
+        if (currentPage != PAGE_START) adapter.removeLoading();
+        //adapter.addItems(items);
+        ArrayList<Song> allData = new ArrayList<Song>(adapter.getData());
+        allData.addAll(items);
+        adapter.onNewData(allData);
+        swipeRefreshLayout.setRefreshing(false);
 
-            @Override
-            public void run() {
-                for (int i = 0; i < 20; i++) {
-                    itemCount++;
-                    Song song = new Song();
-                    song.setTittle("Koshto" + itemCount);
-                    song.setBandName("Avoid Rafa");
-                    items.add(song);
-                }
-                /**
-                 * manage progress view
-                 */
-                if (currentPage != PAGE_START) adapter.removeLoading();
-                //adapter.addItems(items);
-                ArrayList<Song> allData = new ArrayList<Song>(adapter.getData());
-                allData.addAll(items);
-                adapter.onNewData(allData);
-                swipeRefreshLayout.setRefreshing(false);
-
-                // check weather is last page or not
-                if (currentPage < totalPage) {
-                    adapter.addLoading();
-                } else {
-                    isLastPage = true;
-                }
-                isLoading = false;
-
-            }
-        }, 1500);
+        // check weather is last page or not
+        if (currentPage < totalPage) {
+            adapter.addLoading();
+        } else {
+            isLastPage = true;
+        }
+        isLoading = false;
     }
 
     @Override
