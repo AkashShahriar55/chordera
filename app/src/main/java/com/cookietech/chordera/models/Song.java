@@ -9,6 +9,8 @@ public class Song implements Comparable<Song>{
 
     private String tittle, artistName, bandName, genre, updateDate, totalView;
 
+    public Song(){}
+
     public Song(String titlle, String artistName, String bandName, String genre, String updateDate, String totalView)
     {
         this.tittle = titlle;

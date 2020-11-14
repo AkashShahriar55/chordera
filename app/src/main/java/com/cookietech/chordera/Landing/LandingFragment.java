@@ -73,6 +73,14 @@ public class LandingFragment extends ChorderaFragment {
                 mainViewModel.setNavigation(NavigatorTags.CHORD_LIBRARY_FRAGMENT);
             }
         });
+
+        binding.cvTop10Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("sohan debug","top ten pressed");
+                mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT);
+            }
+        });
     }
 
     private void initializeViews() {

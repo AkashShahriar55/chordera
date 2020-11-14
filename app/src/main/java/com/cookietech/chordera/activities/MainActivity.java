@@ -16,6 +16,8 @@ import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.ActivityMainBinding;
+import com.cookietech.chordera.featureSearchResult.SearchResultFragment;
+import com.cookietech.chordera.featureSongList.SongListShowFragment;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
 
 import java.util.List;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     SplashFragment splashFragment;
     LandingFragment landingFragment;
     ChordLibraryFragment chordLibraryFragment;
+    SearchResultFragment searchResultFragment;
+    SongListShowFragment songListShowFragment;
     ActivityMainBinding binding;
     CookieTechFragmentManager cookieTechFragmentManager;
     MainViewModel mainViewModel;
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         splashFragment = SplashFragment.newInstance();
         landingFragment = LandingFragment.newInstance();
         chordLibraryFragment = ChordLibraryFragment.newInstance();
+        searchResultFragment = SearchResultFragment.newInstance();
+        songListShowFragment = SongListShowFragment.newInstance();
         cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
         navigateTo(NavigatorTags.LANDING_FRAGMENT);
         mainViewModel.setNavigation(NavigatorTags.SPLASH_FRAGMENT);
@@ -76,6 +82,11 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(splashFragment, NavigatorTags.SPLASH_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_left,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_left);
             }else if(tag.equals(NavigatorTags.CHORD_LIBRARY_FRAGMENT)){
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordLibraryFragment,NavigatorTags.CHORD_LIBRARY_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }else if(tag.equals(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(searchResultFragment,NavigatorTags.SEARCH_RESULT_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }
+            else if(tag.equals(NavigatorTags.SONG_LIST_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(songListShowFragment,NavigatorTags.SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }
 
