@@ -1,10 +1,13 @@
-package com.cookietech.chordera.featureSearchResult.utilities.collection;
+package com.cookietech.chordera.featureSongList.top10;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -12,29 +15,27 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
-import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
+import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
+import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
 import com.cookietech.chordera.models.Collection;
+import com.cookietech.chordera.models.Song;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-
-    private FragmentListener fragmentListener;
-
+public class TopSongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+    private ArrayList<Song> mDataset;
     private static final int VIEW_TYPE_LOADING = 0;
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
-    private FragmentSearchResultRecyclerViewBinding binding;
-    private List<Collection> collectionList;
-    CookieTechFragmentManager cookieTechFragmentManager;
+    FragmentTopSongListBinding binding;
+    private List<Song> songList;
 
-    public CollectionListShowingAdapter(ArrayList<Collection> collectionList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
-        this.binding = fragmentSearchResultRecyclerViewBinding;
-        this.collectionList = collectionList;
-        cookieTechFragmentManager = CookieTechFragmentManager.getInstance();
+    public TopSongListShowingAdapter(ArrayList<Song> songList, FragmentTopSongListBinding fragmentTopSongListBinding) {
+        this.binding = fragmentTopSongListBinding;
+        this.songList = songList;
     }
 
 
@@ -45,7 +46,7 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new ViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result_collection_row_layout, parent, false));
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.search_result_song_row_view, parent, false));
             case VIEW_TYPE_LOADING:
                 return new ProgressHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
@@ -68,6 +69,8 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
         }else{
             super.onBindViewHolder(holder,position,payloads);
         }
+
+
     }
 
 
@@ -75,7 +78,7 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
     @Override
     public int getItemViewType(int position) {
         if (isLoaderVisible) {
-            return position == collectionList.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
+            return position == songList.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
         } else {
             return VIEW_TYPE_NORMAL;
         }
@@ -83,61 +86,58 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
 
     @Override
     public int getItemCount() {
-        return collectionList == null ? 0 : collectionList.size();
+        return songList == null ? 0 : songList.size();
     }
 
-    public void addItems(List<Collection> collections) {
-        collectionList.addAll(collections);
+    public void addItems(List<Song> songs) {
+        songList.addAll(songs);
         notifyDataSetChanged();
     }
 
     public void addLoading() {
         isLoaderVisible = true;
-        collectionList.add(new Collection());
-        notifyItemInserted(collectionList.size() - 1);
+        songList.add(new Song());
+        notifyItemInserted(songList.size() - 1);
     }
 
     public void removeLoading() {
         isLoaderVisible = false;
-        int position = collectionList.size() - 1;
-        Collection item = getItem(position);
+        int position = songList.size() - 1;
+        Song item = getItem(position);
         if (item != null) {
-            collectionList.remove(position);
+            songList.remove(position);
             notifyItemRemoved(position);
         }
     }
 
     public void clear() {
-        collectionList.clear();
+        songList.clear();
         notifyDataSetChanged();
     }
 
-    Collection getItem(int position) {
-        return collectionList.get(position);
+    Song getItem(int position) {
+        return songList.get(position);
     }
-    public ArrayList<Collection> getData() {
-        return (ArrayList<Collection>) this.collectionList;
+
+    public ArrayList<Song> getData() {
+        return (ArrayList<Song>) this.songList;
     }
+
     public class ViewHolder extends BaseViewHolder {
-        public TextView name, view;
-        ConstraintLayout rowLayout;
+        public TextView tittle, band;
+        public ConstraintLayout rowLayout;
         public ViewHolder(View v) {
             super(v);
-            name = v.findViewById(R.id.txt_collection_name);
-            view = v.findViewById(R.id.txt_collection_view);
+            tittle = v.findViewById(R.id.txt_song_tittle);
+            band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
 
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
+            //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
             params.height = (int) (binding.recyclerView.getWidth()/7.2);
             rowLayout.setLayoutParams(params);
             //width/height = 7.2    ratio was calculated from xd design
 
-            rowLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    fragmentListener.onItemClick("avoid rafa");
-                }
-            });
         }
 
         protected void clear() {
@@ -146,36 +146,38 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
 
         public void onBind(int position) {
             super.onBind(position);
-            Collection item = collectionList.get(position);
+            Song item = songList.get(position);
 
-            name.setText(item.getName());
-            view.setText(item.getView());
+            tittle.setText(item.getTittle());
+            band.setText(item.getBandName());
         }
         public void onBind(int position, List<Object> payloads)
         {
             if (payloads.isEmpty()){
                 //
                 super.onBind(position, payloads);
-                Collection item = collectionList.get(position);
+                Song item = songList.get(position);
 
-                name.setText(item.getName());
-                view.setText(item.getView());
+                tittle.setText(item.getTittle());
+                band.setText(item.getBandName());
             }
             else {
+
                 Bundle o = (Bundle) payloads.get(0);
                 for (String key : o.keySet()) {
-                    if(key.equals("name")){
-                        //Toast.makeText(name.getContext(), "Collection "+position+" : Tittle Changed", Toast.LENGTH_SHORT).show();;
-                        name.setText(collectionList.get(position).getName());
+                    if(key.equals("tittle")){
+                        //Toast.makeText(tittle.getContext(), "Song "+position+" : Tittle Changed", Toast.LENGTH_SHORT).show();;
+                        tittle.setText(songList.get(position).getTittle());
                     }
-                    if(key.equals("view")){
-                       // Toast.makeText(itemView.getContext(), "Collection "+position+" : View Changed", Toast.LENGTH_SHORT).show();;
-                        view.setText(collectionList.get(position).getView());
+                    if(key.equals("band")){
+                        //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
+                        band.setText(songList.get(position).getBandName());
                     }
                 }
             }
         }
     }
+
 
     public class ProgressHolder extends BaseViewHolder {
 
@@ -187,20 +189,10 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
         }
     }
 
-    public void onNewData(ArrayList<Collection> newData) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CollectionDiffUtilCallback(newData, (ArrayList<Collection>) collectionList));
+    public void onNewData(ArrayList<Song> newData) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<Song>) songList));
         diffResult.dispatchUpdatesTo(this);
-        this.collectionList.clear();
-        this.collectionList.addAll(newData);
-    }
-
-    public interface FragmentListener
-    {
-        void onItemClick(String id);
-    }
-
-    public void setOnclickItemListener(FragmentListener listener)
-    {
-        fragmentListener = listener;
+        this.songList.clear();
+        this.songList.addAll(newData);
     }
 }

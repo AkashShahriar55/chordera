@@ -1,4 +1,4 @@
-package com.cookietech.chordera.featureSongList;
+package com.cookietech.chordera.featureSongList.collection;
 
 
 import android.os.Bundle;
@@ -13,11 +13,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.cookietech.chordera.appcomponents.NavigatorTags;
-import com.cookietech.chordera.databinding.FragmentSearchResultBinding;
 import com.cookietech.chordera.databinding.FragmentSongListOfCollectionBinding;
-import com.cookietech.chordera.featureSearchResult.SearchResultCollectionFragment;
 import com.cookietech.chordera.featureSearchResult.SearchResultSongListFragmet;
-import com.cookietech.chordera.featureSearchResult.utilities.TabAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 
 /***
@@ -25,13 +22,13 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
  */
 
 
-public class SongListShowFragment extends ChorderaFragment {
+public class CollectionSongListShowFragment extends ChorderaFragment {
     FragmentSongListOfCollectionBinding binding;
     FrameLayout frameLayout;
 
-    public SongListShowFragment(){};
+    public CollectionSongListShowFragment(){};
 
-    public static SongListShowFragment newInstance(){return new SongListShowFragment();};
+    public static CollectionSongListShowFragment newInstance(){return new CollectionSongListShowFragment();};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
