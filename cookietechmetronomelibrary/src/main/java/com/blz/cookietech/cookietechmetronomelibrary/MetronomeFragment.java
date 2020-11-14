@@ -1,7 +1,10 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 
@@ -37,6 +40,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -105,6 +110,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     Intent metronomeServiceIntent;
     PendingIntent pendingIntent;
     private SubdivisionAdapter adapter;
+    private MetronomeFragmentBroadcastReceiver broadcastReceiver = new MetronomeFragmentBroadcastReceiver();
+    private ImageView backButton;
 
 
     public static MetronomeFragment newInstance(PendingIntent pendingIntent,double[] tick,double[] tock) {
@@ -126,8 +133,13 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("akash_test_debug", "onCreate: ");
         Log.d("akash_debug", "onCreate: "+ com.blz.cookietech.cookietechmetronomelibrary.Model.Constants.getTick()[500]);
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_QUIT);
+        filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_TOGGLE);
+        requireContext().registerReceiver(broadcastReceiver, filter);
 
     }
 
@@ -143,13 +155,14 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Log.d("akash_test_debug", "onViewCreated: ");
         if(getArguments() != null){
             Bundle args = getArguments();
             tick = args.getDoubleArray(ARG_TICK);
             tock = args.getDoubleArray(ARG_TOCK);
             pendingIntent = args.getParcelable(ARG_PENDING_INTENT);
         }
+
 
         /** Initialize play pause button **/
         play_pause_btn = view.findViewById(R.id.play_pause_btn);
@@ -178,7 +191,13 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         /** Initialize wheelerContainer **/
         wheelerContainer = view.findViewById(R.id.wheelerContainer);
 
+        /** initialize back button **/
+        backButton = view.findViewById(R.id.back_btn);
+
         lightsView.setBpm(BPM);
+
+
+        initializeClickEvents();
 
 
 
@@ -368,24 +387,12 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
 
 
-                    Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
-                    playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,true);
-                    requireActivity().sendBroadcast(playPauseIntent);
-                    isPlaying = true;
-                    play_pause_btn.setImageResource(R.drawable.pause);
-                    timerWheel.startTimer();
-
-                    lightsView.startToggling();
+                   playMetronome();
 
                 }
                 else{
 
-                    Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
-                    playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,false);
-                    requireActivity().sendBroadcast(playPauseIntent);
-                    resetPlayPauseBtn();
-                    timerWheel.stopTimer();
-                    lightsView.stopToggling();
+                    stopMetronome();
                 }
 
             }
@@ -395,11 +402,20 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
     }
 
+    private void initializeClickEvents() {
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backButtonPressed();
+            }
+        });
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
-
+        Log.d("akash_test_debug", "onStart: ");
 
     }
 
@@ -421,15 +437,25 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.d("akash_test_debug", "onDestroyView: ");
         Intent service = new Intent(requireContext(),MetronomeService.class);
         requireActivity().stopService(service);
+        isPlaying = false;
+        requireContext().unregisterReceiver(broadcastReceiver);
     }
+
 
 
     @Override
     public void onStopTimer() {
         //resetPlayPauseBtn();
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("akash_test_debug", "onStop: ");
     }
 
     @Override
@@ -489,4 +515,79 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             timerWheel.setUpTimer(Constants.ZERO);
         }
     }
+
+
+
+    public class MetronomeFragmentBroadcastReceiver extends BroadcastReceiver {
+        public static final String ACTION_TOGGLE = "com.blz.cookietech.TOGGLE";
+        public static final String ACTION_QUIT = "com.blz.cookietech.QUIT";
+
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+
+            Log.d("akash_debug", "onReceive: " + intent.getAction());
+
+            Log.d("akash_debug", "onReceive: " + context.getPackageName());
+
+            Log.d("akash_debug", "onReceive: " + intent.getIntExtra(EXTRA_NOTIFICATION_ID,-1));
+
+
+            if(intent.getAction() != null){
+                switch (intent.getAction()) {
+                    case ACTION_TOGGLE:
+
+                        if(isPlaying){
+                            stopMetronome();
+                            Log.d("akash_test_debug", "onReceive: toggle pause");
+                        }else{
+                            playMetronome();
+                            Log.d("akash_test_debug", "onReceive: toggle play");
+                        }
+                        break;
+                    case ACTION_QUIT:
+                        Log.d("akash_test_debug", "onReceive: quit");
+                        stopMetronome();
+                        backButtonPressed();
+                        Intent service = new Intent(requireContext(),MetronomeService.class);
+                        requireActivity().stopService(service);
+                        break;
+                }
+            }
+
+
+
+
+        }
+    }
+
+    private void backButtonPressed() {
+        requireActivity().onBackPressed();
+    }
+
+
+
+
+    private void playMetronome() {
+        Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
+        playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,true);
+        requireActivity().sendBroadcast(playPauseIntent);
+        isPlaying = true;
+        play_pause_btn.setImageResource(R.drawable.pause);
+        timerWheel.startTimer();
+
+        lightsView.startToggling();
+    }
+
+    private void stopMetronome() {
+        Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
+        playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,false);
+        requireActivity().sendBroadcast(playPauseIntent);
+        resetPlayPauseBtn();
+        timerWheel.stopTimer();
+        lightsView.stopToggling();
+    }
+
+
 }

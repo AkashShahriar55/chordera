@@ -190,17 +190,19 @@ public class MetronomeService extends Service {
 
             if(intent.getAction() != null){
                 switch (intent.getAction()) {
-                    case ACTION_TOGGLE:
+                   /* case ACTION_TOGGLE:
 
                         if(isPlaying){
                             isPlaying = false;
                             pause();
                             Log.d("akash_debug", "onReceive: toggle pause");
+
                         }else{
                             isPlaying = true;
                             play();
                             Log.d("akash_debug", "onReceive: toggle play");
                         }
+
                         break;
                     case ACTION_QUIT:
                         if (applicationInForeground()) {
@@ -209,7 +211,7 @@ public class MetronomeService extends Service {
                             Log.d("akash_debug", "onReceive: is not foreground ");
                             stopSelf();
                         }
-                        break;
+                        break;*/
                     case ACTION_PLAY_PAUSE:
                         boolean play = intent.getBooleanExtra(PLAY_PAUSE_EXTRA,false);
 

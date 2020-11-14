@@ -244,7 +244,9 @@ public class TimerWheeler extends View {
     }
 
     public void stopTimer(){
-        timer.cancel();
+        if(timer != null){
+            timer.cancel();
+        }
         isTimerRunning = false;
         resetTimer();
     }
