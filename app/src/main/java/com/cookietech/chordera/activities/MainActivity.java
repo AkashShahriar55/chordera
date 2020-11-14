@@ -22,6 +22,9 @@ import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.ActivityMainBinding;
+import com.cookietech.chordera.featureSearchResult.SearchResultFragment;
+import com.cookietech.chordera.featureSongList.collection.CollectionSongListShowFragment;
+import com.cookietech.chordera.featureSongList.top10.TopSongListFragment;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -39,11 +42,17 @@ public class MainActivity extends AppCompatActivity {
     LandingFragment landingFragment;
     ChordLibraryFragment chordLibraryFragment;
     MetronomeFragment metronomeFragment;
+    SearchResultFragment searchResultFragment;
+    CollectionSongListShowFragment collectionSongListShowFragment;
+    TopSongListFragment topSongListFragment;
     ActivityMainBinding binding;
     CookieTechFragmentManager cookieTechFragmentManager;
     MainViewModel mainViewModel;
     Observer<String> navigationObserver;
     long lastBackButtonPressed = 0;
+
+
+    //skifjoaisdhjfo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         metronomeFragment = MetronomeFragment.newInstance(pendingIntent, AppSharedComponents.getTick(),AppSharedComponents.getTock());
+        searchResultFragment = SearchResultFragment.newInstance();
+        topSongListFragment = TopSongListFragment.newInstance();
+
+        collectionSongListShowFragment = CollectionSongListShowFragment.newInstance();
         cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
         if(savedInstanceState == null){
             navigateTo(NavigatorTags.LANDING_FRAGMENT);
@@ -126,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordLibraryFragment,NavigatorTags.CHORD_LIBRARY_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.METRONOME_FRAGMENT)){
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(metronomeFragment,NavigatorTags.METRONOME_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }else if(tag.equals(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(searchResultFragment,NavigatorTags.SEARCH_RESULT_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }
+            else if(tag.equals(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionSongListShowFragment,NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }
+            else if(tag.equals(NavigatorTags.TOP_SONG_LIST_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(topSongListFragment,NavigatorTags.TOP_SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }
 

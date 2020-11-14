@@ -129,6 +129,15 @@ public class LandingFragment extends ChorderaFragment {
                 return false;
             }
         });
+
+        binding.cvTop10Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("sohan debug","top ten pressed");
+                mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT);
+            }
+        });
+
     }
 
     private void removeSearchSuggestionFragment() {
@@ -137,6 +146,7 @@ public class LandingFragment extends ChorderaFragment {
 
     private void showSearchSuggestionFragment() {
         fragmentManager.addFragmentToBackStack(searchSuggestionFragment,"search_fragment",binding.searchFragmentContainer.getId());
+
     }
 
     private void initializeViews() {
