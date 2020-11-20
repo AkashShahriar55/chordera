@@ -134,6 +134,6 @@ public class SearchResultCollectionFragment extends ChorderaFragment implements 
     @Override
     public void onItemClick(String id) {
         Log.d("sohan_debug", "onItemClick: " + id);
-        mainViewModel.setNavigation(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT);
+        mainViewModel.setNavigation(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
     }
 }

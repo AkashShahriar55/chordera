@@ -6,12 +6,6 @@
     android:background="@color/colorPrimary">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/top_padding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.01" />
-    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/right_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,20 +31,21 @@
 
     <ImageView
         android:id="@+id/btn_back"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/_40sdp"
         android:layout_height="0dp"
-        android:src="@drawable/ic_back"
+        android:scaleType="centerInside"
+        android:src="@drawable/arrow"
         app:layout_constraintBottom_toTopOf="@+id/topbar"
-        app:layout_constraintStart_toStartOf="@+id/left_padding"
-        app:layout_constraintTop_toTopOf="@+id/top_padding" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/header_tittle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="Avoid Rafa"
         android:textColor="@color/color_white"
+        android:textSize="@dimen/_14ssp"
         app:layout_constraintBottom_toTopOf="@+id/topbar"
         app:layout_constraintEnd_toStartOf="@+id/right_padding"
         app:layout_constraintStart_toEndOf="@+id/btn_back"

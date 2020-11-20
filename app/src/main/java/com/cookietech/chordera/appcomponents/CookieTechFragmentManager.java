@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CookieTechFragmentManager {
     public static CookieTechFragmentManager instance;
@@ -45,7 +46,7 @@ public class CookieTechFragmentManager {
         FragmentTransaction fragmentTransaction = manager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
         fragmentTransaction.setCustomAnimations(enter,exit,popEnter,popExit);
-        fragmentTransaction.replace(containerViewId, fragment,tag);
+        fragmentTransaction.add(containerViewId, fragment,tag);
         fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commitAllowingStateLoss();
     }
@@ -83,5 +84,12 @@ public class CookieTechFragmentManager {
 
     public boolean getIsFragmentAvailable(String tag) {
         return manager.findFragmentByTag(tag) != null;
+    }
+
+
+    public Fragment getTopFragment(){
+        List<Fragment> fragments = manager.getFragments();
+
+        return fragments.get(fragments.size()-1);
     }
 }

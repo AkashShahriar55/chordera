@@ -449,7 +449,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     @Override
     public void onStopTimer() {
         //resetPlayPauseBtn();
-
+        if(isTimerEnabled) stopMetronome();
     }
 
     @Override

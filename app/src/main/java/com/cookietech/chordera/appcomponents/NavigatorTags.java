@@ -8,4 +8,5 @@ public class NavigatorTags {
     public static final String SEARCH_RESULT_FRAGMENT = "search_result_fragment";
     public static final String COLLECTION_SONG_LIST_FRAGMENT = "collection_song_list_fragment";
     public static final String TOP_SONG_LIST_FRAGMENT = "top_song_list_fragment";
+    public static final String SEARCH_VIEW_FRAGMENT = "search_view_fragment";
 }

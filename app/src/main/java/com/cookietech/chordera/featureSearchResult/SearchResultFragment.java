@@ -1,6 +1,7 @@
 package com.cookietech.chordera.featureSearchResult;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentSearchResultBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.TabAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.Navigator;
 import com.google.android.material.tabs.TabLayout;
 
 /***
@@ -54,5 +57,17 @@ public class SearchResultFragment extends ChorderaFragment {
         adapter.addFragment(searchResultCollectionListFragment, "Collections");
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    public boolean onBackPressed(Navigator topNavigation) {
+        boolean handled = false;
+        if(topNavigation.getNavigatorTag().equalsIgnoreCase(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
+            Log.d("akash_debug", "result onBackPressed: ");
+            mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,1 );
+            handled = true;
+        }
+        Log.d("akash_debug", "result onBackPressed: " + handled + " " + topNavigation.getNavigatorTag());
+        return handled;
     }
 }

@@ -68,7 +68,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     private List<String> homeList =new ArrayList<>();
     private List<String> typeList = new ArrayList<>();
     private int selectedHomeIndex = 0;
-    LayoutChordLibraryBottomSheetBinding  bottomSheetBinding;
+    LayoutChordLibraryBottomSheetBinding bottomSheetBinding;
 
     int dy;
 
@@ -175,6 +175,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             @Override
             public void onClick(View v) {
                 Log.d("akash_debug", "onClick: ");
+                requireActivity().onBackPressed();
             }
         });
 

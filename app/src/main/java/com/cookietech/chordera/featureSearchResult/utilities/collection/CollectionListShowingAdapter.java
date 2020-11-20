@@ -128,7 +128,7 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
             rowLayout = v.findViewById(R.id.rowLayout);
 
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
-            params.height = (int) (binding.recyclerView.getWidth()/7.2);
+            params.height = (int) (binding.recyclerView.getWidth()/6.0);
             rowLayout.setLayoutParams(params);
             //width/height = 7.2    ratio was calculated from xd design
 

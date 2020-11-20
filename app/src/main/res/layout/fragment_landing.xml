@@ -48,7 +48,7 @@
         android:drawablePadding="10dp"
         android:hint="@string/search_hint"
         android:inputType="textWebEditText|textAutoComplete|textAutoCorrect"
-        android:imeOptions="actionSend"
+        android:imeOptions="actionSearch"
         android:paddingStart="10dp"
         android:textColor="@color/color_white"
         android:textColorHint="@color/text_color_light"

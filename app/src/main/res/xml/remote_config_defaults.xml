@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+
+        <key>metronome_banner_ads_show</key>
+        <value>1</value>
+
+        <key>chord_library_exit_full_screen_ads_show</key>
+        <value>1</value>
+
+    </entry>
+
+</defaultsMap><!-- END xml_defaults -->

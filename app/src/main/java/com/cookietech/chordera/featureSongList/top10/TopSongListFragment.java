@@ -24,7 +24,6 @@ import static com.cookietech.chordera.featureSearchResult.utilities.PaginationLi
 public class TopSongListFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
     FragmentSongListAnythingBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
-    RecyclerView recyclerView;
     SongListShowingAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
     int currentPage = PAGE_START;
@@ -68,18 +67,17 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     private void initialize() {
         binding.headerTittle.setText("Top 10");
         binding.collectionName.setVisibility(View.GONE);
-        recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefresh;
 
         swipeRefreshLayout.setOnRefreshListener(this);
-        recyclerView.setHasFixedSize(true);
+        binding.recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.setLayoutManager(layoutManager);
         adapter = new SongListShowingAdapter(new ArrayList<Song>(), binding);
         getData();
-        recyclerView.setAdapter(adapter);
+        binding.recyclerView.setAdapter(adapter);
 
-        recyclerView.addOnScrollListener(new PaginationListener(layoutManager) {
+        binding.recyclerView.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
@@ -95,6 +93,14 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
             @Override
             public boolean isLoading() {
                 return isLoading;
+            }
+        });
+
+
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backButtonPressed();
             }
         });
 
@@ -135,5 +141,9 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         isLastPage = false;
         adapter.clear();
         getData();
+    }
+
+    private void backButtonPressed() {
+        requireActivity().onBackPressed();
     }
 }

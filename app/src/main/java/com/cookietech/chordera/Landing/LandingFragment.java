@@ -25,8 +25,10 @@ import com.cookietech.chordera.Util.ViewUtils;
 import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
+import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.Navigator;
 
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
@@ -82,7 +84,7 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.d("akash_debug", "onClick: ");
-                mainViewModel.setNavigation(NavigatorTags.CHORD_LIBRARY_FRAGMENT);
+                mainViewModel.setNavigation(NavigatorTags.CHORD_LIBRARY_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });
 
@@ -90,7 +92,7 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.d("akash_debug", "onClick: ");
-                mainViewModel.setNavigation(NavigatorTags.METRONOME_FRAGMENT);
+                mainViewModel.setNavigation(NavigatorTags.METRONOME_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });
 
@@ -100,13 +102,14 @@ public class LandingFragment extends ChorderaFragment {
 
                if(hasFocus){
                    binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
-                   showSearchSuggestionFragment();
+                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId());
                }else{
                    binding.ivCancelSearchButton.setVisibility(View.GONE);
-                   removeSearchSuggestionFragment();
                }
            }
        });
+
+
 
        binding.ivCancelSearchButton.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -114,6 +117,7 @@ public class LandingFragment extends ChorderaFragment {
                binding.edtSearchBox.clearFocus();
                v.setVisibility(View.GONE);
                ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+               mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,binding.searchFragmentContainer.getId() );
            }
        });
 
@@ -125,6 +129,7 @@ public class LandingFragment extends ChorderaFragment {
                     ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
                     mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
                     binding.edtSearchBox.setText("");
+                    mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT,1);
                 }
                 return false;
             }
@@ -134,20 +139,12 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.e("sohan debug","top ten pressed");
-                mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT);
+                mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });
 
     }
 
-    private void removeSearchSuggestionFragment() {
-        fragmentManager.popFragment("search_fragment");
-    }
-
-    private void showSearchSuggestionFragment() {
-        fragmentManager.addFragmentToBackStack(searchSuggestionFragment,"search_fragment",binding.searchFragmentContainer.getId());
-
-    }
 
     private void initializeViews() {
         initializeNewRecyclerView();
@@ -221,5 +218,17 @@ public class LandingFragment extends ChorderaFragment {
 
 
 
+    }
+
+    @Override
+    public boolean onBackPressed(Navigator topNavigation) {
+        boolean handled = false;
+        if(topNavigation.getNavigatorTag().equalsIgnoreCase(NavigatorTags.SEARCH_VIEW_FRAGMENT)){
+            //binding.ivCancelSearchButton.setVisibility(View.GONE);
+            binding.edtSearchBox.clearFocus();
+            mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,binding.searchFragmentContainer.getId() );
+            handled = true;
+        }
+        return handled;
     }
 }

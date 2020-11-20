@@ -1,4 +1,5 @@
 package com.cookietech.chordera.Splash;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -14,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSplashBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -29,8 +32,8 @@ public class SplashFragment extends ChorderaFragment {
     // starting of the project //
 
     FragmentSplashBinding binding;
-    int timeOut = 2000;
     MainViewModel mainViewModel;
+    ConnectionManager connectionManager;
 
     public SplashFragment() {
     }
@@ -88,12 +91,9 @@ public class SplashFragment extends ChorderaFragment {
         binding.splashVideoView.setVideoURI(video);
 
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT);
-            }
-        },timeOut);
+
+
+        connectionManager = new ConnectionManager(requireContext());
     }
 
 
@@ -105,6 +105,38 @@ public class SplashFragment extends ChorderaFragment {
             binding.splashVideoView.start();
             binding.splashVideoView.setBackgroundColor(Color.TRANSPARENT);
         }
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (connectionManager.isOnline()) {
+            try {
+                RemoteConfigManager.fetchRemoteConfigValues(new RemoteConfigManager.RemoteConfigFetchListener() {
+                    @Override
+                    public void onCompletion(boolean isFetchSuccessful) {
+                        SplashFragment.this.launchMainActivityWithDelay(2000);
+                    }
+                });
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            launchMainActivityWithDelay(1000);
+        }
+    }
+
+    private void launchMainActivityWithDelay(int delayInSeconds) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // This method will be executed once the timer is over
+                // Start your app main activity
+                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,((ViewGroup)getView().getParent()).getId());
+            }
+        }, delayInSeconds);
+
     }
 
     @Override

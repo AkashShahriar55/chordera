@@ -76,6 +76,10 @@ public class TimerWheeler extends View {
         wheeler = ResourcesCompat.getDrawable(getResources(),R.drawable.metronome_controller,null);
         wave  = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_wave,null);
         outerRing = ResourcesCompat.getDrawable(getResources(),R.drawable.wheeler_progress,null);
+        timerTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        timerValueTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        outerRingProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        timerValueTextBound = new Rect();
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -99,22 +103,22 @@ public class TimerWheeler extends View {
                 outerRing.setBounds(0,0,width,height);
 
                 timerTextSize = (float) width/12;
-                timerTextColor = new Paint();
+
                 timerTextColor.setColor(Color.WHITE);
                 timerTextColor.setTextSize(timerTextSize);
 
                 timerValueTextSize = (float) width/5;
-                timerValueTextColor = new Paint();
+
                 timerValueTextColor.setColor(Color.WHITE);
                 timerValueTextColor.setTextSize(timerValueTextSize);
                 timerValueTextColor.setAlpha(50);
 
 
-                timerValueTextBound = new Rect();
+
                 //bpmTextBound = new Rect();
                 //waveBound = new Rect();
 
-                outerRingProgressPaint = new Paint();
+
                 outerRingProgressPaint.setStrokeWidth(width/20);
                 outerRingProgressPaint.setStyle(Paint.Style.STROKE);
                 outerRingProgressPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.parseColor("#0072BC"), Color.parseColor("#00D49A"), Shader.TileMode.CLAMP));

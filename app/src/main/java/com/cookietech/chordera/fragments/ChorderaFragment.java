@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.architecture.MainViewModel;
+import com.cookietech.chordera.models.Navigator;
 
 public abstract class ChorderaFragment extends Fragment {
 
@@ -29,6 +30,11 @@ public abstract class ChorderaFragment extends Fragment {
         public LifecycleRegistry getLifecycle() {
             return lifecycleRegistry;
         }
+    }
+
+
+    public boolean onBackPressed(Navigator topNavigation) {
+        return false;
     }
 
     @Override
