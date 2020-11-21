@@ -232,7 +232,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
             }
         });
-        
+
         binding.popupContainer.bindTouch(binding.settingPopupWindow, new TouchInterceptorConstraintLayout.TouchBoundListener() {
             @Override
             public void onTouchOutSide() {
