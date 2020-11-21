@@ -7,10 +7,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,11 +26,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordlibrary.AppComponent.ChordInfoSpannableAdapter;
+import com.cookietech.chordlibrary.AppComponent.Constants;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordClass;
 import com.cookietech.chordlibrary.ChordFactory;
 import com.cookietech.chordlibrary.ChordsAdapter;
+import com.cookietech.chordlibrary.R;
 import com.cookietech.chordlibrary.Root;
+import com.cookietech.chordlibrary.View.TouchInterceptorConstraintLayout;
 import com.cookietech.chordlibrary.databinding.FragmentChordLibraryBinding;
 import com.cookietech.chordlibrary.databinding.LayoutChordLibraryBottomSheetBinding;
 
@@ -71,6 +80,9 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     LayoutChordLibraryBottomSheetBinding bottomSheetBinding;
 
     int dy;
+
+    private boolean isSettingsSelected = false;
+    private int currentTranspose = 0;
 
     public static ChordLibraryFragment newInstance(long testTime) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
@@ -182,9 +194,79 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         SetUpChordSelector();
 
+        /** Transpose Setting Section **/
+        binding.btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               if (!isSettingsSelected){
+                   //binding.settingPopupWindow.setVisibility(View.VISIBLE);
+                   //togglePopupWindow(true);
+                   showPopup();
+                   isSettingsSelected = true;
+               }
+               else {
+                   //binding.settingPopupWindow.setVisibility(View.GONE);
+                   hidePopup();
+                   isSettingsSelected = false;
+               }
+            }
+        });
 
+        binding.negativeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentTranspose > Constants.MIN_TRANSPOSE){
+                    binding.transposeText.setText(String.valueOf(--currentTranspose));
+                }
+
+            }
+        });
+
+        binding.positiveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (currentTranspose < Constants.MAX_TRANSPOSE){
+                    binding.transposeText.setText(String.valueOf(++currentTranspose));
+                }
+
+            }
+        });
+        
+        binding.popupContainer.bindTouch(binding.settingPopupWindow, new TouchInterceptorConstraintLayout.TouchBoundListener() {
+            @Override
+            public void onTouchOutSide() {
+                if(isSettingsSelected){
+                    hidePopup();
+                    isSettingsSelected = false;
+                }
+
+            }
+        });
 
     }
+
+    private void showPopup(){
+        binding.settingPopupWindow.setVisibility(View.VISIBLE);
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.show_popup);
+        binding.settingPopupWindow.startAnimation(animation);
+        binding.settingPopupWindow.setClickable(true);
+        binding.positiveBtn.setClickable(true);
+        binding.negativeBtn.setClickable(true);
+        binding.noteCheckbox.setClickable(true);
+    }
+
+    private void hidePopup(){
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.hide_popup);
+
+        binding.settingPopupWindow.startAnimation(animation);
+        binding.settingPopupWindow.setClickable(false);
+        binding.positiveBtn.setClickable(false);
+        binding.negativeBtn.setClickable(false);
+        binding.noteCheckbox.setClickable(false);
+
+    }
+
 
     private void updateChordTypeList(int selectedHomeIndex) {
         if(!rootArrayList.get(selectedHomeIndex).getChordClasses().isEmpty()){
@@ -417,4 +499,5 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         binding.selectedChord.setText(selectedChord);
         binding.chordSelectorText.setText(selectedChord);
     }
+
 }

@@ -10,4 +10,6 @@
     <color name="text_glow">#53A6F6</color>
     <color name="string_color">#b9b9b9</color>
     <color name="chord_info_notes_color">#53A6F6</color>
+    <color name="popup_transpose_text">#23374D</color>
+    <color name="popup_line">#73325981</color>
 </resources>
