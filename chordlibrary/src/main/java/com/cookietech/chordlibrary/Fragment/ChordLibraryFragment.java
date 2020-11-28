@@ -5,13 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +78,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     private boolean isSettingsSelected = false;
     private int currentTranspose = 0;
+    private boolean isChordSectionSelected = true;
+    private boolean isScaleSectionSelected = false;
 
     public static ChordLibraryFragment newInstance(long testTime) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
@@ -244,7 +241,49 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             }
         });
 
+        /**Bottom Sheet Section **/
+        bottomSheetBinding.chordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setUpChordsSection();
+            }
+        });
+
+        bottomSheetBinding.scaleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setUpScalesSection();
+            }
+        });
+        
+
     }
+
+    private void setUpChordsSection() {
+        if (!isChordSectionSelected){
+            bottomSheetBinding.chordBtn.setImageResource(R.drawable.active_chord_btn);
+            bottomSheetBinding.scaleBtn.setImageResource(R.drawable.scale_btn);
+            bottomSheetBinding.chordsContainer.setVisibility(View.VISIBLE);
+            bottomSheetBinding.scalesContainer.setVisibility(View.GONE);
+            isChordSectionSelected = true;
+            isScaleSectionSelected = false;
+        }
+
+    }
+
+    private void setUpScalesSection() {
+        if (!isScaleSectionSelected){
+            bottomSheetBinding.scaleBtn.setImageResource(R.drawable.active_scale_btn);
+            bottomSheetBinding.chordBtn.setImageResource(R.drawable.chord_btn);
+            bottomSheetBinding.chordsContainer.setVisibility(View.GONE);
+            bottomSheetBinding.scalesContainer.setVisibility(View.VISIBLE);
+            isChordSectionSelected = false;
+            isScaleSectionSelected = true;
+        }
+    }
+
+
 
     private void showPopup(){
         binding.settingPopupWindow.setVisibility(View.VISIBLE);
@@ -340,7 +379,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     private void setChordInfo(Chord chord) {
         SpannableStringBuilder spannableStringBuilder = new ChordInfoSpannableAdapter(chord);
-        bottomSheetBinding.bottomInfo.setText(spannableStringBuilder);
+        //bottomSheetBinding.bottomInfo.setText(spannableStringBuilder);
     }
 
     private void playChord(Chord chord) {

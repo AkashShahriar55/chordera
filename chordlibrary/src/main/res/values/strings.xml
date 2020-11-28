@@ -5,5 +5,10 @@
     <string name="transpose">Transpose</string>
     <string name="todo">TODO</string>
     <string name="_0">0</string>
+    <string name="chords">Chords</string>
+    <string name="scale">Scale</string>
+    <string name="triads">Triads</string>
+    <string name="common_chord_progression">Common Chord Progression</string>
+    <string name="notes">Notes</string>
 
 </resources>
