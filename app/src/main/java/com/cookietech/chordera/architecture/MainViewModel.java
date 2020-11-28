@@ -13,18 +13,21 @@ import androidx.lifecycle.ViewModel;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.repositories.DatabaseRepository;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 
 public class MainViewModel extends ViewModel {
     private WeakReference<EditText> searchBox;
     private SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
+    private DatabaseRepository databaseRepository = new DatabaseRepository();
     @NonNull private SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
 
     public MainViewModel() {
         navigation.setValue(new Navigator("none",0));
-
     }
 
     public MutableLiveData<Navigator> getNavigation() {
@@ -64,5 +67,14 @@ public class MainViewModel extends ViewModel {
 
     public void SaveSearchKeyWordHistory(String keyword) {
         SharedPreferenceManager.addSharedPrefSearchHistory(keyword);
+    }
+
+
+    public void queryTopTenSongs(){
+        databaseRepository.queryTopTenSongs();
+    }
+
+    public SingleLiveEvent<ArrayList<SongsPOJO>> getObservableTopTenSongs(){
+        return databaseRepository.getObservableTopTenSongs();
     }
 }

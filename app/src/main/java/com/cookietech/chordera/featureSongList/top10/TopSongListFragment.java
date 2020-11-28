@@ -1,12 +1,14 @@
 package com.cookietech.chordera.featureSongList.top10;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -16,6 +18,7 @@ import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Song;
+import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;
 
@@ -25,7 +28,6 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     FragmentSongListAnythingBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     SongListShowingAdapter adapter;
-    SwipeRefreshLayout swipeRefreshLayout;
     int currentPage = PAGE_START;
     boolean isLastPage = false;
     int totalPage = 10;
@@ -54,6 +56,20 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         super.onViewCreated(view, savedInstanceState);
         initializeVariable();
         initialize();
+        initializeObservers();
+    }
+
+    private void initializeObservers() {
+        mainViewModel.queryTopTenSongs();
+        mainViewModel.getObservableTopTenSongs().observe(fragmentLifecycleOwner, new Observer<ArrayList<SongsPOJO>>() {
+            @Override
+            public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
+                for(SongsPOJO songsPOJO : songsPOJOS){
+
+                    Log.d("topten_debug", "onEvent: "+ songsPOJO.toString());
+                }
+            }
+        });
     }
 
     private void initializeVariable() {
@@ -67,9 +83,8 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     private void initialize() {
         binding.headerTittle.setText("Top 10");
         binding.collectionName.setVisibility(View.GONE);
-        swipeRefreshLayout = binding.swipeRefresh;
 
-        swipeRefreshLayout.setOnRefreshListener(this);
+        binding.swipeRefresh.setOnRefreshListener(this);
         binding.recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(layoutManager);
@@ -123,7 +138,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         ArrayList<Song> allData = new ArrayList<Song>(adapter.getData());
         allData.addAll(items);
         adapter.onNewData(allData);
-        swipeRefreshLayout.setRefreshing(false);
+        binding.swipeRefresh.setRefreshing(false);
 
         // check weather is last page or not
         if (currentPage < totalPage) {
