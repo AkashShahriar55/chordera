@@ -1,6 +1,7 @@
 package com.cookietech.chordera.featureSongList;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
@@ -26,10 +29,12 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     private boolean isLoaderVisible = false;
     FragmentSongListAnythingBinding binding;
     private List<Song> songList;
+    MainViewModel mainViewModel;
 
-    public SongListShowingAdapter(ArrayList<Song> songList, FragmentSongListAnythingBinding fragmentSongListAnythingBinding) {
+    public SongListShowingAdapter(ArrayList<Song> songList, FragmentSongListAnythingBinding fragmentSongListAnythingBinding, MainViewModel mainViewModel) {
         this.binding = fragmentSongListAnythingBinding;
         this.songList = songList;
+        this.mainViewModel = mainViewModel;
     }
 
 
@@ -132,6 +137,13 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             rowLayout.setLayoutParams(params);
             //width/height = 7.2    ratio was calculated from xd design
 
+            rowLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("sohan_debug","one song clicked");
+                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT);
+                }
+            });
         }
 
         protected void clear() {

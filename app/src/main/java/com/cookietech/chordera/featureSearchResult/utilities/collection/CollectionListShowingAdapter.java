@@ -29,12 +29,10 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
     private boolean isLoaderVisible = false;
     private FragmentSearchResultRecyclerViewBinding binding;
     private List<Collection> collectionList;
-    CookieTechFragmentManager cookieTechFragmentManager;
 
     public CollectionListShowingAdapter(ArrayList<Collection> collectionList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
         this.binding = fragmentSearchResultRecyclerViewBinding;
         this.collectionList = collectionList;
-        cookieTechFragmentManager = CookieTechFragmentManager.getInstance();
     }
 
 

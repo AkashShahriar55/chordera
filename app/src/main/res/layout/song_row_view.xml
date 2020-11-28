@@ -2,17 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clickable="true"
-    android:foreground="?selectableItemBackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="true">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rowLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:minHeight="50dp"
+        android:focusable="true"
+        android:clickable="true"
+        android:foreground="?selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

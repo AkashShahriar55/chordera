@@ -42,14 +42,13 @@
         android:src="@drawable/ic_back"
         app:layout_constraintBottom_toTopOf="@+id/topbar"
         app:layout_constraintStart_toStartOf="@+id/left_padding"
-        app:layout_constraintTop_toTopOf="@+id/top_padding" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/header_tittle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Avoid Rafa"
         android:textColor="@color/color_white"
         app:layout_constraintBottom_toTopOf="@+id/topbar"
         app:layout_constraintEnd_toStartOf="@+id/right_padding"

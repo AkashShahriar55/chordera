@@ -75,7 +75,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SongListShowingAdapter(new ArrayList<Song>(), binding);
+        adapter = new SongListShowingAdapter(new ArrayList<Song>(), binding, mainViewModel);
         getData();
         recyclerView.setAdapter(adapter);
 

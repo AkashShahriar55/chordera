@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/collapsing_toolbar"
+    tools:showPaths="true">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.07" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_padding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.02" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_image">
+        <TextView
+            android:id="@+id/text_lyrics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="আকাশটা ভাঙ্গুক অথবা নাই ভাঙ্গুক\n
+উড়ে যাবার কোনো ইচ্ছে নেই আমার\n
+হার-জিত আজ এখানেই থাকুক\n
+কেমন করে জানি সৃষ্টি হল পথ চলে যাবার\n
+তাও, যেখানেই থাকো না কেন\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n
+আকাশটা ভাঙ্গুক অথবা নাই ভাঙ্গুক\n
+উড়ে যাবার কোনো ইচ্ছে নেই আমার\n
+হার-জিত আজ এখানেই থাকুক\n
+কেমন করে জানি সৃষ্টি হল পথ চলে যাবার\n
+তাও, যেখানেই থাকো না কেন\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n
+আকাশটা ভাঙ্গুক অথবা নাই ভাঙ্গুক\n
+উড়ে যাবার কোনো ইচ্ছে নেই আমার\n
+হার-জিত আজ এখানেই থাকুক\n
+কেমন করে জানি সৃষ্টি হল পথ চলে যাবার\n
+তাও, যেখানেই থাকো না কেন\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n
+আকাশটা ভাঙ্গুক অথবা নাই ভাঙ্গুক\n
+উড়ে যাবার কোনো ইচ্ছে নেই আমার\n
+হার-জিত আজ এখানেই থাকুক\n
+কেমন করে জানি সৃষ্টি হল পথ চলে যাবার\n
+তাও, যেখানেই থাকো না কেন\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n
+আকাশটা ভাঙ্গুক অথবা নাই ভাঙ্গুক\n
+উড়ে যাবার কোনো ইচ্ছে নেই আমার\n
+হার-জিত আজ এখানেই থাকুক\n
+কেমন করে জানি সৃষ্টি হল পথ চলে যাবার\n
+তাও, যেখানেই থাকো না কেন\n
+আকাশ ঝলসানো ঐ চাঁদ\n
+যদি দৃষ্টি কেড়ে নেয় খানিকের জন্য\n
+আমাকে মনে করতে যেও না ভুলে\n
+যদি কষ্ট চেপে ধরে নিঃশ্বাস\n" />
+    </androidx.core.widget.NestedScrollView>
+
+    <ImageView
+        android:id="@+id/toolbar_image"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:background="@color/colorAccent"
+        android:contentDescription="@null"
+        android:fitsSystemWindows="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/test_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/view_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/viewed_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/views_count"
+        app:layout_constraintEnd_toStartOf="@+id/views_count"
+        app:layout_constraintTop_toTopOf="@+id/views_count" />
+
+    <TextView
+        android:id="@+id/views_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="120"
+        android:textColor="@color/color_white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:src="@drawable/arrow"
+        app:layout_constraintBottom_toTopOf="@+id/topbar"
+        app:layout_constraintStart_toStartOf="@+id/left_padding"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/blur"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/blur_back"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Koshto"
+        android:textColor="?android:attr/textColorPrimaryInverse"
+        android:textSize="@dimen/_18ssp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        app:layout_constraintStart_toStartOf="parent" />
+    <TextView
+        android:id="@+id/band"
+        android:text="Artist/Band: Rafa"
+        android:textSize="@dimen/_10ssp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <TextView
+        android:id="@+id/album"
+        android:text="Album: Bhaar"
+        android:textSize="@dimen/_10ssp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>
