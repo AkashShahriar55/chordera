@@ -72,6 +72,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     int dy;
 
+    long processingTime;
+
     public static ChordLibraryFragment newInstance(long testTime) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
         Bundle arguments = new Bundle();
@@ -91,6 +93,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        processingTime = System.currentTimeMillis();
         binding = FragmentChordLibraryBinding.inflate(getLayoutInflater(),container,false);
         bottomSheetBinding = binding.bottomSheet;
         return binding.getRoot();
@@ -100,6 +103,9 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Log.d("performance_debug", "onViewCreated: " + (processingTime - System.currentTimeMillis()));
+        processingTime = System.currentTimeMillis();
 
         if(getArguments() != null){
             long testTime = getArguments().getLong("test_time");
@@ -137,7 +143,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         binding.chordsRecyclerview.setLayoutManager(layoutManager);
-        chordsAdapter = new ChordsAdapter(requireContext(),chords,this);
+        chordsAdapter = new ChordsAdapter(requireContext(),chords,this,binding.chordsRecyclerview);
         binding.chordsRecyclerview.setAdapter(chordsAdapter);
 
 
@@ -183,7 +189,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         SetUpChordSelector();
 
 
-
+        Log.d("performance_debug", "onViewCreated: " + (processingTime - System.currentTimeMillis()));
+        processingTime = System.currentTimeMillis();
     }
 
     private void updateChordTypeList(int selectedHomeIndex) {

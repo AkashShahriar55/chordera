@@ -223,8 +223,10 @@ public class LandingFragment extends ChorderaFragment {
     @Override
     public boolean onBackPressed(Navigator topNavigation) {
         boolean handled = false;
+        Log.d("akash_debug", "onBackPressed: ");
         if(topNavigation.getNavigatorTag().equalsIgnoreCase(NavigatorTags.SEARCH_VIEW_FRAGMENT)){
             //binding.ivCancelSearchButton.setVisibility(View.GONE);
+            Log.d("akash_debug", "onBackPressed: ok ");
             binding.edtSearchBox.clearFocus();
             mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,binding.searchFragmentContainer.getId() );
             handled = true;

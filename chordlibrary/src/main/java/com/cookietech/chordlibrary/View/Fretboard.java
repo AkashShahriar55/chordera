@@ -12,6 +12,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.cookietech.chordlibrary.AppComponent.CacheFactory;
 import com.cookietech.chordlibrary.Model.Constants;
 import com.cookietech.chordlibrary.R;
 
@@ -25,6 +26,7 @@ public class Fretboard extends View {
 
 
 
+
     private ArrayList<Integer> allFretMiddlePosition = new ArrayList<>();
 
 
@@ -33,6 +35,7 @@ public class Fretboard extends View {
 
     public Fretboard(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
         Log.d("akash_fretboard_inspect", "Fretboard: background");
     }
 
@@ -63,7 +66,7 @@ public class Fretboard extends View {
         fretboard = Bitmap.createScaledBitmap(fretboard,canvasWidth,canvasHeight,false);
         mCanvas.drawBitmap(fretboard,0,0,null);
         addFrets();
-        addDots();
+        addDots();;
         fretboard.recycle();
     }
 
@@ -143,4 +146,6 @@ public class Fretboard extends View {
         Log.d("akash_fretboard_inspect", "getAllFretMiddlePosition: " + allFretMiddlePosition.size());
         return allFretMiddlePosition;
     }
+
+
 }

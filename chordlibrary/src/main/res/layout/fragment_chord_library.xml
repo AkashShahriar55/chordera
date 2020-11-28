@@ -118,7 +118,8 @@
         <com.cookietech.chordlibrary.View.FretBoardView
             android:id="@+id/fretbard_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="visible" />
 
         <include
             android:id="@+id/bottom_sheet"

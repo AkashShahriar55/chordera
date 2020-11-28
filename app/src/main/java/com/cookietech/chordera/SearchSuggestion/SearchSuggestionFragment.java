@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer;
 
 import com.cookietech.chordera.databinding.FragmentSearchSuggestionBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
-
+import com.cookietech.chordera.models.Navigator;
 
 
 public class SearchSuggestionFragment extends ChorderaFragment {
@@ -56,6 +56,9 @@ public class SearchSuggestionFragment extends ChorderaFragment {
         super.onStart();
     }
 
-
-
+    @Override
+    public boolean onBackPressed(Navigator topNavigation) {
+        Log.d("akash_debug", "onBackPressed: ");
+        return false;
+    }
 }
