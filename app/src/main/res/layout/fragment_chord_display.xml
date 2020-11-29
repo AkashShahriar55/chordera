@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_layout"
@@ -21,6 +22,7 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/root_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -48,27 +50,26 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:id="@+id/song_name_txt"
+                        android:id="@+id/tv_song_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
                         android:text="এই অবেলাই"
-                        android:textColor="#23374D"
-                        android:textSize="@dimen/_12ssp"
+                        android:textSize="@dimen/_16ssp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/band_name_txt"
+                        android:id="@+id/tv_band_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="Shironamhin"
-                        android:textColor="#3D98F6"
-                        android:textSize="@dimen/_10ssp"
+                        android:textColor="@color/chord_display_band_name"
+                        android:textSize="@dimen/_12ssp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/song_name_txt" />
+                        app:layout_constraintTop_toBottomOf="@+id/tv_song_name" />
 
                     <TextView
                         android:id="@+id/tv_tuning"
@@ -77,10 +78,9 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="Tuning: E A D G B E"
-                        android:textColor="#23374D"
-                        android:textSize="@dimen/_10ssp"
+                        android:textSize="@dimen/_12ssp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/band_name_txt" />
+                        app:layout_constraintTop_toBottomOf="@+id/tv_band_name" />
 
                     <TextView
                         android:id="@+id/tv_key"
@@ -89,8 +89,7 @@
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="Key: C"
-                        android:textColor="#23374D"
-                        android:textSize="@dimen/_10ssp"
+                        android:textSize="@dimen/_12ssp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tv_tuning" />
 
@@ -98,10 +97,11 @@
                         android:id="@+id/imageView10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/todo"
                         android:src="@drawable/chord_download"
-                        app:layout_constraintBottom_toTopOf="@+id/band_name_txt"
+                        app:layout_constraintBottom_toTopOf="@+id/tv_band_name"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/song_name_txt" />
+                        app:layout_constraintTop_toTopOf="@+id/tv_song_name" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -114,36 +114,37 @@
                     app:layout_constraintTop_toBottomOf="@+id/song_info_container">
 
                     <TextView
-                        android:id="@+id/textView14"
+                        android:id="@+id/tv_chords"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="@dimen/_14sdp"
                         android:fontFamily="@font/roboto_regular"
                         android:text="Chords"
-                        android:textColor="#23374D"
-                        android:textSize="@dimen/_13ssp"
+                        android:textSize="@dimen/_15ssp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_chords"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="@dimen/_10sdp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView14" />
+                        app:layout_constraintTop_toBottomOf="@+id/tv_chords" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/_15sdp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline5"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline4"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
                     <TextView
-                        android:id="@+id/textView16"
+                        android:id="@+id/tv_song_chords"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -167,7 +168,6 @@ Kotokal ar vul oboshonno bikele\n
 A#         G        Dm\n
 veja chokh dekhaini tomay\n
 "
-                        android:textColor="#23374D"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -183,7 +183,7 @@ veja chokh dekhaini tomay\n
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView16"></LinearLayout>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_song_chords"></LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

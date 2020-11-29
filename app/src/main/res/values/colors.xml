@@ -14,5 +14,6 @@
     <color name="indicator_color">#3495FF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
+    <color name="chord_display_band_name">#3D98F6</color>
 
 </resources>
