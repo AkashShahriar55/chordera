@@ -15,6 +15,7 @@ import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
+import com.google.gson.JsonStreamParser;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class MainViewModel extends ViewModel {
     private SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
     private DatabaseRepository databaseRepository = new DatabaseRepository();
     @NonNull private SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
+    private SingleLiveEvent<SongsPOJO> selectedSong = new SingleLiveEvent<>();
 
     public MainViewModel() {
         navigation.setValue(new Navigator("none",0));
@@ -76,5 +78,13 @@ public class MainViewModel extends ViewModel {
 
     public SingleLiveEvent<ArrayList<SongsPOJO>> getObservableTopTenSongs(){
         return databaseRepository.getObservableTopTenSongs();
+    }
+
+    public SingleLiveEvent<SongsPOJO> getObservableSelectedSong(){
+        return selectedSong;
+    }
+
+    public void setSelectedSong(SongsPOJO selectedSong){
+        this.selectedSong.setValue(selectedSong);
     }
 }

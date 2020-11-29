@@ -17,6 +17,7 @@ import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBindi
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSearchResult.utilities.song.SearchedSongListShowingAdapter;
 import com.cookietech.chordera.models.Song;
+import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;
 
@@ -64,7 +65,7 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SearchedSongListShowingAdapter(new ArrayList<Song>(), binding);
+        adapter = new SearchedSongListShowingAdapter(new ArrayList<SongsPOJO>(), binding);
         getData();
         recyclerView.setAdapter(adapter);
 
@@ -90,7 +91,7 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
     }
 
     private void getData() {
-        ArrayList<Song> items = new ArrayList<>();
+       /* ArrayList<Song> items = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             itemCount++;
             Song song = new Song();
@@ -99,12 +100,12 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
             song.setTotalView("120");
             items.add(song);
         }
-        /**
+        *//**
          * manage progress view
-         */
+         *//*
         if (currentPage != PAGE_START) adapter.removeLoading();
         //adapter.addItems(items);
-        ArrayList<Song> allData = new ArrayList<Song>(adapter.getData());
+        ArrayList<SongsPOJO> allData = new ArrayList<SongsPOJO>(adapter.getData());
         allData.addAll(items);
         adapter.onNewData(allData);
         swipeRefreshLayout.setRefreshing(false);
@@ -115,7 +116,7 @@ public class SearchResultSongListFragmet extends Fragment implements SwipeRefres
         } else {
             isLastPage = true;
         }
-        isLoading = false;
+        isLoading = false;*/
     }
 
     @Override

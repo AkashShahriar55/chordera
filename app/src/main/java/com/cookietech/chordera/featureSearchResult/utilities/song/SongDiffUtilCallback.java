@@ -6,14 +6,15 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.cookietech.chordera.models.Song;
+import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;
 
 public class SongDiffUtilCallback extends DiffUtil.Callback {
-    ArrayList<Song> newList;
-    ArrayList<Song> oldList;
+    ArrayList<SongsPOJO> newList;
+    ArrayList<SongsPOJO> oldList;
 
-    public SongDiffUtilCallback(ArrayList<Song> newList, ArrayList<Song> oldList) {
+    public SongDiffUtilCallback(ArrayList<SongsPOJO> newList, ArrayList<SongsPOJO> oldList) {
         this.newList = newList;
         this.oldList = oldList;
     }
@@ -45,18 +46,18 @@ public class SongDiffUtilCallback extends DiffUtil.Callback {
     @Nullable
     @Override
     public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-        Song newSong = newList.get(newItemPosition);
-        Song oldSong = oldList.get(oldItemPosition);
+        SongsPOJO newSong = newList.get(newItemPosition);
+        SongsPOJO oldSong = oldList.get(oldItemPosition);
 
         Bundle diff = new Bundle();
-        if(!newSong.getTittle().equals(oldSong.getTittle())){
-            diff.putString("tittle", newSong.getTittle());
+        if(!newSong.getSong_name().equals(oldSong.getSong_name())){
+            diff.putString("tittle", newSong.getSong_name());
         }
-        if(!newSong.getBandName().equals (oldSong.getBandName())){
-            diff.putString("band", newSong.getBandName());
+        if(!newSong.getArtist_name().equals (oldSong.getArtist_name())){
+            diff.putString("band", newSong.getArtist_name());
         }
-        if(!newSong.getTotalView().equals (oldSong.getTotalView())){
-            diff.putString("view", newSong.getTotalView());
+        if(newSong.getViews() != oldSong.getViews()){
+            diff.putInt("view", newSong.getViews());
         }
         if (diff.size()==0){
             return null;

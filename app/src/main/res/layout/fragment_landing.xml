@@ -139,14 +139,16 @@
             android:layout_marginBottom="15dp"
             app:cardBackgroundColor="@color/button_bg_light"
             app:cardCornerRadius="10dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
             app:layout_constraintBottom_toTopOf="@+id/hcenter"
-            app:layout_constraintStart_toStartOf="@+id/vcenter">
+            app:layout_constraintStart_toStartOf="@+id/vcenter"
+            android:focusable="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                >
 
                 <ImageView
                     android:id="@+id/imageView3"

@@ -29,7 +29,7 @@ public class FirebaseUtilClass {
 
 
     public void queryTopTenSongData(EventListener<QuerySnapshot> listener){
-        songsCollection.orderBy(VIEWS, Query.Direction.DESCENDING).limit(2).addSnapshotListener(listener);
+        songsCollection.orderBy(VIEWS, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
     }
 
 

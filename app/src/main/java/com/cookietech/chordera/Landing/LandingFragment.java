@@ -30,6 +30,8 @@ import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
 
+import javax.xml.namespace.QName;
+
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
@@ -80,6 +82,8 @@ public class LandingFragment extends ChorderaFragment {
     }
 
     private void initializeClickEvents() {
+
+
         binding.cvChordlibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,6 +112,7 @@ public class LandingFragment extends ChorderaFragment {
                }
            }
        });
+       
 
 
 
@@ -142,6 +147,14 @@ public class LandingFragment extends ChorderaFragment {
                 mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });
+        binding.cvSavedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("sohan_debug", "saved button pressed");
+                mainViewModel.setNavigation(NavigatorTags.SAVED_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
+            }
+        });
+
 
     }
 

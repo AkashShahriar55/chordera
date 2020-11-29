@@ -9,4 +9,8 @@ public class NavigatorTags {
     public static final String COLLECTION_SONG_LIST_FRAGMENT = "collection_song_list_fragment";
     public static final String TOP_SONG_LIST_FRAGMENT = "top_song_list_fragment";
     public static final String SEARCH_VIEW_FRAGMENT = "search_view_fragment";
+    public static final String SAVED_SONG_LIST_FRAGMENT = "saved_song_list_fragment";
+    public static final String SONG_DETAIL_FRAGMENT = "song_detail_fragment";
+    public static final String SELECTION_TYPE_FRAGMENT = "selection_type_fragment";
+    public static final String CHORD_DISPLAY_FRAGMENT = "chord_display_fragment";
 }

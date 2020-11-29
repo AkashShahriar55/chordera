@@ -15,6 +15,7 @@ import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.models.Song;
+import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,9 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
     FragmentSearchResultRecyclerViewBinding binding;
-    private List<Song> songList;
+    private List<SongsPOJO> songList;
 
-    public SearchedSongListShowingAdapter(ArrayList<Song> songList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
+    public SearchedSongListShowingAdapter(ArrayList<SongsPOJO> songList, FragmentSearchResultRecyclerViewBinding fragmentSearchResultRecyclerViewBinding) {
         this.binding = fragmentSearchResultRecyclerViewBinding;
         this.songList = songList;
     }
@@ -83,21 +84,21 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
         return songList == null ? 0 : songList.size();
     }
 
-    public void addItems(List<Song> songs) {
+    public void addItems(List<SongsPOJO> songs) {
         songList.addAll(songs);
         notifyDataSetChanged();
     }
 
     public void addLoading() {
         isLoaderVisible = true;
-        songList.add(new Song());
+        songList.add(new SongsPOJO());
         notifyItemInserted(songList.size() - 1);
     }
 
     public void removeLoading() {
         isLoaderVisible = false;
         int position = songList.size() - 1;
-        Song item = getItem(position);
+        SongsPOJO item = getItem(position);
         if (item != null) {
             songList.remove(position);
             notifyItemRemoved(position);
@@ -109,12 +110,12 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
         notifyDataSetChanged();
     }
 
-    Song getItem(int position) {
+    SongsPOJO getItem(int position) {
         return songList.get(position);
     }
 
-    public ArrayList<Song> getData() {
-        return (ArrayList<Song>) this.songList;
+    public ArrayList<SongsPOJO> getData() {
+        return (ArrayList<SongsPOJO>) this.songList;
     }
 
     public class ViewHolder extends BaseViewHolder {
@@ -140,22 +141,22 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
 
         public void onBind(int position) {
             super.onBind(position);
-            Song item = songList.get(position);
+            SongsPOJO item = songList.get(position);
 
-            tittle.setText(item.getTittle());
-            band.setText(item.getBandName());
-            view.setText(item.getTotalView());
+            tittle.setText(item.getSong_name());
+            band.setText(item.getArtist_name());
+            view.setText(item.getViews());
         }
         public void onBind(int position, List<Object> payloads)
         {
             if (payloads.isEmpty()){
                //
                 super.onBind(position, payloads);
-                Song item = songList.get(position);
+                SongsPOJO item = songList.get(position);
 
-                tittle.setText(item.getTittle());
-                band.setText(item.getBandName());
-                view.setText(item.getTotalView());
+                tittle.setText(item.getSong_name());
+                band.setText(item.getArtist_name());
+                view.setText(item.getViews());
             }
             else {
 
@@ -163,15 +164,15 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
                 for (String key : o.keySet()) {
                     if(key.equals("tittle")){
                         //Toast.makeText(tittle.getContext(), "Song "+position+" : Tittle Changed", Toast.LENGTH_SHORT).show();;
-                        tittle.setText(songList.get(position).getTittle());
+                        tittle.setText(songList.get(position).getSong_name());
                     }
                     if(key.equals("band")){
                         //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
-                        band.setText(songList.get(position).getBandName());
+                        band.setText(songList.get(position).getArtist_name());
                     }
                     if(key.equals("view")){
                         //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
-                        view.setText(songList.get(position).getTotalView());
+                        view.setText(songList.get(position).getViews());
                     }
                 }
             }
@@ -189,8 +190,8 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
         }
     }
 
-    public void onNewData(ArrayList<Song> newData) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<Song>) songList));
+    public void onNewData(ArrayList<SongsPOJO> newData) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<SongsPOJO>) songList));
         diffResult.dispatchUpdatesTo(this);
         this.songList.clear();
         this.songList.addAll(newData);

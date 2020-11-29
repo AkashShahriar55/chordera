@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SongsPOJO implements Parcelable {
+public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
 
     private String artist_name;
     private ArrayList<String> collections;
@@ -146,5 +146,15 @@ public class SongsPOJO implements Parcelable {
                 ", song_name='" + song_name + '\'' +
                 ", views=" + views +
                 '}';
+    }
+
+
+    @Override
+    public int compareTo(SongsPOJO song) {
+        if(song.getSong_name().equals(this.song_name) && song.getArtist_name().equals(this.artist_name))
+        {
+            return 0;
+        }
+        return 1;
     }
 }
