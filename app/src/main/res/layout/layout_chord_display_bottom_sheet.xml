@@ -23,28 +23,30 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView11"
+            android:id="@+id/play_youtube_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView12"
+            app:layout_constraintEnd_toStartOf="@+id/auto_scroll_btn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/youtube" />
+            app:srcCompat="@drawable/youtube"
+            android:contentDescription="@string/todo" />
 
         <ImageView
-            android:id="@+id/imageView12"
+            android:id="@+id/auto_scroll_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/imageView11"
+            app:layout_constraintStart_toEndOf="@+id/play_youtube_btn"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/autoscroll_btn" />
+            app:srcCompat="@drawable/auto_scroll_btn"
+            android:contentDescription="@string/todo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

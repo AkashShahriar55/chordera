@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
@@ -39,6 +41,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private  ChordsAdapter chordsAdapter;
     ArrayList<Chord> chords =new ArrayList<>();
     private boolean isDarkModeActivated = false;
+    private ImageView auto_scroll_btn;
 
 
     public ChordDisplayFragment() {
@@ -103,6 +106,16 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             @Override
             public void onScrollChanged() {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        /**Go to Auto Scroll fragment**/
+        auto_scroll_btn = binding.rootLayout.findViewById(R.id.auto_scroll_btn);
+
+        auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
             }
         });
 
