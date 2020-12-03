@@ -1,17 +1,21 @@
 package com.cookietech.chordera.chordDisplay;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
 
 import com.cookietech.chordera.R;
@@ -19,6 +23,7 @@ import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordsAdapter;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
 
@@ -28,6 +33,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdapter.Communicator {
+
 
     FragmentChordDisplayBinding binding;
     private  ChordsAdapter chordsAdapter;
@@ -63,6 +69,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         return binding.getRoot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -86,6 +93,20 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
             }
         });
+
+        View bottomSheet = binding.rootLayout.findViewById(R.id.chord_display_bottom_sheet);
+        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+       
+
+
+        binding.displayScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+
 
     }
 
