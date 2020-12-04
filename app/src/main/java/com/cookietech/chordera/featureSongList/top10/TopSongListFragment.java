@@ -151,6 +151,13 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
             }
         });
 
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
+
     }
     private void getData() {
         mainViewModel.queryTopTenSongs();

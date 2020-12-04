@@ -16,8 +16,10 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
     private Map<String,String> song_data = new HashMap<>();
     private String song_name;
     private int views;
+    private String genre;
+    private int song_duration;
 
-    public SongsPOJO(String artist_name, ArrayList<String> collections, int download_count, String image_url, Map<String, String> song_data, String song_name, int views) {
+    public SongsPOJO(String artist_name, ArrayList<String> collections, int download_count, String image_url, Map<String, String> song_data, String song_name, int views,String genre,int durationInSecond) {
         this.artist_name = artist_name;
         this.collections = collections;
         this.download_count = download_count;
@@ -25,11 +27,14 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         this.song_data = song_data;
         this.song_name = song_name;
         this.views = views;
+        this.genre = genre;
+        this.song_duration = durationInSecond;
     }
 
 
     public SongsPOJO() {
     }
+
 
     protected SongsPOJO(Parcel in) {
         artist_name = in.readString();
@@ -38,12 +43,8 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         image_url = in.readString();
         song_name = in.readString();
         views = in.readInt();
-        int client_info_size = in.readInt();
-        for (int i = 0; i < client_info_size; i++) {
-            String key = in.readString();
-            String value = in.readString();
-            song_data.put(key,value);
-        }
+        genre = in.readString();
+        song_duration = in.readInt();
     }
 
     public static final Creator<SongsPOJO> CREATOR = new Creator<SongsPOJO>() {
@@ -114,6 +115,36 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         this.views = views;
     }
 
+
+
+
+
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public int getSong_duration() {
+        return song_duration;
+    }
+
+    public void setSong_duration(int song_duration) {
+        this.song_duration = song_duration;
+    }
+
+    @Override
+    public int compareTo(SongsPOJO song) {
+        if(song.getSong_name().equals(this.song_name) && song.getArtist_name().equals(this.artist_name))
+        {
+            return 0;
+        }
+        return 1;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -127,34 +158,7 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         dest.writeString(image_url);
         dest.writeString(song_name);
         dest.writeInt(views);
-        int song_data_size = song_data.size();
-        dest.writeInt(song_data_size);
-        for(Map.Entry<String,String> map: song_data.entrySet() ){
-            dest.writeString( map.getKey());
-            dest.writeString(map.getValue());
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "SongsPOJO{" +
-                "artist_name='" + artist_name + '\'' +
-                ", collections=" + collections +
-                ", download_count=" + download_count +
-                ", image_url='" + image_url + '\'' +
-                ", song_data=" + song_data +
-                ", song_name='" + song_name + '\'' +
-                ", views=" + views +
-                '}';
-    }
-
-
-    @Override
-    public int compareTo(SongsPOJO song) {
-        if(song.getSong_name().equals(this.song_name) && song.getArtist_name().equals(this.artist_name))
-        {
-            return 0;
-        }
-        return 1;
+        dest.writeString(genre);
+        dest.writeInt(song_duration);
     }
 }

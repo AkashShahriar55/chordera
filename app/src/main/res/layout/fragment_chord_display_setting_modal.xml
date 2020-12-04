@@ -16,7 +16,7 @@
         android:text="More"
         android:textColor="#00D49A"
         android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toTopOf="@+id/textView6"
+        app:layout_constraintBottom_toTopOf="@+id/more_transpose_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,14 +35,15 @@
         app:tint="#00D49A" />
 
     <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
+        android:id="@+id/more_transpose_btn"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/_10sdp"
         android:text="Transpose"
         android:textColor="@color/color_white"
         android:textSize="@dimen/_12ssp"
         app:layout_constraintBottom_toTopOf="@+id/smore_print_btn"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -60,7 +61,7 @@
         app:layout_constraintBottom_toTopOf="@+id/more_share_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/more_transpose_btn" />
 
     <TextView
         android:id="@+id/more_share_btn"
@@ -109,53 +110,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/more_setting_btn" />
-
-    <ImageView
-        android:id="@+id/transpose_plus_btn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="auto"
-        android:scaleType="centerInside"
-        android:src="@drawable/plus_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/textView6"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/transpose_value"
-        app:layout_constraintStart_toStartOf="@+id/more_close_btn"
-        app:layout_constraintTop_toTopOf="@+id/textView6"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <ImageView
-        android:id="@+id/transpose_minus_btn"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="20dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="auto"
-        android:scaleType="centerInside"
-        android:src="@drawable/minus_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/transpose_plus_btn"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/transpose_value"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintTop_toTopOf="@+id/transpose_plus_btn"
-        app:layout_constraintVertical_bias="0.437" />
-
-    <TextView
-        android:id="@+id/transpose_value"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="20dp"
-        android:gravity="center|center_horizontal"
-        android:includeFontPadding="false"
-        android:text="0"
-        android:textColor="@color/color_white"
-        app:layout_constraintBottom_toBottomOf="@+id/transpose_plus_btn"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/transpose_plus_btn"
-        app:layout_constraintTop_toTopOf="@+id/transpose_plus_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

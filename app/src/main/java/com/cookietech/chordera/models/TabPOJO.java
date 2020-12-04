@@ -7,15 +7,11 @@ public class TabPOJO implements Parcelable {
     String data;
     String tuning;
     String key;
-    int durationInSecond;
-    String genre;
 
-    public TabPOJO(String data, String tuning, String key, int durationInSecond, String genre) {
+    public TabPOJO(String data, String tuning, String key) {
         this.data = data;
         this.tuning = tuning;
         this.key = key;
-        this.durationInSecond = durationInSecond;
-        this.genre = genre;
     }
 
     public TabPOJO() {
@@ -25,8 +21,6 @@ public class TabPOJO implements Parcelable {
         data = in.readString();
         tuning = in.readString();
         key = in.readString();
-        durationInSecond = in.readInt();
-        genre = in.readString();
     }
 
     public static final Creator<TabPOJO> CREATOR = new Creator<TabPOJO>() {
@@ -65,21 +59,7 @@ public class TabPOJO implements Parcelable {
         this.key = key;
     }
 
-    public int getDurationInSecond() {
-        return durationInSecond;
-    }
 
-    public void setDurationInSecond(int durationInSecond) {
-        this.durationInSecond = durationInSecond;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
 
     @Override
     public int describeContents() {
@@ -91,7 +71,5 @@ public class TabPOJO implements Parcelable {
         dest.writeString(data);
         dest.writeString(tuning);
         dest.writeString(key);
-        dest.writeInt(durationInSecond);
-        dest.writeString(genre);
     }
 }

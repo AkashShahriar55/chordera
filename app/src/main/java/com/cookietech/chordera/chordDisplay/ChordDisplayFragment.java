@@ -25,8 +25,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
@@ -35,6 +37,9 @@ import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TRANSPOSE_CAPO;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +58,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private SelectionType selectedTab;
     private TabPOJO tabData;
     private ImageView auto_scroll_btn;
+    private String lastSelectedTransposeType = TRANSPOSE_CAPO;
 
     public ChordDisplayFragment() {
         // Required empty public constructor
@@ -135,11 +141,20 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             @Override
             public void onClick(View v) {
 
-                ChordDisplaySettingModal moreFragmentDialog = ChordDisplaySettingModal.newInstance(lastSelectedTranspose);
+                ChordDisplaySettingModal moreFragmentDialog = ChordDisplaySettingModal.newInstance();
                 moreFragmentDialog.setCallback(new ChordDisplaySettingModal.MoreCallback() {
+
                     @Override
-                    public void onTranspose(int transpose) {
-                        lastSelectedTranspose = transpose;
+                    public void onTransposeSelected() {
+                        ChordDisplayTransposeModal transposeModalDialog = ChordDisplayTransposeModal.newInstance(tabData.getKey(),lastSelectedTranspose,lastSelectedTransposeType);
+                        transposeModalDialog.setCallback(new ChordDisplayTransposeModal.TransposeCallback() {
+                            @Override
+                            public void onTranspose(int transpose, String transposeType) {
+                                lastSelectedTranspose = transpose;
+                                lastSelectedTransposeType = transposeType;
+                            }
+                        });
+                        transposeModalDialog.show(requireFragmentManager(),"transpose_dialog");
                     }
 
                     @Override
@@ -160,9 +175,10 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                     @Override
                     public void onBackToHomeSelected() {
                         Log.d("more_debug", "onBackToHomeSelected: ");
+                        mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,NavigatorTags.CONTAINER_ID_DEFAULT);
                     }
                 });
-                moreFragmentDialog.show(requireFragmentManager(),"dialog");
+                moreFragmentDialog.show(requireFragmentManager(),"more_dialog");
             }
         });
 
@@ -187,6 +203,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                 Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
             }
         });
+
 
     }
 
@@ -223,12 +240,12 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         if(selectedSong != null){
             binding.tvSongName.setText(selectedSong.getSong_name());
             binding.tvBandName.setText(selectedSong.getArtist_name());
+            binding.tvGenre.setText("Genre: "+ selectedSong.getGenre());
         }
 
         if(tabData != null){
             binding.tvTuning.setText("Tuning: "+ tabData.getTuning());
             binding.tvKey.setText("Key: "+ tabData.getKey());
-            binding.tvGenre.setText("Genre: "+ tabData.getGenre());
             binding.tvSongChords.setText(tabData.getData());
         }
     }
@@ -388,6 +405,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.tvKey.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvChords.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvSongChords.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvCapo.setTextColor(getResources().getColor(R.color.colorPrimary));
     }
 
     private void activateDarkMode(){
@@ -397,6 +416,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.tvKey.setTextColor(getResources().getColor(R.color.white));
         binding.tvChords.setTextColor(getResources().getColor(R.color.white));
         binding.tvSongChords.setTextColor(getResources().getColor(R.color.white));
+        binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
+        binding.tvCapo.setTextColor(getResources().getColor(R.color.white));
     }
 
     private void toggleMode() {

@@ -24,16 +24,16 @@ public class ChordDisplaySettingModal extends BottomSheetDialogFragment {
 
     FragmentChordDisplaySettingModalBinding binding;
     MoreCallback callback;
-    int transposeValue;
+
 
     public ChordDisplaySettingModal() {
         // Required empty public constructor
     }
 
-    public static ChordDisplaySettingModal newInstance(int lastTranspose) {
+    public static ChordDisplaySettingModal newInstance() {
         ChordDisplaySettingModal fragment = new ChordDisplaySettingModal();
         Bundle args = new Bundle();
-        args.putInt("last_transpose",lastTranspose);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,7 +46,7 @@ public class ChordDisplaySettingModal extends BottomSheetDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            transposeValue = getArguments().getInt("last_transpose");
+
         }
     }
 
@@ -61,26 +61,7 @@ public class ChordDisplaySettingModal extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.transposeValue.setText(String.valueOf(transposeValue));
-        binding.transposePlusBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transposeValue++;
-                if(callback!=null)
-                    callback.onTranspose(transposeValue);
-                binding.transposeValue.setText(String.valueOf(transposeValue));
-            }
-        });
 
-        binding.transposeMinusBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transposeValue--;
-                if(callback!=null)
-                    callback.onTranspose(transposeValue);
-                binding.transposeValue.setText(String.valueOf(transposeValue));
-            }
-        });
 
         binding.moreBackToHomeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +95,16 @@ public class ChordDisplaySettingModal extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
+        binding.moreTransposeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(callback!=null)
+                    callback.onTransposeSelected();
+                dismiss();
+            }
+        });
+
+
 
         binding.moreCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +115,7 @@ public class ChordDisplaySettingModal extends BottomSheetDialogFragment {
     }
 
     public interface MoreCallback{
-        void onTranspose(int transpose);
+        void onTransposeSelected();
         void onPrintSelected();
         void onShareSelected();
         void onSettingSelected();

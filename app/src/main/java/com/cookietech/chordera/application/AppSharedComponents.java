@@ -1,5 +1,9 @@
 package com.cookietech.chordera.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class AppSharedComponents {
     private static double [] tick = new double[3001];
     private static double [] tock = new double[3001];
@@ -24,4 +28,10 @@ public class AppSharedComponents {
     public static void setTock(int index,double tock) {
         AppSharedComponents.tock[index] = tock;
     }
+
+    public static final ArrayList<String> major_key_circle = new ArrayList<String>(
+            Arrays.asList("C", "C#", "D","D#","E","F","F#","G","G#","A","A#","B"));
+
+    public static final ArrayList<String> minor_key_circle = new ArrayList<String>(
+            Arrays.asList("Cm", "Cm#", "Dm","Dm#","Em","Fm","Fm#","Gm","Gm#","Am","Am#","Bm"));
 }

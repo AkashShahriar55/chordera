@@ -51,10 +51,25 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/tv_capo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
+                        android:text="Capo: none"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_genre" />
+
+                    <TextView
                         android:id="@+id/tv_song_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
+                        android:includeFontPadding="false"
+                        android:paddingTop="@dimen/_8sdp"
+                        android:paddingBottom="@dimen/_8sdp"
                         android:text="এই অবেলাই"
                         android:textSize="@dimen/_16ssp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -64,8 +79,8 @@
                         android:id="@+id/tv_band_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
                         android:text="Shironamhin"
                         android:textColor="@color/chord_display_band_name"
                         android:textSize="@dimen/_12ssp"
@@ -78,6 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
                         android:text="Tuning: E A D G B E"
                         android:textSize="@dimen/_12ssp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -89,6 +105,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
                         android:text="Key: C"
                         android:textSize="@dimen/_12ssp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -98,11 +115,13 @@
                         android:id="@+id/tv_genre"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Genre: Rock"
+                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
+                        android:text="Genre: Rock"
                         android:textSize="@dimen/_12ssp"
-                        app:layout_constraintTop_toBottomOf="@id/tv_key"
-                        app:layout_constraintLeft_toLeftOf="parent"/>
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_key" />
 
                     <ImageView
                         android:id="@+id/imageView10"
@@ -128,8 +147,11 @@
                         android:id="@+id/tv_chords"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_14sdp"
                         android:fontFamily="@font/roboto_regular"
+                        android:includeFontPadding="false"
+                        android:letterSpacing="0.15"
+                        android:paddingTop="@dimen/_12sdp"
+                        android:paddingBottom="@dimen/_12sdp"
                         android:text="Chords"
                         android:textSize="@dimen/_15ssp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +161,6 @@
                         android:id="@+id/rv_chords"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tv_chords" />
