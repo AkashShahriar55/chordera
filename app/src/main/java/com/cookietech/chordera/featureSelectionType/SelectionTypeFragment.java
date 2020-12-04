@@ -105,7 +105,7 @@ public class SelectionTypeFragment extends ChorderaFragment{
             int id = 1;
             Map<String, String> map = selectedSong.getSong_data();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                items.add(new SelectionType(entry.getKey(),String.valueOf(id),"120"));
+                items.add(new SelectionType(entry.getKey(),String.valueOf(id)));
                 id++;
             }
 
