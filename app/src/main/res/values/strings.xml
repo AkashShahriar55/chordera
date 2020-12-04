@@ -5,6 +5,7 @@
     <string name="search_hint">Artists or Songs</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="top_10">Top 10</string>
 
 
 </resources>

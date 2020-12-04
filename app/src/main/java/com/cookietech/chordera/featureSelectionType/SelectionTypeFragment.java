@@ -2,6 +2,7 @@ package com.cookietech.chordera.featureSelectionType;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +65,10 @@ public class SelectionTypeFragment extends ChorderaFragment{
         mainViewModel.getObservableSelectedSong().observe(fragmentLifecycleOwner, new Observer<SongsPOJO>() {
             @Override
             public void onChanged(SongsPOJO songsPOJO) {
+                Log.d("akash_debug_list", "onChanged: "+ songsPOJO.getSong_name());
                 selectedSong = songsPOJO;
                 updateView();
+                getData();
             }
         });
     }
@@ -102,11 +105,10 @@ public class SelectionTypeFragment extends ChorderaFragment{
     private void getData() {
         ArrayList<SelectionType> items = new ArrayList<>();
         if(selectedSong != null){
-            int id = 1;
             Map<String, String> map = selectedSong.getSong_data();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                items.add(new SelectionType(entry.getKey(),String.valueOf(id)));
-                id++;
+                Log.d("tab_debug", "getData: " + entry.getValue());
+                items.add(new SelectionType(entry.getKey(),String.valueOf(entry.getValue())));
             }
 
         }

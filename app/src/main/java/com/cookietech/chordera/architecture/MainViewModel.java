@@ -13,8 +13,11 @@ import androidx.lifecycle.ViewModel;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.google.gson.JsonStreamParser;
 
 import java.lang.ref.WeakReference;
@@ -27,6 +30,7 @@ public class MainViewModel extends ViewModel {
     private DatabaseRepository databaseRepository = new DatabaseRepository();
     @NonNull private SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
     private SingleLiveEvent<SongsPOJO> selectedSong = new SingleLiveEvent<>();
+    private SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
 
     public MainViewModel() {
         navigation.setValue(new Navigator("none",0));
@@ -86,5 +90,25 @@ public class MainViewModel extends ViewModel {
 
     public void setSelectedSong(SongsPOJO selectedSong){
         this.selectedSong.setValue(selectedSong);
+    }
+
+    public void setSelectedTab(SelectionType selectionType) {
+        this.selectedType.setValue(selectionType);
+    }
+
+    public SingleLiveEvent<SelectionType> getObservableSelectedTab(){
+        return selectedType;
+    }
+
+    public void loadTab(SelectionType selectionType) {
+        databaseRepository.loadTab(selectionType);
+    }
+
+    public SingleLiveEvent<TabPOJO> getObservableSelectedTabLiveData() {
+        return databaseRepository.getObservableSelectedTabLiveData();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableTopTenResponse() {
+        return databaseRepository.getObservableTopTenResponse();
     }
 }
