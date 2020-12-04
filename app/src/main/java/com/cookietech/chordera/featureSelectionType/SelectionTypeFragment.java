@@ -101,6 +101,14 @@ public class SelectionTypeFragment extends ChorderaFragment{
 
         getData();
 
+
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
+
     }
     private void getData() {
         ArrayList<SelectionType> items = new ArrayList<>();
@@ -111,10 +119,14 @@ public class SelectionTypeFragment extends ChorderaFragment{
                 items.add(new SelectionType(entry.getKey(),String.valueOf(entry.getValue())));
             }
 
+        }else{
+            Log.d("tab_debug", "getData: no data found");
         }
 
         adapter.addItems(items);
     }
+
+
 
 
 }
