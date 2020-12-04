@@ -5,27 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/top_padding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.01" />
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/right_padding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.98" />
-
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/left_padding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.02" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/toolbar_guideline"
@@ -35,15 +14,16 @@
         app:layout_constraintGuide_begin="50dp" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clickable="true"
         android:focusable="true"
         app:cardCornerRadius="5dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/toolbar_guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/toolbar_guideline">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -55,13 +35,13 @@
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 android:clickable="true"
+                android:contentDescription="@string/todo"
                 android:focusable="true"
                 android:scaleType="centerInside"
                 android:src="@mipmap/arrow_back"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="@string/todo" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/header_tittle"
@@ -83,14 +63,13 @@
     </androidx.cardview.widget.CardView>
 
 
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/right_padding"
-        app:layout_constraintStart_toStartOf="@+id/left_padding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toolbar_guideline">
 
         <FrameLayout
@@ -103,7 +82,7 @@
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/tab_selector_rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

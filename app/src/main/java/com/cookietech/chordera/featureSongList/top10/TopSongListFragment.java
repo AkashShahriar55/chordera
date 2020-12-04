@@ -150,15 +150,16 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     private void initialize() {
         binding.headerTittle.setText(R.string.top_10);
         binding.swipeRefresh.setOnRefreshListener(this);
-        binding.recyclerView.setHasFixedSize(true);
+        binding.tabSelectorRv.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
-        binding.recyclerView.setLayoutManager(layoutManager);
+
+        binding.tabSelectorRv.setLayoutManager(layoutManager);
         swipeRefreshLayout = binding.swipeRefresh;
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel);
-        binding.recyclerView.setAdapter(adapter);
+        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel);
+        binding.tabSelectorRv.setAdapter(adapter);
         getData();
 
-        binding.recyclerView.addOnScrollListener(new PaginationListener(layoutManager) {
+        binding.tabSelectorRv.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
