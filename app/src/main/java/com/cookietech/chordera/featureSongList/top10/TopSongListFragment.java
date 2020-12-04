@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
+import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
 import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
 
 public class TopSongListFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
-    FragmentSongListAnythingBinding binding;
+    FragmentTopSongListBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     SongListShowingAdapter adapter;
     int currentPage = PAGE_START;
@@ -46,7 +48,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentSongListAnythingBinding.inflate(getLayoutInflater(),container,false);
+        binding = FragmentTopSongListBinding.inflate(getLayoutInflater(),container,false);
         return binding.getRoot();
     }
 
@@ -77,9 +79,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     }
 
     private void initialize() {
-        binding.headerTittle.setText("Top 10");
-        binding.collectionName.setVisibility(View.GONE);
-
+        binding.headerTittle.setText(R.string.top_10);
         binding.swipeRefresh.setOnRefreshListener(this);
         binding.recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());

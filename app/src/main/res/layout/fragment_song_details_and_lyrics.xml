@@ -9,7 +9,7 @@
 
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topbar"
+        android:id="@+id/toolbar_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -125,7 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:src="@drawable/arrow"
-        app:layout_constraintBottom_toTopOf="@+id/topbar"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar_guideline"
         app:layout_constraintStart_toStartOf="@+id/left_padding"
         app:layout_constraintTop_toTopOf="parent" />
 

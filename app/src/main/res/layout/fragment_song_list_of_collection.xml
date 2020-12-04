@@ -28,7 +28,7 @@
         app:layout_constraintGuide_percent="0.02" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/topbar"
+        android:id="@+id/toolbar_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:src="@drawable/ic_back"
-        app:layout_constraintBottom_toTopOf="@+id/topbar"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar_guideline"
         app:layout_constraintStart_toStartOf="@+id/left_padding"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textColor="@color/color_white"
-        app:layout_constraintBottom_toTopOf="@+id/topbar"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar_guideline"
         app:layout_constraintEnd_toStartOf="@+id/right_padding"
         app:layout_constraintStart_toEndOf="@+id/btn_back"
         app:layout_constraintTop_toTopOf="@+id/btn_back" />
@@ -62,7 +62,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/topbar">
+        app:layout_constraintTop_toTopOf="@+id/toolbar_guideline">
 
     </FrameLayout>
 
