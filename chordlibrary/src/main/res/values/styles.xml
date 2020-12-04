@@ -3,4 +3,6 @@
     <style name="chordera_theme" parent="Theme.AppCompat.NoActionBar">
         <item name="fontFamily">@font/cairo_regular</item>
     </style>
+
+
 </resources>

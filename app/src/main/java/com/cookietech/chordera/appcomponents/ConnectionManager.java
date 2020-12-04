@@ -7,16 +7,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.cookietech.chordera.application.ChorderaApplication;
+
 public class ConnectionManager {
-    ConnectivityManager connectivityManager;
-    Context context;
     static SingleLiveEvent<Boolean> networkAvailability = new SingleLiveEvent<>();
 
-    public ConnectionManager(Context context) {
-        this.context = context;
-    }
-
-    public boolean isOnline() {
+    public static boolean isOnline(Context context) {
         ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

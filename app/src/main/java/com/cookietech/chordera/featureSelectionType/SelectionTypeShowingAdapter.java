@@ -42,6 +42,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final SelectionType selectionType = selectionTypeList.get(position);
+        holder.setPosition(position);
         holder.seletionName.setText(selectionType.getSelectionName());
         holder.view.setText(selectionType.getViews());
     }
@@ -55,6 +56,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
     }
 
     public void addItems(List<SelectionType> selectionTypes) {
+        selectionTypeList.clear();
         selectionTypeList.addAll(selectionTypes);
         notifyDataSetChanged();
     }
@@ -71,6 +73,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView seletionName, view;
         public ConstraintLayout rowLayout;
+        private int position;
 
         public ViewHolder(View v) {
             super(v);
@@ -86,9 +89,14 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mainViewModel.setSelectedTab(selectionTypeList.get(position));
                     mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FRAGMENT,1);
                 }
             });
+        }
+
+        public void setPosition(int position) {
+            this.position = position;
         }
     }
 
