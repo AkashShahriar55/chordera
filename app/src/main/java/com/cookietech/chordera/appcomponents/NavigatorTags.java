@@ -13,4 +13,5 @@ public class NavigatorTags {
     public static final String SONG_DETAIL_FRAGMENT = "song_detail_fragment";
     public static final String SELECTION_TYPE_FRAGMENT = "selection_type_fragment";
     public static final String CHORD_DISPLAY_FRAGMENT = "chord_display_fragment";
+    public static final String CHORD_DISPLAY_FULLSCREEN_FRAGMENT = "chord_display_fullscreen_fragment";
 }

@@ -3,10 +3,12 @@ package com.cookietech.chordera.chordDisplay;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -17,7 +19,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
@@ -27,6 +32,7 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordsAdapter;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
 
@@ -37,6 +43,7 @@ import java.util.ArrayList;
  */
 public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdapter.Communicator {
 
+
     FragmentChordDisplayBinding binding;
     private  ChordsAdapter chordsAdapter;
     ArrayList<Chord> chords =new ArrayList<>();
@@ -45,6 +52,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private SongsPOJO selectedSong;
     private SelectionType selectedTab;
     private TabPOJO tabData;
+    private ImageView auto_scroll_btn;
 
     public ChordDisplayFragment() {
         // Required empty public constructor
@@ -74,6 +82,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         return binding.getRoot();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -157,6 +166,28 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         });
 
+        View bottomSheet = binding.rootLayout.findViewById(R.id.chord_display_bottom_sheet);
+        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+
+
+
+        binding.displayScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+
+        /**Go to Auto Scroll fragment**/
+        auto_scroll_btn = binding.rootLayout.findViewById(R.id.auto_scroll_btn);
+
+        auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void initializeObserver() {
@@ -169,7 +200,6 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                 updateView();
             }
         });
-
         mainViewModel.getObservableSelectedTab().observe(fragmentLifecycleOwner, new Observer<SelectionType>() {
             @Override
             public void onChanged(SelectionType selectionType) {
