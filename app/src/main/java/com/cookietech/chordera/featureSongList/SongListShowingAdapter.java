@@ -134,10 +134,10 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
             view = v.findViewById(R.id.views_count);
-            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
+           /* ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
             //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
             params.height = (int) (recyclerView.getWidth()/7.2);
-            rowLayout.setLayoutParams(params);
+            rowLayout.setLayoutParams(params);*/
             //width/height = 7.2    ratio was calculated from xd design
 
             rowLayout.setOnClickListener(new View.OnClickListener() {
