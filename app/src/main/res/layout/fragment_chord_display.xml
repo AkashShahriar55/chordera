@@ -93,6 +93,16 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tv_tuning" />
 
+                    <TextView
+                        android:id="@+id/tv_genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Genre: Rock"
+                        android:fontFamily="@font/roboto_regular"
+                        android:textSize="@dimen/_12ssp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_key"
+                        app:layout_constraintLeft_toLeftOf="parent"/>
+
                     <ImageView
                         android:id="@+id/imageView10"
                         android:layout_width="wrap_content"
@@ -230,8 +240,9 @@ veja chokh dekhaini tomay\n
                     android:id="@+id/btn_setting"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
+                    android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true"
+                    android:focusable="auto"
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
                     android:scaleType="centerCrop"
@@ -243,12 +254,9 @@ veja chokh dekhaini tomay\n
                 <Switch
                     android:id="@+id/mode_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_height="0dp"
                     android:layout_centerVertical="true"
                     android:switchMinWidth="@dimen/_30sdp"
-                    android:textOff="Light"
-                    android:textOn="Dark"
                     android:thumb="@drawable/switch_thumb"
                     android:track="@drawable/switch_track"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -261,6 +269,18 @@ veja chokh dekhaini tomay\n
 
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/mode_animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Light"
+        android:gravity="center"
+        android:textSize="@dimen/_35sdp"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/roboto_regular"
+        android:alpha="0"
+        />
 
     <include layout="@layout/layout_chord_display_bottom_sheet"/>
 

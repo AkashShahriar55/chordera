@@ -18,6 +18,7 @@ import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
+import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSplashBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -90,10 +91,6 @@ public class SplashFragment extends ChorderaFragment {
 
         binding.splashVideoView.setVideoURI(video);
 
-
-
-
-        connectionManager = new ConnectionManager(requireContext());
     }
 
 
@@ -111,7 +108,7 @@ public class SplashFragment extends ChorderaFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (connectionManager.isOnline()) {
+        if (ConnectionManager.isOnline(ChorderaApplication.getContext())) {
             try {
                 RemoteConfigManager.fetchRemoteConfigValues(new RemoteConfigManager.RemoteConfigFetchListener() {
                     @Override
