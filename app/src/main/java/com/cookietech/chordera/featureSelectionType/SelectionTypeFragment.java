@@ -108,7 +108,17 @@ public class SelectionTypeFragment extends ChorderaFragment{
             Map<String, String> map = selectedSong.getSong_data();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Log.d("tab_debug", "getData: " + entry.getValue());
-                items.add(new SelectionType(entry.getKey(),String.valueOf(entry.getValue())));
+                // here entry.getKey() returns like 'guitar_chord'
+                // SelectionType.displaySelectionNameMap.get(entry.getKey()) returns Guitar Chord
+                if(SelectionType.displaySelectionNameMap.containsKey(entry.getKey()))
+                {
+                    items.add(new SelectionType(SelectionType.displaySelectionNameMap.get(entry.getKey()),String.valueOf(entry.getValue())));
+                }
+                else
+                {
+                    Log.d("sohan_debug","key not found");
+                    //TODO need to handle key not found
+                }
             }
 
         }
