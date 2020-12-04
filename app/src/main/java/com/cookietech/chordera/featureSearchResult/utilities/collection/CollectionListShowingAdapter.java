@@ -177,9 +177,6 @@ public class CollectionListShowingAdapter extends RecyclerView.Adapter<BaseViewH
 
     public class ProgressHolder extends BaseViewHolder {
 
-        @Override
-        protected void clear() {
-        }
         public ProgressHolder(View v) {
             super(v);
         }

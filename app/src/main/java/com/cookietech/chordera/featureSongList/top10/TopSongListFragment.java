@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.Collection;
 import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.repositories.DatabaseResponse;
@@ -38,9 +40,10 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     int currentPage = PAGE_START;
     boolean isLastPage = false;
     int totalPage = 10;
-    boolean isLoading = false;
+    boolean isLoading = true;
     int itemCount = 0;
     LinearLayoutManager layoutManager;
+    SwipeRefreshLayout swipeRefreshLayout;
     public static final String TAG = "top_ten_debug";
     public boolean databaseFetched = false;
 
@@ -73,7 +76,28 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         mainViewModel.getObservableTopTenSongs().observe(fragmentLifecycleOwner, new Observer<ArrayList<SongsPOJO>>() {
             @Override
             public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
-                adapter.onNewData(songsPOJOS);
+                //adapter.onNewData(songsPOJOS);
+                swipeRefreshLayout.setRefreshing(false);
+                if(isLoading)
+                {
+                    adapter.removeLoading();
+                    isLoading = false;
+                }
+                Log.e("songs pojo data size", String.valueOf(songsPOJOS.size()));
+
+                if(adapter.getData().size()<=0)
+                {
+                    adapter.onNewData(songsPOJOS);
+                }
+                else {
+                    ArrayList<SongsPOJO> allData = new ArrayList<SongsPOJO>(adapter.getData());
+                    Log.e("adapter data size", String.valueOf(adapter.getData().size()));
+                    Log.e("alldata data size1", String.valueOf(allData.size()));
+                    allData.addAll(songsPOJOS);
+                    Log.e("alldata data size2", String.valueOf(allData.size()));
+                    adapter.onNewData(allData);
+                }
+
             }
         });
 
@@ -105,10 +129,11 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
                 if(aBoolean){
                     Log.d(TAG, "onChanged: net available");
                     if(!databaseFetched){
-                        getData();
+                        //getData();
                     }
                 }else{
                     Log.d(TAG, "onChanged: net not available");
+                    Toast.makeText(getContext(),"No internet connectoin",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -118,7 +143,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         currentPage = PAGE_START;
         isLastPage = false;
         totalPage = 5;
-        isLoading = false;
+        isLoading = true;
         itemCount = 0;
     }
 
@@ -127,10 +152,12 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
         binding.swipeRefresh.setOnRefreshListener(this);
         binding.tabSelectorRv.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
+
         binding.tabSelectorRv.setLayoutManager(layoutManager);
+        swipeRefreshLayout = binding.swipeRefresh;
         adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel);
-        getData();
         binding.tabSelectorRv.setAdapter(adapter);
+        getData();
 
         binding.tabSelectorRv.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
@@ -138,6 +165,12 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
                 isLoading = true;
                 currentPage++;
                 getData();
+                if (currentPage <= totalPage) {
+                    adapter.addLoading();
+                } else {
+                    isLastPage = true;
+                }
+                isLoading = false;
             }
 
             @Override
@@ -160,6 +193,8 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
 
     }
     private void getData() {
+        adapter.addLoading();
+        isLoading = true;
         mainViewModel.queryTopTenSongs();
     }
 

@@ -182,9 +182,7 @@ public class SearchedSongListShowingAdapter extends RecyclerView.Adapter<BaseVie
 
     public class ProgressHolder extends BaseViewHolder {
 
-        @Override
-        protected void clear() {
-        }
+
         public ProgressHolder(View v) {
             super(v);
         }

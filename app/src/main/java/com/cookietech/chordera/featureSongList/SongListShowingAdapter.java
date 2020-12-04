@@ -30,7 +30,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
     RecyclerView recyclerView;
-    private List<SongsPOJO> songList;
+    private ArrayList<SongsPOJO> songList = new ArrayList<>();
     MainViewModel mainViewModel;
 
     public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel) {
@@ -66,7 +66,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position, @NonNull List<Object> payloads) {
         if(!payloads.isEmpty()){
-            holder.onBind(position, payloads);
+            holder.onBind(position);
         }else{
             super.onBindViewHolder(holder,position,payloads);
         }
@@ -98,7 +98,8 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public void addLoading() {
         isLoaderVisible = true;
         songList.add(new SongsPOJO());
-        notifyItemInserted(songList.size() - 1);
+        if(songList.size()<=0) notifyItemChanged(0);
+        else notifyItemInserted(songList.size() - 1);
     }
 
     public void removeLoading() {
@@ -151,12 +152,15 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
         }
 
         protected void clear() {
-
+            if(songList != null)
+            songList.clear();
+            //notifyDataSetChanged();
         }
 
         public void onBind(int position) {
             super.onBind(position);
             this.position = position;
+            Log.e("sohan debug", String.valueOf(songList.size()));
             SongsPOJO item = songList.get(position);
 
             tittle.setText(item.getSong_name());
@@ -199,18 +203,24 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     public class ProgressHolder extends BaseViewHolder {
 
-        @Override
-        protected void clear() {
-        }
+
         public ProgressHolder(View v) {
             super(v);
         }
     }
 
     public void onNewData(ArrayList<SongsPOJO> newData) {
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<SongsPOJO>) songList));
-        diffResult.dispatchUpdatesTo(this);
-        this.songList.clear();
-        this.songList.addAll(newData);
+        if(this.songList.size() <= 0)
+        {
+            this.songList.addAll(newData);
+            notifyDataSetChanged();
+        }
+        else {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<SongsPOJO>) songList));
+            diffResult.dispatchUpdatesTo(this);
+            this.songList.clear();
+            this.songList.addAll(newData);
+        }
+
     }
 }

@@ -143,7 +143,6 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
         itemCount = 0;
         currentPage = PAGE_START;
         isLastPage = false;
-        adapter.clear();
         getData();
     }
 }

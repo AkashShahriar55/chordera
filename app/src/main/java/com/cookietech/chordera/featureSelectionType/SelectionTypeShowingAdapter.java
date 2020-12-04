@@ -70,7 +70,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
         return (ArrayList<SelectionType>) this.selectionTypeList;
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView seletionName, view;
+        public TextView seletionName;
         public ConstraintLayout rowLayout;
         private int position;
 
@@ -79,7 +79,6 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
 
             seletionName = v.findViewById(R.id.selection_type);
             rowLayout = v.findViewById(R.id.rowLayout);
-            view = v.findViewById(R.id.views_count);
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
             //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
             params.height = (int) (binding.recyclerView.getWidth()/7.2);
