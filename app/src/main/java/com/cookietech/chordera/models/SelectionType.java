@@ -1,11 +1,10 @@
 package com.cookietech.chordera.models;
 
 public class SelectionType {
-    String selectionName, selectionId, views;
-    public SelectionType(String name,String id,String views){
+    String selectionName, selectionId;
+    public SelectionType(String name,String id){
         this.selectionName = name;
         this.selectionId = id;
-        this.views = views;
     }
 
     public String getSelectionId() {
@@ -24,11 +23,4 @@ public class SelectionType {
         this.selectionName = selectionName;
     }
 
-    public String getViews() {
-        return views;
-    }
-
-    public void setViews(String views) {
-        this.views = views;
-    }
 }

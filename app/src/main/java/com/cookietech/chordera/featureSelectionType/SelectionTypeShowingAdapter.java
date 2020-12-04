@@ -44,7 +44,6 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
         final SelectionType selectionType = selectionTypeList.get(position);
         holder.setPosition(position);
         holder.seletionName.setText(selectionType.getSelectionName());
-        holder.view.setText(selectionType.getViews());
     }
 
 
