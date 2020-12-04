@@ -130,7 +130,7 @@ public class SplashFragment extends ChorderaFragment {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,((ViewGroup)getView().getParent()).getId());
+                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,NavigatorTags.CONTAINER_ID_DEFAULT);
             }
         }, delayInSeconds);
 

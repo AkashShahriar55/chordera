@@ -3,7 +3,6 @@ package com.cookietech.chordera.application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.net.ConnectivityManager;
@@ -13,6 +12,7 @@ import androidx.multidex.MultiDexApplication;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordlibrary.ChordFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +25,7 @@ public class ChorderaApplication extends MultiDexApplication {
 
     private static ChorderaApplication APP_CONTEXT ;
     private ConnectionManager.NetworkReceiver networkReceiver;
+    ChordFactory chordFactory;
 
     public static Context getContext() {
         return APP_CONTEXT;
@@ -34,6 +35,8 @@ public class ChorderaApplication extends MultiDexApplication {
     public void onCreate() {
         APP_CONTEXT = this;
         super.onCreate();
+        chordFactory = new ChordFactory(this);
+        AppSharedComponents.roots = chordFactory.getRoots();
         createNotificationChannels();
         readTickTock();
         networkReceiver = new ConnectionManager.NetworkReceiver();

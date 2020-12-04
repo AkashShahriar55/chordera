@@ -118,7 +118,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                     ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
                     ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
                     AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(200);
+                    animatorSet.setDuration(250);
                     animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
                     animatorSet.start();
 
@@ -129,7 +129,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                     ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
                     ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
                     AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(200);
+                    animatorSet.setDuration(250);
                     animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
                     animatorSet.start();
                 }
@@ -399,7 +399,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     }
 
     private void activateLightMode(){
-        binding.rootContainer.setBackgroundColor(getResources().getColor(R.color.white));
+        binding.rootLayout.setBackgroundColor(getResources().getColor(R.color.white));
         binding.tvSongName.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvTuning.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvKey.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -410,7 +410,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     }
 
     private void activateDarkMode(){
-        binding.rootContainer.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        binding.rootLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         binding.tvSongName.setTextColor(getResources().getColor(R.color.white));
         binding.tvTuning.setTextColor(getResources().getColor(R.color.white));
         binding.tvKey.setTextColor(getResources().getColor(R.color.white));

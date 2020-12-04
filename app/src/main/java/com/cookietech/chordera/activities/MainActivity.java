@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         splashFragment = SplashFragment.newInstance();
         landingFragment = LandingFragment.newInstance();
         searchSuggestionFragment = new SearchSuggestionFragment();
-        chordLibraryFragment = ChordLibraryFragment.newInstance(System.currentTimeMillis());
+        chordLibraryFragment = ChordLibraryFragment.newInstance(AppSharedComponents.roots);
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);

@@ -227,6 +227,7 @@ veja chokh dekhaini tomay\n
             android:layout_height="@dimen/topBarHeight"
             android:clickable="true"
             android:focusable="true"
+            app:cardBackgroundColor="@color/toolbarBackground"
             app:cardCornerRadius="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -234,8 +235,7 @@ veja chokh dekhaini tomay\n
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/toolbarBackground">
+                android:layout_height="match_parent">
 
                 <ImageView
                     android:id="@+id/imageView2"

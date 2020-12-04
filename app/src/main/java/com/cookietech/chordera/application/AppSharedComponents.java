@@ -1,5 +1,7 @@
 package com.cookietech.chordera.application;
 
+import com.cookietech.chordlibrary.Root;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,4 +36,6 @@ public class AppSharedComponents {
 
     public static final ArrayList<String> minor_key_circle = new ArrayList<String>(
             Arrays.asList("Cm", "Cm#", "Dm","Dm#","Em","Fm","Fm#","Gm","Gm#","Am","Am#","Bm"));
+
+    public static ArrayList<Root> roots = new ArrayList<>();
 }

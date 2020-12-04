@@ -82,10 +82,10 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     private boolean isChordSectionSelected = true;
     private boolean isScaleSectionSelected = false;
 
-    public static ChordLibraryFragment newInstance(long testTime) {
+    public static ChordLibraryFragment newInstance(ArrayList<Root> rootList) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
         Bundle arguments = new Bundle();
-        arguments.putLong("test_time",testTime);
+        arguments.putParcelableArrayList("root_list",rootList);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -116,8 +116,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         processingTime = System.currentTimeMillis();
 
         if(getArguments() != null){
-            long testTime = getArguments().getLong("test_time");
-            Log.d("akash_test_debug", "onViewCreated: " + testTime + " current time " + System.currentTimeMillis());
+            rootArrayList = getArguments().getParcelableArrayList("root_list");
+            Log.d("akash_test_debug", "onViewCreated: " + rootArrayList.size() + " current time " + System.currentTimeMillis());
         }
 
 
@@ -129,8 +129,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-        chordFactory = new ChordFactory(requireContext());
-        rootArrayList = chordFactory.getRoots();
+        //chordFactory = new ChordFactory(requireContext());
+        //rootArrayList = chordFactory.getRoots();
         if(!rootArrayList.isEmpty()){
             homeList = new ArrayList<>();
             for (Root root:rootArrayList){
