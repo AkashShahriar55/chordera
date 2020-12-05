@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -28,16 +27,15 @@ import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
-import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordera.repositories.DatabaseResponse;
+import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TRANSPOSE_CAPO;
 
@@ -51,7 +49,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
     FragmentChordDisplayBinding binding;
     private  ChordsAdapter chordsAdapter;
-    ArrayList<Chord> chords =new ArrayList<>();
+    ArrayList<Variation> chords =new ArrayList<>();
     private boolean isDarkModeActivated = false;
     private int lastSelectedTranspose;
     private SongsPOJO selectedSong;
@@ -234,6 +232,31 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
            }
        });
 
+       mainViewModel.getObservableTabDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Invalid_data:
+                       Log.d("callback_debug", "onChanged: Invalid_data");
+                       break;
+                   case No_internet:
+                       Log.d("callback_debug", "onChanged: No_internet");
+                       break;
+                   case Fetching:
+                       Log.d("callback_debug", "onChanged: Fetching");
+                       break;
+                   case Fetched:
+                       Log.d("callback_debug", "onChanged: Fetched");
+                       break;
+                   case Error:
+                       Log.d("callback_debug", "onChanged: Error");
+                       break;
+                   default:
+                       break;
+               }
+           }
+       });
+
     }
 
     private void updateView() {
@@ -252,7 +275,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
     private void setDummyChords(){
         chords.clear();
-        chords.add(new Chord("A maj", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -272,7 +295,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -292,7 +315,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A5", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -312,7 +335,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A maj", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -332,7 +355,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -352,7 +375,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A5", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -372,7 +395,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);

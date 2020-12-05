@@ -111,4 +111,12 @@ public class MainViewModel extends ViewModel {
     public SingleLiveEvent<DatabaseResponse> getObservableTopTenResponse() {
         return databaseRepository.getObservableTopTenResponse();
     }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableTabDataResponse() {
+        return databaseRepository.getObservableTabDataResponse();
+    }
+
+    public void stopListeningTopTen(){
+        databaseRepository.stopListeningTopTen();
+    }
 }

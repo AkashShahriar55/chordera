@@ -54,20 +54,20 @@ public class ChordFactory {
         for (int i = 0; i < classJsonArray.length(); i++) {
             JSONObject classJsonObject = classJsonArray.getJSONObject(i);
             String className = classJsonObject.getString("class");
-            JSONArray chordsJsonArray = classJsonObject.getJSONArray("chords");
-            ArrayList<Chord> chords = new ArrayList<>();
+            String name = classJsonObject.getString("name");
+            JSONArray chordsJsonArray = classJsonObject.getJSONArray("variation");
+            ArrayList<Variation> chords = new ArrayList<>();
             chords = decodeChords(chordsJsonArray);
-            ChordClass chordClass = new ChordClass(className, chords);
+            ChordClass chordClass = new ChordClass(className,name, chords);
             chordClasses.add(chordClass);
         }
         return chordClasses;
     }
 
-    private ArrayList<Chord> decodeChords(JSONArray chordsJsonArray) throws JSONException {
-        ArrayList<Chord> chords = new ArrayList<>();
+    private ArrayList<Variation> decodeChords(JSONArray chordsJsonArray) throws JSONException {
+        ArrayList<Variation> chords = new ArrayList<>();
         for (int i = 0; i < chordsJsonArray.length(); i++) {
             JSONObject chordJsonObject = chordsJsonArray.getJSONObject(i);
-            String chordName = chordJsonObject.getString("name");
             ArrayList<Integer> notesArray = new ArrayList<Integer>();
             JSONArray notesJsonArray = chordJsonObject.getJSONArray("notes");
             for (int j = 0; j < notesJsonArray.length(); j++) {
@@ -80,7 +80,7 @@ public class ChordFactory {
                 int fingers = fingersJsonArray.getInt(j);
                 fingersArray.add(fingers);
             }
-            Chord chord = new Chord(chordName,notesArray,fingersArray);
+            Variation chord = new Variation(notesArray,fingersArray);
             chords.add(chord);
         }
         return chords;

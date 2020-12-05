@@ -32,7 +32,6 @@ import com.cookietech.chordera.featureSongList.saved.SavedSongListFragment;
 import com.cookietech.chordera.featureSongList.top10.TopSongListFragment;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
-import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;

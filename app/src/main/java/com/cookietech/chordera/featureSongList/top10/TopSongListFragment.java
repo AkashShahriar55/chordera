@@ -199,6 +199,12 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mainViewModel.stopListeningTopTen();
+    }
+
+    @Override
     public void onRefresh() {
         itemCount = 0;
         currentPage = PAGE_START;

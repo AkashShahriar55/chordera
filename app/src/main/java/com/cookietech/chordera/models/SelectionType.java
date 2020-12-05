@@ -9,9 +9,9 @@ public class SelectionType {
     static {
         displaySelectionNameMap = new HashMap<>();
 
-        displaySelectionNameMap.put("guitar_chord", "Guitar Chord");
+        displaySelectionNameMap.put("guitar_chord", "Guitar Chords");
         displaySelectionNameMap.put("lyrics", "Lyrics");
-        displaySelectionNameMap.put("ukulele_chord", "Ukulele Chord");
+        displaySelectionNameMap.put("ukulele_chord", "Ukulele Chords");
     }
 
     String selectionName, displaySelectionName, selectionId;

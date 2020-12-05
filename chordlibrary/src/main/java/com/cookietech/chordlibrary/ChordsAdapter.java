@@ -13,20 +13,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordlibrary.AppComponent.ThumbGeneratorListener;
-import com.google.common.util.concurrent.Runnables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ThumbGeneratorListener {
     private Context context;
-    private ArrayList<Chord> chords;
+    private ArrayList<Variation> chords;
     private Communicator communicator;
     private RecyclerView recyclerView;
 
 
-    public ChordsAdapter(Context context,ArrayList<Chord> chords,Communicator communicator,RecyclerView recyclerView) {
+    public ChordsAdapter(Context context, ArrayList<Variation> chords, Communicator communicator, RecyclerView recyclerView) {
         this.context = context;
         this.chords = chords;
         this.communicator = communicator;
@@ -59,7 +57,7 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         ChordViewHolder chordViewHolder = (ChordViewHolder) holder;
-        Chord chord = chords.get(position);
+        Variation chord = chords.get(position);
         //chordViewHolder.tv_fret_no.setText("fret "+chord.getStartFret());
         new Thread(new ThumbGeneratorRunnable(position,chord,this)).start();
 
@@ -76,13 +74,13 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return chords.size();
     }
 
-    public void setChords(ArrayList<Chord> chords) {
+    public void setChords(ArrayList<Variation> chords) {
         this.chords = chords;
         notifyDataSetChanged();
     }
 
     @Override
-    public void onThumbGenerated(final int index, final Bitmap thumb, Chord chord) {
+    public void onThumbGenerated(final int index, final Bitmap thumb, Variation chord) {
         if(chords.contains(chord)){
             recyclerView.post(new Runnable() {
                 @Override
@@ -117,11 +115,11 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class ThumbGeneratorRunnable implements Runnable {
         int index;
-        Chord chord;
+        Variation chord;
         ThumbGeneratorListener listener;
         private ThumbGenerator thumbGenerator = new ThumbGenerator();
 
-        public ThumbGeneratorRunnable(int index, Chord chord, ThumbGeneratorListener listener) {
+        public ThumbGeneratorRunnable(int index, Variation chord, ThumbGeneratorListener listener) {
             this.index = index;
             this.chord = chord;
             this.listener = listener;

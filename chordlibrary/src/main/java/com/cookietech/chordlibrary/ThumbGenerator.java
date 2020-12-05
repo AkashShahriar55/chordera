@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class ThumbGenerator {
     private Bitmap thumbBitmap;
     private Canvas mCanvas;
-    private Chord chord;
+    private Variation chord;
 
     public ThumbGenerator() {
         thumbBitmap = Bitmap.createBitmap(110,110, Bitmap.Config.ARGB_8888);
@@ -29,7 +29,7 @@ public class ThumbGenerator {
     }
 
 
-    public Bitmap getThumbBitmap(Chord chord) {
+    public Bitmap getThumbBitmap(Variation chord) {
         Bitmap mainThumbBitmap = thumbBitmap.copy(thumbBitmap.getConfig(),true);
         mCanvas = new Canvas(mainThumbBitmap);
         ArrayList notes = chord.getNotes();
