@@ -43,7 +43,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final SelectionType selectionType = selectionTypeList.get(position);
         holder.setPosition(position);
-        holder.seletionName.setText(selectionType.getSelectionName());
+        holder.seletionName.setText(selectionType.getDisplaySelectionName());
     }
 
 
@@ -87,8 +87,16 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mainViewModel.setSelectedTab(selectionTypeList.get(position));
-                    mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FRAGMENT,1);
+                    if(selectionTypeList.get(position).getSelectionName().equals("lyrics"))
+                    {
+                        mainViewModel.setSelectedTab(selectionTypeList.get(position));
+                        mainViewModel.setNavigation(NavigatorTags.SONG_DETAIL_FRAGMENT,1);
+                    }
+                    else if(selectionTypeList.get(position).getSelectionName().equals("guitar_chord"))
+                    {
+                        mainViewModel.setSelectedTab(selectionTypeList.get(position));
+                        mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FRAGMENT,1);
+                    }
                 }
             });
         }

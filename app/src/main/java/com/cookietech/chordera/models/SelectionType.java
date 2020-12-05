@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class SelectionType {
 
-    public static Map<String, String> displaySelectionNameMap;
+    public final static Map<String, String> displaySelectionNameMap;
     static {
         displaySelectionNameMap = new HashMap<>();
 
@@ -15,9 +15,10 @@ public class SelectionType {
     }
 
     String selectionName, displaySelectionName, selectionId;
-    public SelectionType(String name,String id){
+    public SelectionType(String name,String displayName, String id){
         this.selectionName = name;
         this.selectionId = id;
+        this.displaySelectionName = displayName;
     }
 
     public String getSelectionId() {
