@@ -3,6 +3,7 @@ package com.cookietech.chordera.chordDisplay;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,17 +16,22 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
@@ -35,6 +41,7 @@ import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.firebase.firestore.core.Bound;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -103,6 +110,22 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.rvChords.setAdapter(chordsAdapter);
 
         toggleMode();
+
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        String lyricWithChord = "[Dm]এই অ[Am]বেলাই [Gm]তোমারি আকা[Bdim]শে  নিরব[Gaug] আপোসে ভেসে [G]যাই";
+        //Rect bounds = new Rect();
+        //TextPaint textPaint = binding.tvChords.getPaint();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager  = requireActivity().getWindowManager();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int marginPadding = 50;
+        int rootWidth = displayMetrics.widthPixels - marginPadding;
+        ChordFormater chordFormater = new ChordFormater(lyricWithChord,rootWidth);
+        //chordFormater.processChord(0)
+        spannableStringBuilder = chordFormater.getProcessedChord(0);
+        binding.tvSongChords.setText(spannableStringBuilder);
+
+
         binding.modeSwitch.setChecked(isDarkModeActivated);
         binding.modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -246,7 +269,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         if(tabData != null){
             binding.tvTuning.setText("Tuning: "+ tabData.getTuning());
             binding.tvKey.setText("Key: "+ tabData.getKey());
-            binding.tvSongChords.setText(tabData.getData());
+            //binding.tvSongChords.setText(tabData.getData());
         }
     }
 

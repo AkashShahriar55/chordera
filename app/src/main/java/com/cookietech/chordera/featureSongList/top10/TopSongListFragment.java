@@ -83,7 +83,6 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
                     adapter.removeLoading();
                     isLoading = false;
                 }
-                Log.e("songs pojo data size", String.valueOf(songsPOJOS.size()));
 
                 if(adapter.getData().size()<=0)
                 {
@@ -91,10 +90,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
                 }
                 else {
                     ArrayList<SongsPOJO> allData = new ArrayList<SongsPOJO>(adapter.getData());
-                    Log.e("adapter data size", String.valueOf(adapter.getData().size()));
-                    Log.e("alldata data size1", String.valueOf(allData.size()));
                     allData.addAll(songsPOJOS);
-                    Log.e("alldata data size2", String.valueOf(allData.size()));
                     adapter.onNewData(allData);
                 }
 

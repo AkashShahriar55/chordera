@@ -120,7 +120,7 @@ public class SelectionTypeFragment extends ChorderaFragment{
                 // SelectionType.displaySelectionNameMap.get(entry.getKey()) returns Guitar Chord
                 if(SelectionType.displaySelectionNameMap.containsKey(entry.getKey()))
                 {
-                    items.add(new SelectionType(SelectionType.displaySelectionNameMap.get(entry.getKey()),String.valueOf(entry.getValue())));
+                    items.add(new SelectionType(entry.getKey(), SelectionType.displaySelectionNameMap.get(entry.getKey()),String.valueOf(entry.getValue())));
                 }
                 else
                 {
