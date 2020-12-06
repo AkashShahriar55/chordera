@@ -25,6 +25,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Room.SongDataEntity;
+import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -32,12 +35,15 @@ import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TRANSPOSE_CAPO;
 
@@ -101,6 +107,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.rvChords.setLayoutManager(layoutManager);
         chordsAdapter = new ChordsAdapter(requireContext(),chords,this,binding.rvChords);
         binding.rvChords.setAdapter(chordsAdapter);
+
 
         toggleMode();
         binding.modeSwitch.setChecked(isDarkModeActivated);
@@ -204,7 +211,20 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         });
 
+        /**Download Section**/
+        binding.downloadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(requireContext(), "Hey Baby", Toast.LENGTH_SHORT).show();
+                downloadSong();
+            }
+        });
 
+
+    }
+
+    private void downloadSong() {
+        mainViewModel.roomInsertSongData(new SongDataEntity(tabData.getId(),tabData.getData(),tabData.getKey(),tabData.getTuning(),tabData.getData_type()));
     }
 
     private void initializeObserver() {
@@ -234,6 +254,57 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
            }
        });
 
+       /*mainViewModel.getObservableLoadTabCalledFor().observe(fragmentLifecycleOwner, new Observer<String>() {
+           @Override
+           public void onChanged(String s) {
+               Log.d("loadTabCalledFor", "onChanged: " + s);
+           }
+       });*/
+        Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
+        mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, new Observer<String>() {
+            @Override
+            public void onChanged(String fromWhere) {
+                if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+                    binding.downloadBtn.setVisibility(View.GONE);
+                }else{
+                    binding.downloadBtn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+       mainViewModel.getObservableDownloadSongDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Storing:
+                       Log.d("download_debug", "onChanged: song data storing");
+                        break;
+                   case Stored:
+                       Log.d("download_debug", "onChanged: song data storing");
+                       Map<String,String> songDataMap = new HashMap<>();
+                       songDataMap.put(tabData.getData_type(),tabData.getId());
+                       mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap));
+                       break;
+
+               }
+
+           }
+       });
+
+       mainViewModel.getObservableDownloadSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Storing:
+                       Log.d("download_debug", "onChanged: song storing");
+                       break;
+                   case Stored:
+                       Log.d("download_debug", "onChanged: song stored");
+                       break;
+
+               }
+           }
+       });
     }
 
     private void updateView() {
@@ -248,6 +319,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             binding.tvKey.setText("Key: "+ tabData.getKey());
             binding.tvSongChords.setText(tabData.getData());
         }
+
+
     }
 
     private void setDummyChords(){

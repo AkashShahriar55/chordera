@@ -6,7 +6,10 @@ public class DatabaseResponse {
         Fetched,
         Error,
         No_internet,
-        Invalid_data
+        Invalid_data,
+        Stored,
+        Storing,
+        Already_exist
     }
     String identifier;
     Exception errorException;

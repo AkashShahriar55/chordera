@@ -7,9 +7,12 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.cookietech.chordera.Room.SongDataEntity;
+import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.models.Navigator;
@@ -18,10 +21,10 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
-import com.google.gson.JsonStreamParser;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainViewModel extends ViewModel {
@@ -31,10 +34,14 @@ public class MainViewModel extends ViewModel {
     @NonNull private SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
     private SingleLiveEvent<SongsPOJO> selectedSong = new SingleLiveEvent<>();
     private SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
+    private MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
+    private SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
 
     public MainViewModel() {
         navigation.setValue(new Navigator("none",0));
     }
+
+
 
     public MutableLiveData<Navigator> getNavigation() {
         return navigation;
@@ -71,6 +78,10 @@ public class MainViewModel extends ViewModel {
         return searchKeyword;
     }
 
+    public MutableLiveData<String> getObservableSongListShowingCalledFrom(){
+        return songListShowingCalledFrom;
+    }
+
     public void SaveSearchKeyWordHistory(String keyword) {
         SharedPreferenceManager.addSharedPrefSearchHistory(keyword);
     }
@@ -96,12 +107,16 @@ public class MainViewModel extends ViewModel {
         this.selectedType.setValue(selectionType);
     }
 
+    public void setSongListShowingCalledFrom(String calledFrom){
+        this.songListShowingCalledFrom.setValue(calledFrom);
+    }
+
     public SingleLiveEvent<SelectionType> getObservableSelectedTab(){
         return selectedType;
     }
 
     public void loadTab(SelectionType selectionType) {
-        databaseRepository.loadTab(selectionType);
+        databaseRepository.loadTab(selectionType,songListShowingCalledFrom.getValue());
     }
 
     public SingleLiveEvent<TabPOJO> getObservableSelectedTabLiveData() {
@@ -110,5 +125,43 @@ public class MainViewModel extends ViewModel {
 
     public SingleLiveEvent<DatabaseResponse> getObservableTopTenResponse() {
         return databaseRepository.getObservableTopTenResponse();
+    }
+
+    public void roomInsertSong(SongsEntity entity) {
+        databaseRepository.roomInsertSong(entity);
+    }
+
+    public void roomInsertSongData(SongDataEntity entity){
+        databaseRepository.roomInsertSongData(entity);
+    }
+
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDownloadSongDataResponse() {
+        return databaseRepository.getObservableDownloadSongDataResponse();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDownloadSongResponse() {
+        return databaseRepository.getObservableDownloadSongResponse();
+    }
+
+    public void fetchAllSongs(){
+        databaseRepository.fetchAllSongs();
+    }
+
+    public SingleLiveEvent<List<SongsEntity>> getObservableAllSongs() {
+        return databaseRepository.getObservableAllSongs();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableFetchAllSongsResponse() {
+        return databaseRepository.getObservableFetchAllSongsResponse();
+    }
+
+
+    public SingleLiveEvent<String> getObservableLoadTabCalledFor() {
+        return loadTabCalledFor;
+    }
+
+    public void setLoadTabCalledFor(String loadTabCalledFor) {
+        this.loadTabCalledFor.setValue(loadTabCalledFor);
     }
 }

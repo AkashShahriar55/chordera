@@ -3,15 +3,22 @@ package com.cookietech.chordera.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.Exclude;
+
 public class TabPOJO implements Parcelable {
     String data;
     String tuning;
     String key;
+    String data_type;
+    @Exclude
+    String id;
 
-    public TabPOJO(String data, String tuning, String key) {
+    public TabPOJO(String data, String tuning, String key,String id,String data_type) {
         this.data = data;
         this.tuning = tuning;
         this.key = key;
+        this.id = id;
+        this.data_type = data_type;
     }
 
     public TabPOJO() {
@@ -21,6 +28,8 @@ public class TabPOJO implements Parcelable {
         data = in.readString();
         tuning = in.readString();
         key = in.readString();
+        id = in.readString();
+        data = in.readString();
     }
 
     public static final Creator<TabPOJO> CREATOR = new Creator<TabPOJO>() {
@@ -59,7 +68,21 @@ public class TabPOJO implements Parcelable {
         this.key = key;
     }
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getData_type() {
+        return data_type;
+    }
+
+    public void setData_type(String data_type) {
+        this.data_type = data_type;
+    }
 
     @Override
     public int describeContents() {
@@ -71,5 +94,7 @@ public class TabPOJO implements Parcelable {
         dest.writeString(data);
         dest.writeString(tuning);
         dest.writeString(key);
+        dest.writeString(id);
+        dest.writeString(data_type);
     }
 }
