@@ -14,6 +14,7 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
 public class SongDetailLyricsFragment extends ChorderaFragment {
     public SongDetailLyricsFragment(){};
 
+    FragmentSongDetailsAndLyricsBinding binding;
     public static SongDetailLyricsFragment newInstance(){return new SongDetailLyricsFragment();}
 
     @Override
@@ -24,7 +25,7 @@ public class SongDetailLyricsFragment extends ChorderaFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentSongDetailsAndLyricsBinding binding = FragmentSongDetailsAndLyricsBinding.inflate(getLayoutInflater(), container, false);
+        binding = FragmentSongDetailsAndLyricsBinding.inflate(getLayoutInflater(), container, false);
         return binding.getRoot();
     }
 
@@ -35,6 +36,11 @@ public class SongDetailLyricsFragment extends ChorderaFragment {
     }
 
     private void initialize() {
-
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
     }
 }

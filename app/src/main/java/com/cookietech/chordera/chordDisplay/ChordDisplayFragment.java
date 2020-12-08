@@ -227,6 +227,13 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         });
 
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requireActivity().onBackPressed();
+            }
+        });
+
 
     }
 
