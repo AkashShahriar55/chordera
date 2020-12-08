@@ -21,11 +21,12 @@ public class SongsEntity {
     private String genre;
     private String image_url;
     private int song_duration;
+    private String youtube_id;
 
     @TypeConverters(StringMapConverter.class)
     private Map<String,String> song_data;
 
-    public SongsEntity(@NotNull String song_id, String artist_name, String song_name, String genre, String image_url, int song_duration, Map<String,String> song_data) {
+    public SongsEntity(@NotNull String song_id, String artist_name, String song_name, String genre, String image_url, int song_duration, Map<String,String> song_data, String youtube_id) {
         this.song_id = song_id;
         this.artist_name = artist_name;
         this.song_name = song_name;
@@ -34,6 +35,7 @@ public class SongsEntity {
         this.image_url = image_url;
         this.song_duration = song_duration;
         this.song_data = song_data;
+        this.youtube_id = youtube_id;
     }
 
     @NotNull
@@ -93,6 +95,14 @@ public class SongsEntity {
         this.song_data = song_data;
     }
 
+    public String getYoutube_id() {
+        return youtube_id;
+    }
+
+    public void setYoutube_id(String youtube_id) {
+        this.youtube_id = youtube_id;
+    }
+
     public SongsPOJO convertToSongsPOJO(){
         SongsPOJO songsPOJO = new SongsPOJO();
         songsPOJO.setArtist_name(this.getArtist_name());
@@ -102,6 +112,7 @@ public class SongsEntity {
         songsPOJO.setSong_data(this.getSong_data());
         songsPOJO.setSong_name(this.getSong_name());
         //songsPOJO.setViews(this.getViews());
+        songsPOJO.setYoutube_id(this.youtube_id);
         return songsPOJO;
     }
 }

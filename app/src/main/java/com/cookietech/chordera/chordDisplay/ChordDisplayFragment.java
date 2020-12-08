@@ -2,8 +2,12 @@ package com.cookietech.chordera.chordDisplay;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -71,6 +75,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private SelectionType selectedTab;
     private TabPOJO tabData;
     private ImageView auto_scroll_btn;
+    private ImageView play_youtube_btn;
     private String lastSelectedTransposeType = TRANSPOSE_CAPO;
 
     public ChordDisplayFragment() {
@@ -226,11 +231,20 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
         /**Go to Auto Scroll fragment**/
         auto_scroll_btn = binding.rootLayout.findViewById(R.id.auto_scroll_btn);
+        play_youtube_btn = binding.rootLayout.findViewById(R.id.play_youtube_btn);
 
         auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        play_youtube_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d("youtube", "onClick: " + selectedSong.getYoutube_id());
+                watchYoutubeVideo(requireContext(),selectedSong.getYoutube_id());
             }
         });
 
@@ -277,12 +291,6 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
            }
        });
 
-       /*mainViewModel.getObservableLoadTabCalledFor().observe(fragmentLifecycleOwner, new Observer<String>() {
-           @Override
-           public void onChanged(String s) {
-               Log.d("loadTabCalledFor", "onChanged: " + s);
-           }
-       });*/
         Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
         mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, new Observer<String>() {
             @Override
@@ -303,10 +311,14 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                        Log.d("download_debug", "onChanged: song data storing");
                         break;
                    case Stored:
-                       Log.d("download_debug", "onChanged: song data storing");
+                       Log.d("download_debug", "onChanged: song data stored");
                        Map<String,String> songDataMap = new HashMap<>();
                        songDataMap.put(tabData.getData_type(),tabData.getId());
-                       mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap));
+                       mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap,selectedSong.getYoutube_id()));
+                       break;
+                   case Already_exist:
+                       Log.d("download_debug", "onChanged: song data already exist");
+                       Toast.makeText(requireContext(), "You Already downloaded this chord", Toast.LENGTH_SHORT).show();
                        break;
 
                }
@@ -324,6 +336,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                    case Stored:
                        Log.d("download_debug", "onChanged: song stored");
                        break;
+                   case Already_exist:
+                       Log.d("download_debug", "onChanged: song already exist");
 
                }
            }
@@ -523,6 +537,17 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         }
         else {
             activateDarkMode();
+        }
+    }
+
+    public static void watchYoutubeVideo(Context context, String id){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(webIntent);
         }
     }
 }

@@ -17,6 +17,7 @@ import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -141,7 +142,7 @@ public class DatabaseRepository {
         return allSongs;
     }
 
-    private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Void> {
+    private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
 
 
         @Override
@@ -151,27 +152,29 @@ public class DatabaseRepository {
         }
 
         @Override
-        protected Void doInBackground(SongsEntity... songsEntities) {
-
+        protected Boolean doInBackground(SongsEntity... songsEntities) {
             try{
                 songsDao.roomInsertSong(songsEntities[0]);
+                return true;
             }catch (SQLiteConstraintException exception){
                 Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
                 downloadSongResponse.postValue(new DatabaseResponse("song_response",null, DatabaseResponse.Response.Already_exist));
+                return false;
             }
 
-            return null;
+
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            downloadSongResponse.setValue(new DatabaseResponse("song_response",null, DatabaseResponse.Response.Stored));
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                downloadSongResponse.setValue(new DatabaseResponse("song_response",null, DatabaseResponse.Response.Stored));
+            super.onPostExecute(isSuccess);
         }
     }
 
 
-    private class RoomInsertSongDataAsyncTask extends AsyncTask<SongDataEntity,Void,Void> {
+    private class RoomInsertSongDataAsyncTask extends AsyncTask<SongDataEntity,Void,Boolean> {
 
 
         @Override
@@ -181,21 +184,24 @@ public class DatabaseRepository {
         }
 
         @Override
-        protected Void doInBackground(SongDataEntity... songDataEntities) {
+        protected Boolean doInBackground(SongDataEntity... songDataEntities) {
             try{
                 songDataDao.roomInsertSongData(songDataEntities[0]);
+                return true;
             }catch (SQLiteConstraintException exception){
                 Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
                 downloadSongDataResponse.postValue(new DatabaseResponse("song_data_download",null, DatabaseResponse.Response.Already_exist));
+                return false;
             }
 
-            return null;
+
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            downloadSongDataResponse.setValue(new DatabaseResponse("song_data_download",null, DatabaseResponse.Response.Stored));
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                downloadSongDataResponse.setValue(new DatabaseResponse("song_data_download",null, DatabaseResponse.Response.Stored));
+            super.onPostExecute(isSuccess);
         }
     }
 
