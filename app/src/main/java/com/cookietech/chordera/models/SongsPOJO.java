@@ -3,6 +3,8 @@ package com.cookietech.chordera.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +20,11 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
     private int views;
     private String genre;
     private int song_duration;
+    private String youtube_id;
+    @Exclude
+    private String id;
 
-    public SongsPOJO(String artist_name, ArrayList<String> collections, int download_count, String image_url, Map<String, String> song_data, String song_name, int views,String genre,int durationInSecond) {
+    public SongsPOJO(String artist_name, ArrayList<String> collections, int download_count, String image_url, Map<String, String> song_data, String song_name, int views, String genre, int durationInSecond, String songId, String youtube_id) {
         this.artist_name = artist_name;
         this.collections = collections;
         this.download_count = download_count;
@@ -29,6 +34,8 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         this.views = views;
         this.genre = genre;
         this.song_duration = durationInSecond;
+        this.id = songId;
+        this.youtube_id = youtube_id;
     }
 
 
@@ -45,6 +52,14 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         views = in.readInt();
         genre = in.readString();
         song_duration = in.readInt();
+        id = in.readString();
+        youtube_id = in.readString();
+        int songDataSize = in.readInt();
+        for (int i = 0; i < songDataSize; i++) {
+            String key = in.readString();
+            String value = in.readString();
+            song_data.put(key,value);
+        }
     }
 
     public static final Creator<SongsPOJO> CREATOR = new Creator<SongsPOJO>() {
@@ -116,9 +131,13 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
     }
 
 
+    public String getId() {
+        return id;
+    }
 
-
-
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getGenre() {
         return genre;
@@ -134,6 +153,14 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
 
     public void setSong_duration(int song_duration) {
         this.song_duration = song_duration;
+    }
+
+    public String getYoutube_id() {
+        return youtube_id;
+    }
+
+    public void setYoutube_id(String youtube_id) {
+        this.youtube_id = youtube_id;
     }
 
     @Override
@@ -160,5 +187,13 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
         dest.writeInt(views);
         dest.writeString(genre);
         dest.writeInt(song_duration);
+        dest.writeString(id);
+        dest.writeString(youtube_id);
+        int songDataSize = song_data.size();
+        dest.writeInt(songDataSize);
+        for (Map.Entry<String, String> entry : song_data.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeString(entry.getValue());
+        }
     }
 }

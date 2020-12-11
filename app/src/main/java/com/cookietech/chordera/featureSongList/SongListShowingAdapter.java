@@ -5,17 +5,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
 import com.cookietech.chordera.models.Song;
@@ -30,15 +33,27 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
     RecyclerView recyclerView;
-    private ArrayList<SongsPOJO> songList = new ArrayList<>();
-    MainViewModel mainViewModel;
+    private ArrayList<SongsPOJO> songList;
+    private final MainViewModel mainViewModel;
+    private final LifecycleOwner lifecycleOwner;
+    private String fromWhere = "";
 
-    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel) {
+    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner) {
         this.recyclerView = recyclerView;
         this.songList = songList;
         this.mainViewModel = mainViewModel;
+        this.lifecycleOwner = lifecycleOwner;
+        initializeObserver();
     }
 
+    private void initializeObserver() {
+        mainViewModel.getObservableSongListShowingCalledFrom().observe(lifecycleOwner, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                fromWhere = s;
+            }
+        });
+    }
 
 
     // Create new views (invoked by the layout manager)
@@ -59,6 +74,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+
         holder.onBind(position);
     }
 
@@ -128,6 +144,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public class ViewHolder extends BaseViewHolder {
         public TextView tittle, band, view;
         public ConstraintLayout rowLayout;
+        public ImageView view_icon;
         private int position;
         public ViewHolder(View v) {
             super(v);
@@ -135,6 +152,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
             view = v.findViewById(R.id.views_count);
+            view_icon = v.findViewById(R.id.view_icon);
            /* ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
             //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
             params.height = (int) (recyclerView.getWidth()/7.2);
@@ -159,6 +177,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         public void onBind(int position) {
             super.onBind(position);
+
             this.position = position;
             Log.e("sohan debug", String.valueOf(songList.size()));
             SongsPOJO item = songList.get(position);
@@ -166,9 +185,23 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             tittle.setText(item.getSong_name());
             band.setText(item.getArtist_name());
             view.setText(String.valueOf(item.getViews()));
+            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+                view.setVisibility(View.GONE);
+                view_icon.setVisibility(View.GONE);
+            }else{
+                view.setVisibility(View.VISIBLE);
+                view_icon.setVisibility(View.VISIBLE);
+            }
         }
         public void onBind(int position, List<Object> payloads)
         {
+            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+                view.setVisibility(View.GONE);
+                view_icon.setVisibility(View.GONE);
+            }else{
+                view.setVisibility(View.VISIBLE);
+                view_icon.setVisibility(View.VISIBLE);
+            }
             this.position = position;
             if (payloads.isEmpty()){
                 //

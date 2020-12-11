@@ -2,8 +2,12 @@ package com.cookietech.chordera.chordDisplay;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -30,6 +34,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Room.SongDataEntity;
+import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
@@ -38,6 +45,7 @@ import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -45,6 +53,8 @@ import com.google.firebase.firestore.core.Bound;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TRANSPOSE_CAPO;
 
@@ -65,6 +75,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private SelectionType selectedTab;
     private TabPOJO tabData;
     private ImageView auto_scroll_btn;
+    private ImageView play_youtube_btn;
     private String lastSelectedTransposeType = TRANSPOSE_CAPO;
 
     public ChordDisplayFragment() {
@@ -108,6 +119,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.rvChords.setLayoutManager(layoutManager);
         chordsAdapter = new ChordsAdapter(requireContext(),chords,this,binding.rvChords);
         binding.rvChords.setAdapter(chordsAdapter);
+
 
         toggleMode();
 
@@ -219,6 +231,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
         /**Go to Auto Scroll fragment**/
         auto_scroll_btn = binding.rootLayout.findViewById(R.id.auto_scroll_btn);
+        play_youtube_btn = binding.rootLayout.findViewById(R.id.play_youtube_btn);
 
         auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,7 +247,28 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         });
 
+        play_youtube_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d("youtube", "onClick: " + selectedSong.getYoutube_id());
+                watchYoutubeVideo(requireContext(),selectedSong.getYoutube_id());
+            }
+        });
 
+        /**Download Section**/
+        binding.downloadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(requireContext(), "Hey Baby", Toast.LENGTH_SHORT).show();
+                downloadSong();
+            }
+        });
+
+
+    }
+
+    private void downloadSong() {
+        mainViewModel.roomInsertSongData(new SongDataEntity(tabData.getId(),tabData.getData(),tabData.getKey(),tabData.getTuning(),tabData.getData_type()));
     }
 
     private void initializeObserver() {
@@ -264,6 +298,57 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
            }
        });
 
+        Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
+        mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, new Observer<String>() {
+            @Override
+            public void onChanged(String fromWhere) {
+                if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+                    binding.downloadBtn.setVisibility(View.GONE);
+                }else{
+                    binding.downloadBtn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+       mainViewModel.getObservableDownloadSongDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Storing:
+                       Log.d("download_debug", "onChanged: song data storing");
+                        break;
+                   case Stored:
+                       Log.d("download_debug", "onChanged: song data stored");
+                       Map<String,String> songDataMap = new HashMap<>();
+                       songDataMap.put(tabData.getData_type(),tabData.getId());
+                       mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap,selectedSong.getYoutube_id()));
+                       break;
+                   case Already_exist:
+                       Log.d("download_debug", "onChanged: song data already exist");
+                       Toast.makeText(requireContext(), "You Already downloaded this chord", Toast.LENGTH_SHORT).show();
+                       break;
+
+               }
+
+           }
+       });
+
+       mainViewModel.getObservableDownloadSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Storing:
+                       Log.d("download_debug", "onChanged: song storing");
+                       break;
+                   case Stored:
+                       Log.d("download_debug", "onChanged: song stored");
+                       break;
+                   case Already_exist:
+                       Log.d("download_debug", "onChanged: song already exist");
+
+               }
+           }
+       });
     }
 
     private void updateView() {
@@ -278,6 +363,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             binding.tvKey.setText("Key: "+ tabData.getKey());
             //binding.tvSongChords.setText(tabData.getData());
         }
+
+
     }
 
     private void setDummyChords(){
@@ -457,6 +544,17 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         }
         else {
             activateDarkMode();
+        }
+    }
+
+    public static void watchYoutubeVideo(Context context, String id){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(webIntent);
         }
     }
 }

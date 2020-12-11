@@ -18,7 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentSelectionTypeBinding;
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -115,7 +114,7 @@ public class SelectionTypeFragment extends ChorderaFragment{
         if(selectedSong != null){
             Map<String, String> map = selectedSong.getSong_data();
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                Log.d("tab_debug", "getData: " + entry.getValue());
+                Log.d("tab_debug", "getData: " + entry.getKey());
                 // here entry.getKey() returns like 'guitar_chord'
                 // SelectionType.displaySelectionNameMap.get(entry.getKey()) returns Guitar Chord
                 if(SelectionType.displaySelectionNameMap.containsKey(entry.getKey()))

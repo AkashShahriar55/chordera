@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cookietech.chordera.appcomponents.NavigatorTags;
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
-import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
-import com.cookietech.chordera.featureSearchResult.SearchResultSongListFragmet;
+import com.cookietech.chordera.databinding.FragmentSavedSongBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
@@ -32,7 +30,7 @@ import java.util.ArrayList;
 import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
 
 public class CollectionSongListShowFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
-    FragmentSongListAnythingBinding binding;
+    FragmentSavedSongBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     RecyclerView recyclerView;
     SongListShowingAdapter adapter;
@@ -56,7 +54,7 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentSongListAnythingBinding.inflate(getLayoutInflater(),container,false);
+        binding = FragmentSavedSongBinding.inflate(getLayoutInflater(),container,false);
         return binding.getRoot();
     }
 
@@ -77,7 +75,7 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
 
     private void initialize() {
         binding.headerTittle.setText("Collection");
-        binding.collectionName.setText("'Avoid Rafa'");
+        //binding.collectionName.setText("'Avoid Rafa'");
         recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefresh;
 
@@ -85,7 +83,7 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel);
+        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel,fragmentLifecycleOwner);
         getData();
         recyclerView.setAdapter(adapter);
 

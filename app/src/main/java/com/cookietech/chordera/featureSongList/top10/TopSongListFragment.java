@@ -17,7 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
@@ -151,9 +151,10 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
 
         binding.tabSelectorRv.setLayoutManager(layoutManager);
         swipeRefreshLayout = binding.swipeRefresh;
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel);
+        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel,fragmentLifecycleOwner);
         binding.tabSelectorRv.setAdapter(adapter);
         getData();
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
 
         binding.tabSelectorRv.addOnScrollListener(new PaginationListener(layoutManager) {
             @Override
