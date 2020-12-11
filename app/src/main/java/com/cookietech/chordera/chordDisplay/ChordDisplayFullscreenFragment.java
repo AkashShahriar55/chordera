@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.databinding.FragmentChordDisplayFullscreenBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 
 /**
@@ -25,6 +25,8 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
  * status bar and navigation/system bar) with user interaction.
  */
 public class ChordDisplayFullscreenFragment extends ChorderaFragment {
+
+    private FragmentChordDisplayFullscreenBinding binding;
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -43,6 +45,14 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+
+    public static ChordDisplayFullscreenFragment newInstance() {
+        ChordDisplayFullscreenFragment fragment = new ChordDisplayFullscreenFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -85,8 +95,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
             return false;
         }
     };
-    private View mContentView;
-    private View mControlsView;
+
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -95,7 +104,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
+            binding.bottomControls.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -111,7 +120,8 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_chord_display_fullscreen, container, false);
+        binding = FragmentChordDisplayFullscreenBinding.inflate(inflater,container,false);
+        return binding.getRoot();
     }
 
     @Override
@@ -119,11 +129,11 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
         super.onViewCreated(view, savedInstanceState);
         mVisible = true;
 
-        mControlsView = view.findViewById(R.id.fullscreen_content_controls);
-        mContentView = view.findViewById(R.id.fullscreen_content);
+
+        //mContentView = view.findViewById(R.id.fullscreen_content);
 
         // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        binding.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
@@ -133,7 +143,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        view.findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        //view.findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override
@@ -164,8 +174,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mContentView = null;
-        mControlsView = null;
+
     }
 
     private void toggle() {
@@ -173,6 +182,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
             hide();
         } else {
             show();
+            delayedHide(AUTO_HIDE_DELAY_MILLIS);
         }
     }
 
@@ -182,7 +192,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
+        binding.bottomControls.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -193,7 +203,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment {
     @SuppressLint("InlinedApi")
     private void show() {
         // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        binding.container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         mVisible = true;
 

@@ -236,7 +236,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+                mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,1);
             }
         });
 

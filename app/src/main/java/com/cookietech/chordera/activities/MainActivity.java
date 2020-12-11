@@ -23,6 +23,7 @@ import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.chordDisplay.ChordDisplayFragment;
+import com.cookietech.chordera.chordDisplay.ChordDisplayFullscreenFragment;
 import com.cookietech.chordera.databinding.ActivityMainBinding;
 import com.cookietech.chordera.featureSearchResult.SearchResultFragment;
 import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     SongDetailLyricsFragment songDetailLyricsFragment;
     SelectionTypeFragment selectionTypeFragment;
     ChordDisplayFragment chordDisplayFragment;
+    ChordDisplayFullscreenFragment chordDisplayFullscreenFragment;
     ActivityMainBinding binding;
     CookieTechFragmentManager cookieTechFragmentManager;
     MainViewModel mainViewModel;
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         songDetailLyricsFragment = SongDetailLyricsFragment.newInstance();
         selectionTypeFragment = SelectionTypeFragment.newInstance();
         chordDisplayFragment = ChordDisplayFragment.newInstance();
+        chordDisplayFullscreenFragment = ChordDisplayFullscreenFragment.newInstance();
 
         collectionSongListShowFragment = CollectionSongListShowFragment.newInstance();
         cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
@@ -183,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(selectionTypeFragment,NavigatorTags.SELECTION_TYPE_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FRAGMENT)){
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFragment,NavigatorTags.CHORD_DISPLAY_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }
+            else if (tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT)){
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFullscreenFragment,NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }
 
