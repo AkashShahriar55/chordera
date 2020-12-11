@@ -33,7 +33,6 @@ import com.cookietech.chordera.featureSongList.saved.SavedSongListFragment;
 import com.cookietech.chordera.featureSongList.top10.TopSongListFragment;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
-import com.cookietech.chordlibrary.Chord;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         splashFragment = SplashFragment.newInstance();
         landingFragment = LandingFragment.newInstance();
         searchSuggestionFragment = new SearchSuggestionFragment();
-        chordLibraryFragment = ChordLibraryFragment.newInstance(AppSharedComponents.roots);
+        chordLibraryFragment = ChordLibraryFragment.newInstance(AppSharedComponents.getRoots());
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);

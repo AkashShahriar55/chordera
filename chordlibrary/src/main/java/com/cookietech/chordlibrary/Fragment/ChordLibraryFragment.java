@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordlibrary.AppComponent.ChordInfoSpannableAdapter;
 import com.cookietech.chordlibrary.AppComponent.Constants;
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.ChordClass;
 import com.cookietech.chordlibrary.ChordFactory;
 import com.cookietech.chordlibrary.ChordsAdapter;
@@ -56,7 +56,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     private ChordFactory chordFactory;
     private ArrayList<Root> rootArrayList = new ArrayList<>();
-    ArrayList<Chord> chords =new ArrayList<>();
+    ArrayList<Variation> chords =new ArrayList<>();
 
     int previouslyScrolled = 0;
 
@@ -145,7 +145,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-        chords = rootArrayList.get(0).getChordClasses().get(0).getChords();
+        chords = rootArrayList.get(0).getChordClasses().get(0).getVariations();
 
         binding.chordsRecyclerview.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -156,7 +156,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-        Chord chord = chords.get(0);
+        Variation chord = chords.get(0);
         binding.fretbardContainer.setChord(chord);
 
 
@@ -317,7 +317,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         if(!rootArrayList.get(selectedHomeIndex).getChordClasses().isEmpty()){
             typeList = new ArrayList<>();
             for(ChordClass chordClass:rootArrayList.get(0).getChordClasses()){
-                typeList.add(chordClass.getName());
+                typeList.add(chordClass.getClass_name());
             }
         }
     }
@@ -346,7 +346,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     @Override
     public void onChordSelected(int position) {
-        Chord chord = chords.get(position);
+        Variation chord = chords.get(position);
         setChord(chord);
     }
 
@@ -365,7 +365,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-    private void setChord(final Chord chord) {
+    private void setChord(final Variation chord) {
       /*  fretBoardGenerator.generateChord(chord);
         int scrollingDistance = FretBoardGenerator.getScrollIngDistance();
         dy = scrollingDistance - previouslyScrolled;
@@ -383,12 +383,12 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     }
 
-    private void setChordInfo(Chord chord) {
+    private void setChordInfo(Variation chord) {
         SpannableStringBuilder spannableStringBuilder = new ChordInfoSpannableAdapter(chord);
         //bottomSheetBinding.bottomInfo.setText(spannableStringBuilder);
     }
 
-    private void playChord(Chord chord) {
+    private void playChord(Variation chord) {
         int interval = 0;
         for (int i = 0; i < 6; i++) {
             int note = chord.getNotes().get(i);
@@ -492,9 +492,9 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             @Override
             public void onItemSelected(WheelPicker parentView, int[] position) {
                 // 选中后的回调
-                chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getChords();
+                chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getVariations();
                 updateChordTypeList(position[0]);
-                Chord chord = chords.get(0);
+                Variation chord = chords.get(0);
                 binding.fretbardContainer.setChord(chord);
                 chordsAdapter.setChords(chords);
                 changeTheTopChordText(position[0],position[1]);

@@ -15,14 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.R;
 
 import java.util.ArrayList;
 
 public class FretboardOverlay extends View {
 
-    private Chord chord;
+    private Variation chord;
     private Canvas mCanvas;
     private Context context;
     private int canvasWidth;
@@ -50,7 +50,7 @@ public class FretboardOverlay extends View {
         Log.d("akash_fretboard_inspect", "FretboardOverlay: background");
     }
 
-    public void setChord(Chord chord) {
+    public void setChord(Variation chord) {
         this.chord = chord;
         invalidate();
     }

@@ -5,44 +5,35 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-public class Chord implements Parcelable {
-    private String name;
+public class Variation implements Parcelable {
     private ArrayList<Integer> notes = new ArrayList<Integer>();
     private ArrayList<Integer> fingers = new ArrayList<Integer>();
 
-    public Chord() {
+    public Variation() {
     }
 
-    public Chord(String name, ArrayList<Integer> notes, ArrayList<Integer> fingers) {
-        this.name = name;
+    public Variation( ArrayList<Integer> notes, ArrayList<Integer> fingers) {
         this.notes = notes;
         this.fingers = fingers;
     }
 
 
-    protected Chord(Parcel in) {
-        name = in.readString();
+    protected Variation(Parcel in) {
+        in.readList(notes,Integer.class.getClassLoader());
+        in.readList(fingers,Integer.class.getClassLoader());
     }
 
-    public static final Creator<Chord> CREATOR = new Creator<Chord>() {
+    public static final Creator<Variation> CREATOR = new Creator<Variation>() {
         @Override
-        public Chord createFromParcel(Parcel in) {
-            return new Chord(in);
+        public Variation createFromParcel(Parcel in) {
+            return new Variation(in);
         }
 
         @Override
-        public Chord[] newArray(int size) {
-            return new Chord[size];
+        public Variation[] newArray(int size) {
+            return new Variation[size];
         }
     };
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public ArrayList<Integer> getNotes() {
         return notes;
@@ -80,6 +71,7 @@ public class Chord implements Parcelable {
         return lastFret;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -87,6 +79,7 @@ public class Chord implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
+        dest.writeList(notes);
+        dest.writeList(fingers);
     }
 }
