@@ -13,18 +13,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class ChordFactory {
     private Context context;
     private ArrayList<Root> roots = new ArrayList<>();
+    private Map<String,ChordClass> allChordsList = new HashMap<>();
 
 
     public ChordFactory(Context context) {
         this.context = context;
     }
 
-    public ArrayList<Root> getRoots(){
+    public void decodeChordDatabase(){
+        allChordsList = new HashMap<>();
         String jsonString = "";
         jsonString = readJsonStringFromAsset();
         try {
@@ -46,7 +50,6 @@ public class ChordFactory {
             Log.d("akash_debug", "getRoots: " + e.getLocalizedMessage());
             e.printStackTrace();
         }
-        return roots;
     }
 
     private ArrayList<ChordClass> decodeChordClasses(JSONArray classJsonArray) throws JSONException {
@@ -60,6 +63,7 @@ public class ChordFactory {
             chords = decodeChords(chordsJsonArray);
             ChordClass chordClass = new ChordClass(className,name, chords);
             chordClasses.add(chordClass);
+            allChordsList.put(name.toLowerCase(),chordClass);
         }
         return chordClasses;
     }
@@ -118,4 +122,15 @@ public class ChordFactory {
     }
 
 
+    public void setAllChordsList(Map<String, ChordClass> allChordsList) {
+        this.allChordsList = allChordsList;
+    }
+
+    public Map<String, ChordClass> getAllChordsList() {
+        return allChordsList;
+    }
+
+    public ArrayList<Root> getRoots() {
+        return roots;
+    }
 }

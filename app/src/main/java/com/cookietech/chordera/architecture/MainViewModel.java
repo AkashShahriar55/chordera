@@ -18,6 +18,7 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
+import com.cookietech.chordlibrary.ChordClass;
 import com.google.gson.JsonStreamParser;
 
 import java.lang.ref.WeakReference;
@@ -118,5 +119,13 @@ public class MainViewModel extends ViewModel {
 
     public void stopListeningTopTen(){
         databaseRepository.stopListeningTopTen();
+    }
+
+    public void decodeChordsFromData(String data) {
+        databaseRepository.decodeChordsFromData(data);
+    }
+
+    public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
+        return databaseRepository.getObservableTabDisplayChords();
     }
 }

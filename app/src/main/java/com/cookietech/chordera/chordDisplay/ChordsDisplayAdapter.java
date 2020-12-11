@@ -1,4 +1,5 @@
-package com.cookietech.chordlibrary;
+package com.cookietech.chordera.chordDisplay;
+
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -13,19 +14,24 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cookietech.chordera.R;
 import com.cookietech.chordlibrary.AppComponent.ThumbGeneratorListener;
+import com.cookietech.chordlibrary.ChordClass;
+import com.cookietech.chordlibrary.ThumbGenerator;
+import com.cookietech.chordlibrary.Variation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ThumbGeneratorListener {
+public class ChordsDisplayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ThumbGeneratorListener {
     private Context context;
-    private ArrayList<Variation> chords;
+    private ArrayList<ChordClass> chords;
     private Communicator communicator;
     private RecyclerView recyclerView;
+    private int thumbSize;
 
 
-    public ChordsAdapter(Context context, ArrayList<Variation> chords, Communicator communicator, RecyclerView recyclerView) {
+    public ChordsDisplayAdapter(Context context, ArrayList<ChordClass> chords, Communicator communicator, RecyclerView recyclerView) {
         this.context = context;
         this.chords = chords;
         this.communicator = communicator;
@@ -36,7 +42,8 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View root = inflater.inflate(R.layout.chords_item_layout,parent,false);
+        View root = inflater.inflate(R.layout.chords_display_item_layout,parent,false);
+        thumbSize = recyclerView.getWidth()/5-dpToPx(2);
         return new ChordViewHolder(root);
     }
 
@@ -58,14 +65,16 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         ChordViewHolder chordViewHolder = (ChordViewHolder) holder;
-        Variation chord = chords.get(position);
-        //chordViewHolder.tv_fret_no.setText("fret "+chord.getStartFret());
-        new Thread(new ThumbGeneratorRunnable(position,chord,this)).start();
+        final ChordClass chordClass = chords.get(position);
+        Variation variation = chordClass.getVariations().get(0);
+        String chordName = chordClass.getName().substring(0,1).toUpperCase() + chordClass.getName().substring(1).toLowerCase();
+        chordViewHolder.tv_fret_no.setText(chordName);
+        new Thread(new ThumbGeneratorRunnable(position,variation,this)).start();
 
         chordViewHolder.cl_chord_holder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                communicator.onChordSelected(position);
+                communicator.onChordSelected(chordClass);
             }
         });
     }
@@ -75,14 +84,14 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return chords.size();
     }
 
-    public void setChords(ArrayList<Variation> chords) {
+    public void setChords(ArrayList<ChordClass> chords) {
         this.chords = chords;
         notifyDataSetChanged();
     }
 
     @Override
     public void onThumbGenerated(final int index, final Bitmap thumb, Variation chord) {
-        if(chords.contains(chord)){
+        if(chords.get(index).getVariations().contains(chord)){
             recyclerView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -101,11 +110,11 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         ChordViewHolder(@NonNull View itemView) {
             super(itemView);
-            cl_chord_holder = itemView.findViewById(R.id.chord_holder);
-            iv_thumb = itemView.findViewById(R.id.chord_thumb);
-            tv_fret_no = itemView.findViewById(R.id.fret_number);
-            iv_thumb.getLayoutParams().width = dpToPx(50);
-            iv_thumb.getLayoutParams().height = dpToPx(50);
+            cl_chord_holder = itemView.findViewById(com.cookietech.chordlibrary.R.id.chord_holder);
+            iv_thumb = itemView.findViewById(com.cookietech.chordlibrary.R.id.chord_thumb);
+            tv_fret_no = itemView.findViewById(com.cookietech.chordlibrary.R.id.fret_number);
+            iv_thumb.getLayoutParams().width = thumbSize;
+            iv_thumb.getLayoutParams().height = thumbSize;
         }
 
 
@@ -113,19 +122,20 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public interface Communicator{
-        void onChordSelected(int position);
+        void onChordSelected(ChordClass chord);
     }
 
     class ThumbGeneratorRunnable implements Runnable {
         int index;
         Variation chord;
         ThumbGeneratorListener listener;
-        private ThumbGenerator thumbGenerator = new ThumbGenerator(dpToPx(50));
+        private final ThumbGenerator thumbGenerator = new ThumbGenerator(thumbSize);
 
         public ThumbGeneratorRunnable(int index, Variation chord, ThumbGeneratorListener listener) {
             this.index = index;
             this.chord = chord;
             this.listener = listener;
+
         }
 
         @Override
@@ -135,9 +145,8 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 listener.onThumbGenerated(index,bitmap,chord);
         }
     }
-
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
-
 }
+

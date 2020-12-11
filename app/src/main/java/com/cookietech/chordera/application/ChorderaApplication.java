@@ -36,7 +36,9 @@ public class ChorderaApplication extends MultiDexApplication {
         APP_CONTEXT = this;
         super.onCreate();
         chordFactory = new ChordFactory(this);
-        AppSharedComponents.roots = chordFactory.getRoots();
+        chordFactory.decodeChordDatabase();
+        AppSharedComponents.setRoots(chordFactory.getRoots());
+        AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
         createNotificationChannels();
         readTickTock();
         networkReceiver = new ConnectionManager.NetworkReceiver();
