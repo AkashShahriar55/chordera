@@ -20,11 +20,9 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.SpannableStringBuilder;
-import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -46,17 +44,20 @@ import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
-import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseResponse;
-import com.cookietech.chordlibrary.Chord;
+
+import com.cookietech.chordlibrary.ChordClass;
+import com.cookietech.chordlibrary.Variation;
+
 import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.firebase.firestore.core.Bound;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,12 +69,12 @@ import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TR
  * Use the {@link ChordDisplayFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdapter.Communicator {
+public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisplayAdapter.Communicator {
 
 
     FragmentChordDisplayBinding binding;
-    private  ChordsAdapter chordsAdapter;
-    ArrayList<Chord> chords =new ArrayList<>();
+    private  ChordsDisplayAdapter chordsDisplayAdapter;
+    ArrayList<Variation> chords =new ArrayList<>();
     private boolean isDarkModeActivated = false;
     private int lastSelectedTranspose;
     private SongsPOJO selectedSong;
@@ -82,6 +83,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     private ImageView auto_scroll_btn;
     private ImageView play_youtube_btn;
     private String lastSelectedTransposeType = TRANSPOSE_CAPO;
+    private TabulatorGenerator tabulatorGenerator = new TabulatorGenerator();
 
     public ChordDisplayFragment() {
         // Required empty public constructor
@@ -118,30 +120,14 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
 
         setDummyChords();
         initializeObserver();
-        binding.rvChords.setHasFixedSize(true);
-        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(),5);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        binding.rvChords.setLayoutManager(layoutManager);
-        chordsAdapter = new ChordsAdapter(requireContext(),chords,this,binding.rvChords);
-        binding.rvChords.setAdapter(chordsAdapter);
+        initializeChordsRecyclerView();
+
 
         setupMenuSelector();
 
         toggleMode();
 
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        String lyricWithChord = "[Dm]এই অ[Am]বেলাই [Gm]তোমারি আকা[Bdim]শে  নিরব[Gaug] আপোসে ভেসে [G]যাই";
-        //Rect bounds = new Rect();
-        //TextPaint textPaint = binding.tvChords.getPaint();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager  = requireActivity().getWindowManager();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        int marginPadding = 50;
-        int rootWidth = displayMetrics.widthPixels - marginPadding;
-        ChordFormater chordFormater = new ChordFormater(lyricWithChord,rootWidth);
-        //chordFormater.processChord(0)
-        spannableStringBuilder = chordFormater.getProcessedChord(0);
-        binding.tvSongChords.setText(spannableStringBuilder);
+
 
 
         binding.modeSwitch.setChecked(isDarkModeActivated);
@@ -242,7 +228,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         auto_scroll_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
+                mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,1);
             }
         });
 
@@ -348,6 +335,15 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         mainViewModel.roomInsertSongData(new SongDataEntity(tabData.getId(),tabData.getData(),tabData.getKey(),tabData.getTuning(),tabData.getData_type()));
     }
 
+    private void initializeChordsRecyclerView() {
+        binding.rvChords.setHasFixedSize(true);
+        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(),5);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        binding.rvChords.setLayoutManager(layoutManager);
+        chordsDisplayAdapter = new ChordsDisplayAdapter(requireContext(),new ArrayList<ChordClass>(),this,binding.rvChords);
+        binding.rvChords.setAdapter(chordsDisplayAdapter);
+    }
+
     private void initializeObserver() {
         selectedSong = mainViewModel.getObservableSelectedSong().getValue();
         mainViewModel.getObservableSelectedSong().observe(fragmentLifecycleOwner, new Observer<SongsPOJO>() {
@@ -371,9 +367,11 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
            @Override
            public void onChanged(TabPOJO tabPOJO) {
                 tabData = tabPOJO;
+                mainViewModel.decodeChordsFromData(tabPOJO.getData());
                 updateView();
            }
        });
+
 
         Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
         mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, new Observer<String>() {
@@ -426,6 +424,38 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
                }
            }
        });
+       mainViewModel.getObservableTabDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+           @Override
+           public void onChanged(DatabaseResponse databaseResponse) {
+               switch (databaseResponse.getResponse()){
+                   case Invalid_data:
+                       Log.d("callback_debug", "onChanged: Invalid_data");
+                       break;
+                   case No_internet:
+                       Log.d("callback_debug", "onChanged: No_internet");
+                       break;
+                   case Fetching:
+                       Log.d("callback_debug", "onChanged: Fetching");
+                       break;
+                   case Fetched:
+                       Log.d("callback_debug", "onChanged: Fetched");
+                       break;
+                   case Error:
+                       Log.d("callback_debug", "onChanged: Error");
+                       break;
+                   default:
+                       break;
+               }
+           }
+       });
+
+       mainViewModel.getObservableTabDisplayChords().observe(fragmentLifecycleOwner, new Observer<ArrayList<ChordClass>>() {
+           @Override
+           public void onChanged(ArrayList<ChordClass> chordClasses) {
+               chordsDisplayAdapter.setChords(chordClasses);
+           }
+       });
+
     }
 
     private void updateView() {
@@ -441,12 +471,33 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             //binding.tvSongChords.setText(tabData.getData());
         }
 
+/*        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        String lyricWithChord = "[Dm]এই অ[Am]বেলাই [Gm]তোমারি আকা[Bdim]শে  নিরব[Gaug] আপোসে ভেসে [G]যাই[Tab]";
+        //Rect bounds = new Rect();
+        //TextPaint textPaint = binding.tvChords.getPaint();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager  = requireActivity().getWindowManager();
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int marginPadding = 50;
+        int rootWidth = displayMetrics.widthPixels - marginPadding;
+        ChordFormater chordFormater = new ChordFormater(tabData.getData(),rootWidth);
+        //chordFormater.processChord(0)
+        spannableStringBuilder = chordFormater.getProcessedChord(0);*/
 
+
+        if (tabData != null) {
+/*            binding.tvSongChords.setFormattedText("{Intro}\n" +
+                    "([Em],[C],[Am],[D]) " +
+                    "(x4)\n" +
+                    "{Verse 1}\n" +
+                    "[Em]   Nona [C]Shopne Gora[Am]a To[D]mar Swmriti\n");*/
+            binding.tvSongChords.setFormattedText(tabData.getData());
+        }
     }
 
     private void setDummyChords(){
         chords.clear();
-        chords.add(new Chord("A maj", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -466,7 +517,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -486,7 +537,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A5", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -506,7 +557,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A maj", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -526,7 +577,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -546,7 +597,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A5", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -566,7 +617,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         }));
 
-        chords.add(new Chord("A min", new ArrayList<Integer>(){
+        chords.add(new Variation( new ArrayList<Integer>(){
             {
                 add(-1);
                 add(0);
@@ -588,7 +639,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
     }
 
     @Override
-    public void onChordSelected(int position) {
+    public void onChordSelected(ChordClass chordClass) {
 
     }
 
@@ -598,7 +649,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.tvTuning.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvKey.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvChords.setTextColor(getResources().getColor(R.color.colorPrimary));
-        binding.tvSongChords.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvSongChords.setCustomColor(getResources().getColor(R.color.colorPrimary));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.colorPrimary));
     }
@@ -609,7 +660,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         binding.tvTuning.setTextColor(getResources().getColor(R.color.white));
         binding.tvKey.setTextColor(getResources().getColor(R.color.white));
         binding.tvChords.setTextColor(getResources().getColor(R.color.white));
-        binding.tvSongChords.setTextColor(getResources().getColor(R.color.white));
+        binding.tvSongChords.setCustomColor(getResources().getColor(R.color.white));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.white));
     }

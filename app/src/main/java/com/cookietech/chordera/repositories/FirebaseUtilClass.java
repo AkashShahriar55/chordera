@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -31,13 +32,13 @@ public class FirebaseUtilClass {
     }
 
 
-    public void queryTopTenSongData(EventListener<QuerySnapshot> listener){
-        songsCollection.orderBy(VIEWS, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
+    public ListenerRegistration queryTopTenSongData(EventListener<QuerySnapshot> listener){
+        return songsCollection.orderBy(VIEWS, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
     }
 
-    public void queryTab(String tabId,EventListener<DocumentSnapshot> listener) {
+    public ListenerRegistration queryTab(String tabId,EventListener<DocumentSnapshot> listener) {
         DocumentReference tab = tabsCollection.document(tabId);
-        tab.addSnapshotListener(listener);
+        return tab.addSnapshotListener(listener);
     }
 
 

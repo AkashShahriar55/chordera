@@ -9,23 +9,22 @@
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:foreground="@drawable/effect_ripple"
-            android:background="@drawable/chord_thumbnail">
+            android:background="@drawable/chord_thumbnail"
+            android:foreground="@drawable/effect_ripple">
 
             <ImageView
                 android:id="@+id/chord_thumb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/test2"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -37,8 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="fret 1"
+                android:includeFontPadding="false"
                 android:padding="2dp"
+                android:text="fret 1"
                 android:textColor="#E4E4E4"
                 android:textSize="8sp"
                 app:layout_constraintEnd_toEndOf="parent"

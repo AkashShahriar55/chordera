@@ -6,12 +6,12 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordlibrary.Variation;
 
 public class ChordInfoSpannableAdapter extends SpannableStringBuilder {
-    Chord chord;
+    Variation chord;
     int notes_heading_color = Color.parseColor("#53A6F6");
-    public ChordInfoSpannableAdapter( Chord chord) {
+    public ChordInfoSpannableAdapter( Variation chord) {
         super("");
         this.chord = chord;
         buildFormat();

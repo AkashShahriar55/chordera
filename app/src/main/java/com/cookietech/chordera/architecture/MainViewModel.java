@@ -21,6 +21,8 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
+import com.cookietech.chordlibrary.ChordClass;
+import com.google.gson.JsonStreamParser;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -127,6 +129,7 @@ public class MainViewModel extends ViewModel {
         return databaseRepository.getObservableTopTenResponse();
     }
 
+
     public void roomInsertSong(SongsEntity entity) {
         databaseRepository.roomInsertSong(entity);
     }
@@ -163,5 +166,20 @@ public class MainViewModel extends ViewModel {
 
     public void setLoadTabCalledFor(String loadTabCalledFor) {
         this.loadTabCalledFor.setValue(loadTabCalledFor);
+    }
+    public SingleLiveEvent<DatabaseResponse> getObservableTabDataResponse() {
+        return databaseRepository.getObservableTabDataResponse();
+    }
+
+    public void stopListeningTopTen(){
+        databaseRepository.stopListeningTopTen();
+    }
+
+    public void decodeChordsFromData(String data) {
+        databaseRepository.decodeChordsFromData(data);
+    }
+
+    public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
+        return databaseRepository.getObservableTabDisplayChords();
     }
 }

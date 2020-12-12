@@ -170,36 +170,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/_15sdp"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline4"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
-                    <TextView
+                    <com.cookietech.chordera.chordDisplay.TabulatorTextView
                         android:id="@+id/tv_song_chords"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:lineSpacingExtra="@dimen/_10sdp"
-                        android:text="[Chorus]\n
-Dm   Am     G      Dm\n
-Ei   obelay tomari akashe\n
-G     Dm     A\n
-nirob aposhe veshe jay\n
-F    C      G      Dm\n
-Shei vishon shitol veja chokh\n
-A#      G       Dm\n
-kokhono dekhaini tomay\n
- \n
-Dm   Am     G        Dm\n
-Keu  kothao valo nei jeno sei\n
-G          Dm       A\n
-kotokal ar hate hat obelay\n
-F          C    G        Dm\n
-Kotokal ar vul oboshonno bikele\n
-A#         G        Dm\n
-veja chokh dekhaini tomay\n
-"
+                        android:textSize="@dimen/_14ssp"
+                        android:padding="@dimen/_15sdp"
+                        android:textColor="@color/colorPrimary"
+                        android:fontFamily="@font/roboto_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"

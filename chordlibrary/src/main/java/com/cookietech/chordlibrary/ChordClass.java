@@ -6,20 +6,23 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 public class ChordClass implements Parcelable {
+    private String class_name;
     private String name;
-    protected ArrayList<Chord> chords;
+    protected ArrayList<Variation> variations;
 
     public ChordClass() {
     }
 
-    public ChordClass(String name, ArrayList<Chord> chords) {
+    public ChordClass(String class_name, String name, ArrayList<Variation> variations) {
+        this.class_name = class_name;
         this.name = name;
-        this.chords = chords;
+        this.variations = variations;
     }
 
     protected ChordClass(Parcel in) {
+        class_name = in.readString();
         name = in.readString();
-        chords = in.createTypedArrayList(Chord.CREATOR);
+        variations = in.createTypedArrayList(Variation.CREATOR);
     }
 
     public static final Creator<ChordClass> CREATOR = new Creator<ChordClass>() {
@@ -34,6 +37,23 @@ public class ChordClass implements Parcelable {
         }
     };
 
+    public ArrayList<Variation> getVariations() {
+        return variations;
+    }
+
+    public void setVariations(ArrayList<Variation> variations) {
+        this.variations = variations;
+    }
+
+
+    public String getClass_name() {
+        return class_name;
+    }
+
+    public void setClass_name(String class_name) {
+        this.class_name = class_name;
+    }
+
     public String getName() {
         return name;
     }
@@ -42,12 +62,8 @@ public class ChordClass implements Parcelable {
         this.name = name;
     }
 
-    public ArrayList<Chord> getChords() {
-        return chords;
-    }
-
-    public void setChords(ArrayList<Chord> chords) {
-        this.chords = chords;
+    public static Creator<ChordClass> getCREATOR() {
+        return CREATOR;
     }
 
     @Override
@@ -57,7 +73,8 @@ public class ChordClass implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(class_name);
         dest.writeString(name);
-        dest.writeTypedList(chords);
+        dest.writeTypedList(variations);
     }
 }

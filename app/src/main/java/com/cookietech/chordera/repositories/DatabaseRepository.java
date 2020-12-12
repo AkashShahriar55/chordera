@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+
 import com.cookietech.chordera.Room.SongDataDao;
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsDao;
@@ -13,19 +14,28 @@ import com.cookietech.chordera.Room.SongsDatabase;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.SingleLiveEvent;
+import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.cookietech.chordlibrary.ChordClass;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.internal.bind.TreeTypeAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DatabaseRepository {
     private static final String TAG = "database_repository";
@@ -47,10 +57,16 @@ public class DatabaseRepository {
         songDataDao = database.songDataDao();
     }
 
+    private final SingleLiveEvent<DatabaseResponse> tabDataResponse = new SingleLiveEvent<>();
+    private final SingleLiveEvent<ArrayList<ChordClass>> tabDisplayChords = new SingleLiveEvent<>();
+    private ListenerRegistration topTenListenerRegistration;
+    private ListenerRegistration tabDataListenerRegistration;
 
     public void queryTopTenSongs(){
         topTenResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetching));
-        firebaseUtilClass.queryTopTenSongData(new EventListener<QuerySnapshot>() {
+        if(topTenListenerRegistration != null)
+            stopListeningTopTen();
+        topTenListenerRegistration = firebaseUtilClass.queryTopTenSongData(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
@@ -80,9 +96,14 @@ public class DatabaseRepository {
     }
 
     public void loadTab(final SelectionType selectionType,String fromWhere) {
-
-
-
+        if(!ConnectionManager.isOnline(ChorderaApplication.getContext())){
+            tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.No_internet));
+            return;
+        }
+        tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.Fetching));
+        Log.d("tab_debug", "loadTab: " + selectionType.getSelectionId());
+        if(tabDataListenerRegistration != null)
+            stopListeningTabData();
         if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
             //binding.downloadBtn.setVisibility(View.GONE);
             fetchSongData(selectionType.getSelectionId());
@@ -106,10 +127,12 @@ public class DatabaseRepository {
                         TabPOJO tabPOJO = value.toObject(TabPOJO.class);
                         tabPOJO.setId(value.getId());
                         selectedTabLiveData.setValue(tabPOJO);
+                        tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.Fetched));
                     } else {
-
+                        tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.Invalid_data));
                         Log.d(TAG, source + " data: null");
                     }
+
                 }
             });
         }
@@ -265,7 +288,7 @@ public class DatabaseRepository {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch",null, DatabaseResponse.Response.Storing));
+            fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch", null, DatabaseResponse.Response.Storing));
         }
 
         /*@Override
@@ -282,10 +305,50 @@ public class DatabaseRepository {
 
         @Override
         protected void onPostExecute(SongDataEntity entity) {
-            fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch",null, DatabaseResponse.Response.Stored));
-            TabPOJO tabPOJO =entity.convertToSongDataPOJO();
+            fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch", null, DatabaseResponse.Response.Stored));
+            TabPOJO tabPOJO = entity.convertToSongDataPOJO();
             selectedTabLiveData.setValue(tabPOJO);
             super.onPostExecute(entity);
         }
+    }
+    public SingleLiveEvent<DatabaseResponse> getObservableTabDataResponse() {
+        return tabDataResponse;
+    }
+
+    public void stopListeningTopTen(){
+        topTenListenerRegistration.remove();
+    }
+
+    public void stopListeningTabData(){
+        tabDataListenerRegistration.remove();
+    }
+
+    public void decodeChordsFromData(final String data) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                ArrayList<String> chordsList = new ArrayList<>();
+                ArrayList<ChordClass> chordClassArrayList = new ArrayList<>();
+                Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+                Matcher matcher = pattern.matcher(data);
+                while (matcher.find())
+                {
+                    String chord = matcher.group(1);
+                    if(!chordsList.contains(chord.toLowerCase()) && AppSharedComponents.getAllChords().containsKey(chord.toLowerCase())){
+                        chordClassArrayList.add(AppSharedComponents.getAllChords().get(chord.toLowerCase()));
+                        chordsList.add(chord.toLowerCase());
+                    }
+                }
+
+
+                tabDisplayChords.postValue(chordClassArrayList);
+            }
+        }).start();
+    }
+
+
+    public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
+        return tabDisplayChords;
     }
 }
