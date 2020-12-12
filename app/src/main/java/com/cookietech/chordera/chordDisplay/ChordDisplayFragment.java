@@ -8,12 +8,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -24,7 +27,9 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -120,6 +125,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
         chordsAdapter = new ChordsAdapter(requireContext(),chords,this,binding.rvChords);
         binding.rvChords.setAdapter(chordsAdapter);
 
+        setupMenuSelector();
 
         toggleMode();
 
@@ -264,6 +270,77 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsAdap
             }
         });
 
+
+    }
+
+    private void setupMenuSelector() {
+        final ArrayList<SelectionType> selectionTypeArrayList = new ArrayList<>();
+        binding.menuSelector.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ViewGroup root = (ViewGroup) requireActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+                String[] limits = new String[]{"Guitar Chord", "Lyrics"};
+                final View view = new View(requireContext());
+                view.setLayoutParams(new ViewGroup.LayoutParams(1, 1));
+                view.setBackgroundColor(Color.TRANSPARENT);
+
+                root.addView(view);
+                float toolbarheight = binding.toolbar.getHeight();
+                view.setX(0);
+                view.setY(toolbarheight);
+                Context wrapper = new ContextThemeWrapper(requireContext(), R.style.PopupMenuStyle);
+                PopupMenu popupMenu = new PopupMenu(wrapper, view, Gravity.CENTER);
+
+                if(selectedSong != null){
+                    Map<String, String> map = selectedSong.getSong_data();
+                    Log.d("sohan_debug","map_size:"+String.valueOf(map.size()));
+                    int i = 0;
+                    for (Map.Entry<String, String> entry : map.entrySet()) {
+                        // here entry.getKey() returns like 'guitar_chord'
+                        // SelectionType.displaySelectionNameMap.get(entry.getKey()) returns Guitar Chord
+                        if(SelectionType.displaySelectionNameMap.containsKey(entry.getKey()) && !entry.getKey().equals("guitar_chord"))
+                        {
+                            popupMenu.getMenu().add(1,i,i,SelectionType.displaySelectionNameMap.get(entry.getKey()));  //here assigning i as temporary item id
+                            selectionTypeArrayList.add(new SelectionType(entry.getKey(), SelectionType.displaySelectionNameMap.get(entry.getKey()),String.valueOf(entry.getValue())));
+                            i++;
+                        }
+                        else
+                        {
+                            Log.d("sohan_debug","key not found");
+                            //TODO need to handle key not found
+                        }
+                    }
+
+                }else{
+                    Log.d("tab_debug", "getData: no data found");
+                }
+                popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener()
+                {
+                    @Override
+                    public void onDismiss(PopupMenu menu)
+                    {
+                        root.removeView(view);
+                    }
+                });
+
+                popupMenu.show();
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //TODO if you have new selection type you should add here logic for that
+                        Log.d("sohan_debug", (String) item.getTitle());
+                        SelectionType selectionType = selectionTypeArrayList.get(item.getItemId());
+                        if(((String) item.getTitle()).equals(SelectionType.displaySelectionNameMap.get("lyrics")))
+                        {
+                            mainViewModel.setSelectedTab(selectionType);
+                            mainViewModel.setNavigation(NavigatorTags.SONG_DETAIL_FRAGMENT,1);
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
 
     }
 
