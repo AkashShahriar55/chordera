@@ -43,11 +43,10 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     StringBuilder tabStringBuilder = new StringBuilder();
     Paint highLightPaint = new Paint();
     TextView dummyTextView;
-    SpannableStringBuilder finalStringBuilder = new SpannableStringBuilder();
+
     StaticLayout staticLayout;
     ArrayList<Pair<Integer,TabulatorChordStructure>> chordMap = new ArrayList<>();
     ArrayList<Integer> blankSpace = new ArrayList<>();
-    ArrayList<Integer> divisionList = new ArrayList<>();
     Rect chordBackgroundRect = new Rect();
     RectF tempRectF = new RectF();
     Paint chordBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -58,6 +57,13 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     Rect measurementRect = new Rect();
     private int initialLineCount;
     private int textColor;
+    private Mode mode;
+    TextPaint myTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+
+    public enum Mode{
+        Dark,
+        Light
+    }
 
     public TabulatorTextView(@NonNull Context context) {
         super(context);
@@ -82,7 +88,6 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
         int w = resolveSizeAndState(minw, widthMeasureSpec, 1);
 
 
-        getPaint().getTextBounds(getText().toString(),0,getText().length(),measurementRect);
         textHeight = getPaint().descent() - getPaint().ascent();
         float totalHeight = initialLineCount * textHeight + ((textHeight +extraSpace) * (initialLineCount+1));
         int minh = (int) (totalHeight + getPaddingBottom() + getPaddingTop());
@@ -96,10 +101,18 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     @Override
     protected void onDraw(Canvas canvas) {
         setTextColor(Color.TRANSPARENT);
+        Log.d("Tabulator_final", "onDraw: ");
         super.onDraw(canvas);
-        //canvas.drawColor(Color.RED);
-        //canvas.drawColor(Color.WHITE);
-        Log.d("tabulator", "onDraw: not null");
+        if(mode == Mode.Dark){
+            myTextPaint.setColor(getResources().getColor(R.color.color_white));
+            chordPaint.setColor(getResources().getColor(R.color.color_white));
+            chordBackgroundPaint.setColor(getResources().getColor(R.color.tabulator_chord_background_dark));
+        }else{
+            myTextPaint.setColor(getResources().getColor(R.color.colorPrimary));
+            chordPaint.setColor(getResources().getColor(R.color.colorPrimary));
+            chordBackgroundPaint.setColor(getResources().getColor(R.color.tabulator_chord_background_light));
+        }
+
         String text = getText().toString();
         Layout layout = getLayout();
         if(layout == null){
@@ -107,99 +120,67 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
             return;
             //todo fix the bug
         }
-        Paint textPaint = getPaint();
-        textPaint.setColor(textColor);
         for (int i = 0; i < layout.getLineCount(); i++) {
             final int start = layout.getLineStart(i);
             final int end = layout.getLineEnd(i);
-            Log.d("text_final_debug", "onDraw: " + start);
             String line = text.substring(start, end);
-            /*if(chordMap.containsKey(i)){
-                extraSpace = 0;
-            }*/
-
-            System.out.println("Line:\t" + line);
 
             final float left = layout.getLineLeft(i);
             final int baseLine = layout.getLineBaseline(i);
-            float offset = 0;
-            if(i>0){
-                offset = (textHeight+ extraSpace) *i;
-            }
+            float  offset = (textHeight+ extraSpace) *i;
             Log.d("tabulator_debug", "onDraw: " + offset);
             canvas.drawText(line,
                     left + getTotalPaddingLeft(),
                     // The text will not be clipped anymore
                     // You can add a padding here too, faster than string string concatenation
                     baseLine + getTotalPaddingTop() + offset,
-                    textPaint);
+                    myTextPaint);
             Log.d("edit_text_test " ,"on Draw");
         }
 
-        chordPaint.setColor(textColor);
         chordPaint.setTextSize(getPaint().getTextSize());
         chordPaint.setTextAlign(Paint.Align.LEFT);
-        chordPaint.setTypeface(ResourcesCompat.getFont(getContext(), R.font.roboto_bold));
-        float lastPositionLeft = 0;
+        chordPaint.setTypeface(ResourcesCompat.getFont(getContext(), R.font.roboto_medium));
         float lastPositionRight = 0;
+        int lastBoxPositionTop = -1;
         for (Pair<Integer, TabulatorChordStructure> pair : chordMap) {
             if (layout == null) { // Layout may be null right after change to the text view
                 // Do nothing
             }
             String chord = pair.second.getChord();
-            float textHeight =chordPaint.descent() - chordPaint.ascent();
-            float textOffset = (textHeight / 2) - textPaint.descent();
             int lineOfText = layout.getLineForOffset(pair.first);
-            int xCoordinate = (int) layout.getPrimaryHorizontal(pair.first);
-            int yCoordinate = layout.getLineBaseline(lineOfText)+getTotalPaddingTop();
             float offset = (this.textHeight+ extraSpace) *lineOfText ;
-            chordBackgroundPaint.setColor(Color.GRAY);
-            chordPaint.getTextBounds(chord,0,chord.length(),chordBackgroundRect);
-            chordBackgroundRect.right = chordBackgroundRect.right + xCoordinate+getTotalPaddingLeft() + dpToPx(4);
-            if(pair.second.isInline()){
-                chordBackgroundRect.top = (int) (yCoordinate + offset  + chordBackgroundRect.top) - dpToPx(4);
-                chordBackgroundRect.bottom = (int) (yCoordinate + offset + chordBackgroundRect.bottom) + dpToPx(4);
-            }else{
-                chordBackgroundRect.top = (int) (yCoordinate + offset - this.textHeight  - extraSpace/2 + chordBackgroundRect.top) - dpToPx(4);
-                chordBackgroundRect.bottom = (int) (yCoordinate + offset - this.textHeight  - extraSpace/2 + chordBackgroundRect.bottom) + dpToPx(4);
+            float xCoordinate =  layout.getPrimaryHorizontal(pair.first)+getTotalPaddingLeft();
+            float yCoordinate =  layout.getLineBaseline(lineOfText)+getTotalPaddingTop()+ offset;
+            if(!pair.second.isInline()){
+                yCoordinate = yCoordinate - (this.textHeight  + extraSpace/2);
             }
 
-            chordBackgroundRect.left = chordBackgroundRect.left + xCoordinate+getTotalPaddingLeft() - dpToPx(4);
+            chordPaint.getTextBounds(chord,0,chord.length(),chordBackgroundRect);
+            chordBackgroundRect.left = (int) (chordBackgroundRect.left + xCoordinate - dpToPx(4));
+            chordBackgroundRect.right = (int) (chordBackgroundRect.right + xCoordinate + dpToPx(4));
+            chordBackgroundRect.top = (int) (yCoordinate   + chordBackgroundRect.top - dpToPx(4));
+            chordBackgroundRect.bottom = (int) (yCoordinate  + chordBackgroundRect.bottom + dpToPx(4));
 
-//            if((xCoordinate+getTotalPaddingLeft()) < lastPositionX){
-//                xCoordinate = (int) (lastPositionX + dpToPx(4) - getTotalPaddingLeft());
-//            }
 
-            if(chordBackgroundRect.left > lastPositionLeft && chordBackgroundRect.left < lastPositionRight){
+           if(lastBoxPositionTop == chordBackgroundRect.top && chordBackgroundRect.left < lastPositionRight){
+                Log.d("spacing_debug", "onDraw: " + chordBackgroundRect.left +" "+  pair.second.getChord());
                 float pixelToMove = lastPositionRight - chordBackgroundRect.left + dpToPx(4);
                 xCoordinate += pixelToMove;
                 chordBackgroundRect.left += pixelToMove;
                 chordBackgroundRect.right += pixelToMove;
-
+                Log.d("spacing_debug", "onDraw: " + chordBackgroundRect.left + " " + pixelToMove);
             }
-            lastPositionLeft = chordBackgroundRect.left;
+            lastBoxPositionTop = chordBackgroundRect.top;
             lastPositionRight = chordBackgroundRect.right;
             tempRectF.set(chordBackgroundRect);
-            chordBackgroundPaint.setColor(getResources().getColor(R.color.tabulator_chord_background));
-            if(pair.second.isInline()){
-                canvas.drawRoundRect(tempRectF,5,5,chordBackgroundPaint);
-                canvas.drawText(pair.second.getChord(),
-                        xCoordinate + getTotalPaddingLeft(),
-                        // The text will not be clipped anymore
-                        // You can add a padding here too, faster than string string concatenation
-                        yCoordinate +offset,
-                        chordPaint);
-            }else{
-                canvas.drawRoundRect(tempRectF,5,5,chordBackgroundPaint);
-                canvas.drawText(pair.second.getChord(),
-                        xCoordinate + getTotalPaddingLeft(),
-                        // The text will not be clipped anymore
-                        // You can add a padding here too, faster than string string concatenation
-                        yCoordinate + offset - this.textHeight - extraSpace/2,
-                        chordPaint);
-            }
-
-
+            canvas.drawRoundRect(tempRectF,5,5,chordBackgroundPaint);
+            canvas.drawText(pair.second.getChord(),
+                    xCoordinate,
+                    // The text will not be clipped anymore
+                    // You can add a padding here too, faster than string string concatenation
+                    yCoordinate ,
+                    chordPaint);
         }
     }
 
@@ -210,13 +191,13 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
 
 
     public SpannableStringBuilder generateFormattedText(String text){
-        divisionList = new ArrayList<>();
+        SpannableStringBuilder finalStringBuilder = new SpannableStringBuilder();
         requestLayout();
         text = text.replaceAll("\\s{2,}", " ").trim();
         text = text.replace("\\n","\n");
 
 
-        TextPaint normalTextPaint = getPaint();
+        myTextPaint = getPaint();
 
         int width = getMeasuredWidth();
 
@@ -224,7 +205,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
         float spacingMultiplier = getLineSpacingMultiplier();
         float spacingAddition = getLineSpacingExtra();
         boolean includePadding = getIncludeFontPadding();
-        StaticLayout layout = new StaticLayout(text, normalTextPaint, width, alignment, spacingMultiplier, spacingAddition, includePadding);
+        StaticLayout layout = new StaticLayout(text, myTextPaint, width, alignment, spacingMultiplier, spacingAddition, includePadding);
 
         int globalPointer = 0;
         for (int i = 0; i < layout.getLineCount(); i++) {
@@ -330,13 +311,13 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
 */
         }
 
-        Log.d("tabulator_final_debug", "generateFormattedText: "+ globalPointer +" "+ finalStringBuilder.toString().length());
+/*        Log.d("tabulator_final_debug", "generateFormattedText: "+ globalPointer +" "+ finalStringBuilder.toString().length());
         for (Pair<Integer, TabulatorChordStructure> pair : chordMap) {
             Log.d("tabulator_final_debug", "generateFormattedText: " +pair.first  + " " + pair.second.getChord());
 
-        }
+        }*/
 
-        StaticLayout initialLayout = new StaticLayout(finalStringBuilder.toString(), normalTextPaint, width, alignment, spacingMultiplier, spacingAddition, includePadding);
+        StaticLayout initialLayout = new StaticLayout(finalStringBuilder.toString(), myTextPaint, width, alignment, spacingMultiplier, spacingAddition, includePadding);
         initialLineCount = initialLayout.getLineCount();
         Log.d("text_final_debug", "generateFormattedText: length" + initialLineCount);
         return finalStringBuilder;
@@ -349,6 +330,11 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
 
     public void setCustomColor(int color) {
         textColor = color;
+        invalidate();
+    }
+
+    public void setMode(Mode mode){
+        this.mode = mode;
         invalidate();
     }
 }

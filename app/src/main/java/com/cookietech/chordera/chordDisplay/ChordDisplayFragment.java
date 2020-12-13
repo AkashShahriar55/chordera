@@ -649,7 +649,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         binding.tvTuning.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvKey.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvChords.setTextColor(getResources().getColor(R.color.colorPrimary));
-        binding.tvSongChords.setCustomColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvSongChords.setMode(TabulatorTextView.Mode.Light);
         binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.colorPrimary));
     }
@@ -660,7 +660,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         binding.tvTuning.setTextColor(getResources().getColor(R.color.white));
         binding.tvKey.setTextColor(getResources().getColor(R.color.white));
         binding.tvChords.setTextColor(getResources().getColor(R.color.white));
-        binding.tvSongChords.setCustomColor(getResources().getColor(R.color.white));
+        binding.tvSongChords.setMode(TabulatorTextView.Mode.Dark);
         binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.white));
     }
