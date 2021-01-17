@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
@@ -21,6 +22,8 @@ import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.cookietech.chordlibrary.ChordClass;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 
 import java.util.ArrayList;
@@ -39,6 +43,7 @@ import java.util.regex.Pattern;
 
 public class DatabaseRepository {
     private static final String TAG = "database_repository";
+    private static final String MY_TAG = "bishal_db_debug";
     private final FirebaseUtilClass firebaseUtilClass = FirebaseUtilClass.getInstance();
     private final SingleLiveEvent<ArrayList<SongsPOJO>> topTenLiveData = new SingleLiveEvent<>();
     private final SingleLiveEvent<TabPOJO> selectedTabLiveData = new SingleLiveEvent<>();
@@ -350,5 +355,29 @@ public class DatabaseRepository {
 
     public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
         return tabDisplayChords;
+    }
+
+    public void getSearchResults(String searchString){
+        firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(new OnCompleteListener<String>() {
+
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (task.isSuccessful()){
+                    Log.d(MY_TAG, "onComplete: task successful");
+                }
+                else {
+                    Log.d(MY_TAG, "onComplete: task is not successful");
+                    Exception e = task.getException();
+                    if (e instanceof FirebaseFunctionsException) {
+                        FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                        FirebaseFunctionsException.Code code = ffe.getCode();
+                        Object details = ffe.getDetails();
+
+                        Log.d(MY_TAG, "onComplete: " +  "code: " + code + " details: "+ details);
+                    }
+                }
+            }
+        });
+
     }
 }

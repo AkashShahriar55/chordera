@@ -182,4 +182,8 @@ public class MainViewModel extends ViewModel {
     public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
         return databaseRepository.getObservableTabDisplayChords();
     }
+
+    public void getSearchResults(String searchString){
+        databaseRepository.getSearchResults(searchString);
+    }
 }

@@ -18,6 +18,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
@@ -152,6 +153,15 @@ public class LandingFragment extends ChorderaFragment {
             public void onClick(View v) {
                 Log.d("sohan_debug", "saved button pressed");
                 mainViewModel.setNavigation(NavigatorTags.SAVED_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
+            }
+        });
+
+        binding.ivChorderaIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(getActivity(), "Get Search Result", Toast.LENGTH_SHORT).show();
+                Log.d("bishal_db_debug", "onClick: " + System.currentTimeMillis());
+                mainViewModel.getSearchResults("Artcell");
             }
         });
 

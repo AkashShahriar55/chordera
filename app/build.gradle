@@ -84,6 +84,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
 
+    // Declare the dependency for the Cloud Functions library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-functions'
+
     //for database
     implementation 'com.google.firebase:firebase-firestore'
 
