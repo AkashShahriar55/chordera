@@ -38,7 +38,7 @@ public class AppSharedComponents {
             Arrays.asList("C", "C#", "D","D#","E","F","F#","G","G#","A","A#","B"));
 
     public static final ArrayList<String> minor_key_circle = new ArrayList<String>(
-            Arrays.asList("Cm", "Cm#", "Dm","Dm#","Em","Fm","Fm#","Gm","Gm#","Am","Am#","Bm"));
+            Arrays.asList("Cm", "C#m", "Dm","D#m","Em","Fm","F#m","Gm","G#m","Am","A#m","Bm"));
 
     private static ArrayList<Root> roots = new ArrayList<>();
     private static  Map<String,ChordClass> allChords = new HashMap<>();

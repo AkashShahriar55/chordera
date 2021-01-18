@@ -47,6 +47,10 @@ public class ChordsDisplayAdapter extends RecyclerView.Adapter<RecyclerView.View
         return new ChordViewHolder(root);
     }
 
+    public ArrayList<ChordClass> getChords() {
+        return chords;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
         if (payloads.size() > 0) {

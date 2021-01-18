@@ -3,6 +3,7 @@ package com.cookietech.chordera.repositories;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -12,6 +13,7 @@ import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsDao;
 import com.cookietech.chordera.Room.SongsDatabase;
 import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.Util.StringManipulationHelper;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
@@ -21,6 +23,7 @@ import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordera.models.TabulatorChordStructure;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.cookietech.chordlibrary.ChordClass;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -59,6 +62,7 @@ public class DatabaseRepository {
 
     private final SingleLiveEvent<DatabaseResponse> tabDataResponse = new SingleLiveEvent<>();
     private final SingleLiveEvent<ArrayList<ChordClass>> tabDisplayChords = new SingleLiveEvent<>();
+    private final SingleLiveEvent<ArrayList<ChordClass>> transposedTabDisplayChords = new SingleLiveEvent<>();
     private ListenerRegistration topTenListenerRegistration;
     private ListenerRegistration tabDataListenerRegistration;
 
@@ -78,9 +82,14 @@ public class DatabaseRepository {
                 ArrayList<SongsPOJO> songs = new ArrayList<>();
                 if (snapshots != null) {
                     for (QueryDocumentSnapshot doc : snapshots) {
-                        SongsPOJO song = doc.toObject(SongsPOJO.class);
-                        song.setId(doc.getId());
-                        songs.add(song);
+                        try{
+                            SongsPOJO song = doc.toObject(SongsPOJO.class);
+                            song.setId(doc.getId());
+                            songs.add(song);
+                        }catch (Exception e){
+
+                        }
+
                     }
                     topTenLiveData.setValue(songs);
                     topTenResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetched));
@@ -330,7 +339,7 @@ public class DatabaseRepository {
 
                 ArrayList<String> chordsList = new ArrayList<>();
                 ArrayList<ChordClass> chordClassArrayList = new ArrayList<>();
-                Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+                Pattern pattern = Pattern.compile("[\\{\\[](.*?)[\\]\\}]");
                 Matcher matcher = pattern.matcher(data);
                 while (matcher.find())
                 {
@@ -342,11 +351,46 @@ public class DatabaseRepository {
                 }
 
 
+
+
                 tabDisplayChords.postValue(chordClassArrayList);
             }
         }).start();
     }
 
+
+    public void transposeChords(final ArrayList<ChordClass> chordClassArrayList,final int transpose){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<ChordClass> TransposedChordClassArrayList = new ArrayList<>();
+                for (ChordClass chordClass: chordClassArrayList){
+                    String chord = chordClass.getName().toLowerCase();
+                    Pattern pattern = Pattern.compile("[A-Za-z]#?m?");
+                    Matcher matcher = pattern.matcher(chord);
+                    String key = "";
+                    if(matcher.find()){
+                        key = matcher.group();
+                    }
+                    String remains = chord.substring(matcher.end());
+                    Log.d("transpose_debug", "setTranspose: " + key+ " " + chord.substring(matcher.end()));
+                    String transposedChord = StringManipulationHelper.getTransposedChord(key.toLowerCase(),transpose)+remains;
+                    Log.d("transpose_debug", "setTranspose: " + transposedChord);
+                    if( AppSharedComponents.getAllChords().containsKey(transposedChord.toLowerCase())){
+                        TransposedChordClassArrayList.add(AppSharedComponents.getAllChords().get(transposedChord.toLowerCase()));
+                    }
+
+                }
+
+                transposedTabDisplayChords.postValue(TransposedChordClassArrayList);
+            }
+        }).start();
+    }
+
+
+    public SingleLiveEvent<ArrayList<ChordClass>> getTransposedTabDisplayChords() {
+        return transposedTabDisplayChords;
+    }
 
     public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
         return tabDisplayChords;

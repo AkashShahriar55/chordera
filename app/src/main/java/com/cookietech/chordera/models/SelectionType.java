@@ -17,8 +17,8 @@ public class SelectionType {
     String selectionName, displaySelectionName, selectionId;
     public SelectionType(String name,String displayName, String id){
         this.selectionName = name;
-        this.selectionId = id;
         this.displaySelectionName = displayName;
+        this.selectionId = id;
     }
 
     public String getSelectionId() {

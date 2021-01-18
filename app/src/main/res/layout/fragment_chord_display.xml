@@ -180,8 +180,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textSize="@dimen/_14ssp"
+                        android:textSize="@dimen/_12ssp"
                         android:padding="@dimen/_15sdp"
+                        android:clickable="true"
                         android:textColor="@color/colorPrimary"
                         android:fontFamily="@font/roboto_regular"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -290,6 +291,8 @@
         android:alpha="0"
         />
 
-    <include layout="@layout/layout_chord_display_bottom_sheet"/>
+    <include
+        android:id="@+id/bottom_sheet"
+        layout="@layout/layout_chord_display_bottom_sheet"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
