@@ -1,5 +1,6 @@
 package com.cookietech.chordera.chordDisplay;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.ReceiverCallNotAllowedException;
 import android.content.SearchRecentSuggestionsProvider;
@@ -21,6 +22,8 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Util.StringManipulationHelper;
+import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.models.TabulatorChordStructure;
 
 import org.w3c.dom.Text;
@@ -37,28 +42,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextView {
-    StringBuilder tabStringBuilder = new StringBuilder();
-    Paint highLightPaint = new Paint();
     TextView dummyTextView;
 
-    StaticLayout staticLayout;
     ArrayList<Pair<Integer,TabulatorChordStructure>> chordMap = new ArrayList<>();
-    ArrayList<Integer> blankSpace = new ArrayList<>();
     Rect chordBackgroundRect = new Rect();
     RectF tempRectF = new RectF();
     Paint chordBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     Paint chordPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    float extraSpace = dpToPx(10);
+    float extraSpace = dpToPx(15);
     float textHeight = 0;
     Rect chordPositionRect = new Rect();
     Rect measurementRect = new Rect();
     private int initialLineCount;
-    private int textColor;
     private Mode mode;
     TextPaint myTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    ArrayList<Rect> chordTouchableRect = new ArrayList<>();
+    HashMap<Rect,String> chordTouchableMap = new HashMap<>();
 
     public enum Mode{
         Dark,
@@ -72,7 +76,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     public TabulatorTextView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         dummyTextView = new TextView(context,attrs);
-        textColor = getResources().getColor(R.color.colorPrimary);
+        setAlpha(0);
     }
 
     public TabulatorTextView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -87,13 +91,16 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
         int minw = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();
         int w = resolveSizeAndState(minw, widthMeasureSpec, 1);
 
+        getPaint().getTextBounds(getText().toString(),0,getText().length(),measurementRect);
 
         textHeight = getPaint().descent() - getPaint().ascent();
-        float totalHeight = initialLineCount * textHeight + ((textHeight +extraSpace) * (initialLineCount+1));
+        float totalHeight = (initialLineCount+1) * measurementRect.height() + ((measurementRect.height() +extraSpace) * (initialLineCount));
+        Log.d("size_debug", "onMeasure: "+ getPaddingBottom() +" "+ getPaddingTop() + " " + textHeight + " " + measurementRect.height() + " " + initialLineCount);
         int minh = (int) (totalHeight + getPaddingBottom() + getPaddingTop());
         int h = resolveSizeAndState(minh, heightMeasureSpec, 1);
         Log.v("tabulator onMeasure h", MeasureSpec.toString(minh)+" " + h);
         Log.d("tabulator_final_debug", "onMeasure: " + h + " " + initialLineCount);
+        Log.d("measure_debug", "onMeasure: " + h);
         super.setMeasuredDimension(w, h);
     }
 
@@ -101,7 +108,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     @Override
     protected void onDraw(Canvas canvas) {
         setTextColor(Color.TRANSPARENT);
-        Log.d("Tabulator_final", "onDraw: ");
+        Log.d("measure_debug", "onDraw: " + getHeight());
         super.onDraw(canvas);
         if(mode == Mode.Dark){
             myTextPaint.setColor(getResources().getColor(R.color.color_white));
@@ -116,10 +123,11 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
         String text = getText().toString();
         Layout layout = getLayout();
         if(layout == null){
-            Log.d("tabulator", "onDraw: null");
+            Log.d("text_final_debug", "onDraw: null" + layout.getLineCount());
             return;
             //todo fix the bug
         }
+        Log.d("text_final_debug", "onDraw: " + layout.getLineCount());
         for (int i = 0; i < layout.getLineCount(); i++) {
             final int start = layout.getLineStart(i);
             final int end = layout.getLineEnd(i);
@@ -135,6 +143,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
                     // You can add a padding here too, faster than string string concatenation
                     baseLine + getTotalPaddingTop() + offset,
                     myTextPaint);
+            Log.d("size_debug", "onMeasure: "+ (baseLine + getTotalPaddingTop() + offset) + " " + layout.getLineCount());
             Log.d("edit_text_test " ,"on Draw");
         }
 
@@ -143,11 +152,10 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
         chordPaint.setTypeface(ResourcesCompat.getFont(getContext(), R.font.roboto_medium));
         float lastPositionRight = 0;
         int lastBoxPositionTop = -1;
+        int count = 0;
         for (Pair<Integer, TabulatorChordStructure> pair : chordMap) {
-            if (layout == null) { // Layout may be null right after change to the text view
-                // Do nothing
-            }
-            String chord = pair.second.getChord();
+            String chord = pair.second.getTransposed_chord().toLowerCase();
+            chord = chord.substring(0,1).toUpperCase() + chord.substring(1).toLowerCase();
             int lineOfText = layout.getLineForOffset(pair.first);
             float offset = (this.textHeight+ extraSpace) *lineOfText ;
             float xCoordinate =  layout.getPrimaryHorizontal(pair.first)+getTotalPaddingLeft();
@@ -174,14 +182,23 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
             lastBoxPositionTop = chordBackgroundRect.top;
             lastPositionRight = chordBackgroundRect.right;
             tempRectF.set(chordBackgroundRect);
+            chordTouchableRect.get(count).set(chordBackgroundRect);
+            chordTouchableMap.put(chordTouchableRect.get(count),pair.second.getChord());
             canvas.drawRoundRect(tempRectF,5,5,chordBackgroundPaint);
-            canvas.drawText(pair.second.getChord(),
+            canvas.drawText(chord,
                     xCoordinate,
                     // The text will not be clipped anymore
                     // You can add a padding here too, faster than string string concatenation
                     yCoordinate ,
                     chordPaint);
+
+            count++;
         }
+
+
+        ObjectAnimator animator = ObjectAnimator.ofFloat(this, View.ALPHA,0f,1f);
+        animator.setDuration(200);
+        animator.start();
     }
 
 
@@ -199,7 +216,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
 
         myTextPaint = getPaint();
 
-        int width = getMeasuredWidth();
+        int width = getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
 
         Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
         float spacingMultiplier = getLineSpacingMultiplier();
@@ -239,8 +256,12 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
                         finalStringBuilder.append("    ");
                         globalPointer+=4;
                     }
-
-                    chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer-(4*chordStringBuilder.length()),new TabulatorChordStructure(true,chordStringBuilder.toString())));
+                    if(AppSharedComponents.getAllChords().containsKey(chordStringBuilder.toString().toLowerCase())){
+                        String chord = chordStringBuilder.toString().toLowerCase();
+                        chord = chord.substring(0,1).toUpperCase() + chord.substring(1).toLowerCase();
+                        chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer-(4*chordStringBuilder.length()),new TabulatorChordStructure(true,chord,chord)));
+                        chordTouchableRect.add(new Rect());
+                    }
                     continue;
                 }
 
@@ -253,10 +274,21 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
                     }
                     if(currentChar != ']'){
                         chordStringBuilder.append(currentChar);
-                        chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer-1,new TabulatorChordStructure(false,chordStringBuilder.toString())));
+                        if(AppSharedComponents.getAllChords().containsKey(chordStringBuilder.toString().toLowerCase())){
+                            String chord = chordStringBuilder.toString().toLowerCase();
+                            chord = chord.substring(0,1).toUpperCase() + chord.substring(1).toLowerCase();
+                            chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer-1,new TabulatorChordStructure(false,chord,chord)));
+                            chordTouchableRect.add(new Rect());
+                        }
+
                         Log.d("tabulator_final_debug", "test : " +globalPointer  + " " + chordStringBuilder.toString());
                     }else if(++lookAhead < line.length()){
-                        chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer,new TabulatorChordStructure(false,chordStringBuilder.toString())));
+                        if(AppSharedComponents.getAllChords().containsKey(chordStringBuilder.toString().toLowerCase())){
+                            String chord = chordStringBuilder.toString().toLowerCase();
+                            chord = chord.substring(0,1).toUpperCase() + chord.substring(1).toLowerCase();
+                            chordMap.add(new Pair<Integer, TabulatorChordStructure>(globalPointer,new TabulatorChordStructure(false,chord,chord)));
+                            chordTouchableRect.add(new Rect());
+                        }
                         Log.d("tabulator_final_debug", "test : " +globalPointer  + " " + chordStringBuilder.toString());
                         if(line.charAt(lookAhead) == ' '){
                             for (int j = 0; j < chordStringBuilder.length(); j++) {
@@ -328,13 +360,34 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     }
 
 
-    public void setCustomColor(int color) {
-        textColor = color;
+    public void setMode(Mode mode){
+        this.mode = mode;
         invalidate();
     }
 
-    public void setMode(Mode mode){
-        this.mode = mode;
+    public ArrayList<Rect> getChordTouchableRect() {
+        return chordTouchableRect;
+    }
+
+    public HashMap<Rect, String> getChordTouchableMap() {
+        return chordTouchableMap;
+    }
+
+
+    public void setTranspose(int transpose){
+        for (Pair<Integer, TabulatorChordStructure> pair : chordMap) {
+            String chord = pair.second.getChord().toLowerCase();
+            Pattern pattern = Pattern.compile("[A-Za-z]#?m?");
+            Matcher matcher = pattern.matcher(chord);
+            String key = "";
+            if(matcher.find()){
+                key = matcher.group();
+            }
+            String remains = chord.substring(matcher.end());
+           // Log.d("transpose_debug", "setTranspose: " + key+ " " + chord.substring(matcher.end()));
+
+            pair.second.setTransposed_chord(StringManipulationHelper.getTransposedChord(key.toLowerCase(),transpose)+remains);
+        }
         invalidate();
     }
 }

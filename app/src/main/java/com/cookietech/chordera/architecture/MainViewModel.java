@@ -22,11 +22,19 @@ import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.ChordClass;
-import com.google.gson.JsonStreamParser;
+/*import com.google.gson.JsonStreamParser;
+import com.jakewharton.rxbinding2.widget.RxTextView;*/
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+/*import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;*/
 
 
 public class MainViewModel extends ViewModel {
@@ -54,6 +62,36 @@ public class MainViewModel extends ViewModel {
     }
 
     public void bindSearchBox(EditText edtSearchBox) {
+/*        RxTextView.textChanges(edtSearchBox)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(it -> {
+
+                })
+                .observeOn(Schedulers.io())
+                .switchMap( text -> {
+
+                }).subscribe(new Observer<Object>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object value) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });*/
         searchBox = new WeakReference<EditText>(edtSearchBox);
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -179,11 +217,19 @@ public class MainViewModel extends ViewModel {
         databaseRepository.decodeChordsFromData(data);
     }
 
+    public void transposeChords(final ArrayList<ChordClass> chordClassArrayList,final int transpose) {
+        databaseRepository.transposeChords(chordClassArrayList,transpose);
+    }
+
     public SingleLiveEvent<ArrayList<ChordClass>> getObservableTabDisplayChords() {
         return databaseRepository.getObservableTabDisplayChords();
     }
 
-    public void getSearchResults(String searchString){
+    public void getSearchResults(String searchString) {
         databaseRepository.getSearchResults(searchString);
     }
+    public SingleLiveEvent<ArrayList<ChordClass>> getObservableTransposedTabDisplayChords() {
+        return databaseRepository.getTransposedTabDisplayChords();
+    }
+
 }

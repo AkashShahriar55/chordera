@@ -34,6 +34,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
@@ -84,6 +85,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     private ImageView play_youtube_btn;
     private String lastSelectedTransposeType = TRANSPOSE_CAPO;
     private TabulatorGenerator tabulatorGenerator = new TabulatorGenerator();
+    private double autoScrollSpeed = 1;
+    private ArrayList<ChordClass> initialChordList;
 
     public ChordDisplayFragment() {
         // Required empty public constructor
@@ -117,11 +120,11 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        lastSelectedTranspose = 0;
         setDummyChords();
         initializeObserver();
         initializeChordsRecyclerView();
-
+        initializeAutoScrollSpeedUi();
 
         setupMenuSelector();
 
@@ -177,8 +180,13 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                         transposeModalDialog.setCallback(new ChordDisplayTransposeModal.TransposeCallback() {
                             @Override
                             public void onTranspose(int transpose, String transposeType) {
+                                Log.d("transpose_debug", "onTranspose: " + transpose);
                                 lastSelectedTranspose = transpose;
                                 lastSelectedTransposeType = transposeType;
+                                if(transposeType.equalsIgnoreCase(ChordDisplayTransposeModal.TRANSPOSE_KEY)){
+                                    binding.tvSongChords.setTranspose(transpose);
+                                    mainViewModel.transposeChords(initialChordList,transpose);
+                                }
                             }
                         });
                         transposeModalDialog.show(requireFragmentManager(),"transpose_dialog");
@@ -209,8 +217,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             }
         });
 
-        View bottomSheet = binding.rootLayout.findViewById(R.id.chord_display_bottom_sheet);
-        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) binding.bottomSheet.chordDisplayBottomSheet);
 
 
 
@@ -257,7 +264,38 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             }
         });
 
+        ChordTouchListener chordTouchListener = new ChordTouchListener(new ChordTouchListener.chordSelectionListener() {
+            @Override
+            public void onChordSelected(ChordClass chordClass) {
+                Toast.makeText(requireContext(),chordClass.getName(),Toast.LENGTH_SHORT).show();
+            }
+        });
+        binding.tvSongChords.setOnTouchListener(chordTouchListener);
 
+
+
+    }
+
+    private void initializeAutoScrollSpeedUi() {
+        String speed = String.format("%.1f", autoScrollSpeed);
+        binding.bottomSheet.autoscrollSpeedTv.setText("Speed "+speed+"x");
+        binding.bottomSheet.autoscrollSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                autoScrollSpeed = (progress / 100f) + 0.5;
+                String speed = String.format("%.1f", autoScrollSpeed);
+                binding.bottomSheet.autoscrollSpeedTv.setText("Speed " + speed + "x");
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     private void setupMenuSelector() {
@@ -452,7 +490,16 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
        mainViewModel.getObservableTabDisplayChords().observe(fragmentLifecycleOwner, new Observer<ArrayList<ChordClass>>() {
            @Override
            public void onChanged(ArrayList<ChordClass> chordClasses) {
+               initialChordList = chordClasses;
                chordsDisplayAdapter.setChords(chordClasses);
+           }
+       });
+
+
+       mainViewModel.getObservableTransposedTabDisplayChords().observe(fragmentLifecycleOwner, new Observer<ArrayList<ChordClass>>() {
+           @Override
+           public void onChanged(ArrayList<ChordClass> chordClassArrayList) {
+               chordsDisplayAdapter.setChords(chordClassArrayList);
            }
        });
 

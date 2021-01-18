@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Util.StringManipulationHelper;
 import com.cookietech.chordera.databinding.FragmentChordDisplayTransposeModalBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -128,7 +129,7 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
                 transposeValue = 0;
                 if(callback != null)
                     callback.onTranspose(transposeValue,transposeType);
-                binding.transposeKeyValue.setText(getTheActualKeyValue());
+                binding.transposeKeyValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
                 binding.transposeValue.setText(String.valueOf(0));
             }
         });
@@ -136,7 +137,7 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
         if(transposeType.equalsIgnoreCase(TRANSPOSE_KEY)){
            setUpUiForKeyTransposeChange();
         }else{
-            binding.transposeKeyValue.setText(getTheActualKeyValue());
+            binding.transposeKeyValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
             binding.transposeValue.setText(String.valueOf(transposeValue));
         }
 
@@ -151,34 +152,8 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
     }
 
     void setUpUiForKeyTransposeChange(){
-        binding.transposeKeyValue.setText(getTheActualKeyValue());
-        binding.transposeValue.setText(getTheActualKeyValue());
-    }
-
-    String getTheActualKeyValue(){
-        String actualKey = "";
-        int currentKeyPosition;
-        int transposedPosition;
-        int key_value_for_transpose;
-        for (String value:major_key_circle){
-            if(value.equalsIgnoreCase(key)){
-                currentKeyPosition = major_key_circle.indexOf(value);
-                transposedPosition = currentKeyPosition+transposeValue;
-                key_value_for_transpose = transposedPosition>=0? (Math.abs(transposedPosition)%12):(12-Math.abs(transposedPosition)%12);
-                actualKey = major_key_circle.get(key_value_for_transpose);
-            }
-
-        }
-        for (String value:minor_key_circle){
-            if(value.equalsIgnoreCase(key)){
-                currentKeyPosition = minor_key_circle.indexOf(value);
-                transposedPosition = currentKeyPosition+transposeValue;
-                key_value_for_transpose = transposedPosition>=0? (Math.abs(transposedPosition)%12):(12-Math.abs(transposedPosition)%12);
-                actualKey = minor_key_circle.get(key_value_for_transpose);
-            }
-        }
-
-        return actualKey;
+        binding.transposeKeyValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
+        binding.transposeValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
     }
 
 
