@@ -130,7 +130,7 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void run() {
-            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord);
+            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord,false);
             if(bitmap!=null)
                 listener.onThumbGenerated(index,bitmap,chord);
         }

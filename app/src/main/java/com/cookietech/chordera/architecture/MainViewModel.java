@@ -23,18 +23,12 @@ import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.ChordClass;
 import com.google.gson.JsonStreamParser;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class MainViewModel extends ViewModel {

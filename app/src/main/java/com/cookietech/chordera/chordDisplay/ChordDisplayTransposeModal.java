@@ -22,10 +22,7 @@ import static com.cookietech.chordera.application.AppSharedComponents.minor_key_
 
 
 public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
-    public static final String TRANSPOSE_CAPO = "transpose_capo";
-    public static final String TRANSPOSE_KEY = "transpose_key";
     String key = "C";
-    private String transposeType = TRANSPOSE_CAPO;
     TransposeCallback callback;
     FragmentChordDisplayTransposeModalBinding binding;
     int transposeValue;
@@ -33,11 +30,10 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
         // Required empty public constructor
     }
 
-    public static ChordDisplayTransposeModal newInstance(String key,int lastTranspose,String transposeType) {
+    public static ChordDisplayTransposeModal newInstance(String key,int lastTranspose) {
         ChordDisplayTransposeModal fragment = new ChordDisplayTransposeModal();
         Bundle args = new Bundle();
         args.putInt("last_transpose",lastTranspose);
-        args.putString("last_type_selected",transposeType);
         args.putString("key",key);
         fragment.setArguments(args);
         return fragment;
@@ -48,7 +44,6 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             transposeValue = getArguments().getInt("last_transpose");
-            transposeType = getArguments().getString("last_type_selected");
             key = getArguments().getString("key");
         }
     }
@@ -76,12 +71,10 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 transposeValue++;
                 if(callback!=null)
-                    callback.onTranspose(transposeValue,transposeType);
+                    callback.onTranspose(transposeValue);
                 binding.transposeValue.setText(String.valueOf(transposeValue));
 
-                if(transposeType.equalsIgnoreCase(TRANSPOSE_KEY)){
-                   setUpUiForKeyTransposeChange();
-                }
+                setUpUiForKeyTransposeChange();
             }
         });
 
@@ -90,56 +83,17 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 transposeValue--;
                 if(callback!=null)
-                    callback.onTranspose(transposeValue,transposeType);
+                    callback.onTranspose(transposeValue);
                 binding.transposeValue.setText(String.valueOf(transposeValue));
-                if(transposeType.equalsIgnoreCase(TRANSPOSE_KEY)){
-                   setUpUiForKeyTransposeChange();
-                }
+                setUpUiForKeyTransposeChange();
             }
         });
 
-        if(transposeType.equalsIgnoreCase(TRANSPOSE_CAPO)){
-            binding.tranposeCapoBtn.setSelected(true);
-            binding.transposeKeyBtn.setSelected(false);
-        }else{
-            binding.tranposeCapoBtn.setSelected(false);
-            binding.transposeKeyBtn.setSelected(true);
-        }
+        binding.transposeKeyBtn.setSelected(true);
 
-        binding.transposeKeyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transposeType = TRANSPOSE_KEY;
-                binding.tranposeCapoBtn.setSelected(false);
-                binding.transposeKeyBtn.setSelected(true);
-                transposeValue = 0;
-                if(callback != null)
-                    callback.onTranspose(transposeValue,transposeType);
-                binding.transposeKeyValue.setText(key);
-                binding.transposeValue.setText(key);
-            }
-        });
 
-        binding.tranposeCapoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transposeType = TRANSPOSE_CAPO;
-                binding.tranposeCapoBtn.setSelected(true);
-                binding.transposeKeyBtn.setSelected(false);
-                transposeValue = 0;
-                if(callback != null)
-                    callback.onTranspose(transposeValue,transposeType);
-                binding.transposeKeyValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
-                binding.transposeValue.setText(String.valueOf(0));
-            }
-        });
 
-        if(transposeType.equalsIgnoreCase(TRANSPOSE_KEY)){
-           setUpUiForKeyTransposeChange();
-        }else{
-            binding.transposeKeyValue.setText(StringManipulationHelper.getTransposedChord(key,transposeValue));
-            binding.transposeValue.setText(String.valueOf(transposeValue));
-        }
+        setUpUiForKeyTransposeChange();
 
 
         binding.moreCloseBtn.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +112,6 @@ public class ChordDisplayTransposeModal extends BottomSheetDialogFragment {
 
 
     public interface TransposeCallback{
-        void onTranspose(int transpose,String transposeType);
+        void onTranspose(int transpose);
     }
 }

@@ -42,6 +42,7 @@ import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.chordDisplay.chordDetails.ChordDetailsDialogFragment;
 import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -63,8 +64,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.cookietech.chordera.chordDisplay.ChordDisplayTransposeModal.TRANSPOSE_CAPO;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ChordDisplayFragment#newInstance} factory method to
@@ -83,7 +82,6 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     private TabPOJO tabData;
     private ImageView auto_scroll_btn;
     private ImageView play_youtube_btn;
-    private String lastSelectedTransposeType = TRANSPOSE_CAPO;
     private TabulatorGenerator tabulatorGenerator = new TabulatorGenerator();
     private double autoScrollSpeed = 1;
     private ArrayList<ChordClass> initialChordList;
@@ -176,17 +174,14 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
                     @Override
                     public void onTransposeSelected() {
-                        ChordDisplayTransposeModal transposeModalDialog = ChordDisplayTransposeModal.newInstance(tabData.getKey(),lastSelectedTranspose,lastSelectedTransposeType);
+                        ChordDisplayTransposeModal transposeModalDialog = ChordDisplayTransposeModal.newInstance(tabData.getKey(),lastSelectedTranspose);
                         transposeModalDialog.setCallback(new ChordDisplayTransposeModal.TransposeCallback() {
                             @Override
-                            public void onTranspose(int transpose, String transposeType) {
+                            public void onTranspose(int transpose) {
                                 Log.d("transpose_debug", "onTranspose: " + transpose);
                                 lastSelectedTranspose = transpose;
-                                lastSelectedTransposeType = transposeType;
-                                if(transposeType.equalsIgnoreCase(ChordDisplayTransposeModal.TRANSPOSE_KEY)){
-                                    binding.tvSongChords.setTranspose(transpose);
-                                    mainViewModel.transposeChords(initialChordList,transpose);
-                                }
+                                binding.tvSongChords.setTranspose(transpose);
+                                mainViewModel.transposeChords(initialChordList,transpose);
                             }
                         });
                         transposeModalDialog.show(requireFragmentManager(),"transpose_dialog");
@@ -267,7 +262,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         ChordTouchListener chordTouchListener = new ChordTouchListener(new ChordTouchListener.chordSelectionListener() {
             @Override
             public void onChordSelected(ChordClass chordClass) {
-                Toast.makeText(requireContext(),chordClass.getName(),Toast.LENGTH_SHORT).show();
+                ChordDetailsDialogFragment.newInstance(chordClass).show(requireFragmentManager(),"chord_selection");
             }
         });
         binding.tvSongChords.setOnTouchListener(chordTouchListener);
@@ -687,7 +682,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
     @Override
     public void onChordSelected(ChordClass chordClass) {
-
+        ChordDetailsDialogFragment.newInstance(chordClass).show(requireFragmentManager(),"chord_selection");
     }
 
     private void activateLightMode(){

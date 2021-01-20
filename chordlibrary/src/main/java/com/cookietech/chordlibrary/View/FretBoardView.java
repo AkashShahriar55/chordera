@@ -44,8 +44,8 @@ public class FretBoardView extends ScrollView {
         binding.fretboardForeground.setChord(chord);
         int startFret = chord.getFirstFret();
         int scrollIngDistance = 0;
-        if(startFret > 2){
-            scrollIngDistance = allMiddlePosition.get(startFret - 2);
+        if(startFret > 3){
+            scrollIngDistance = allMiddlePosition.get(startFret - 3);
         }
         smoothScrollTo(0,scrollIngDistance);
     }

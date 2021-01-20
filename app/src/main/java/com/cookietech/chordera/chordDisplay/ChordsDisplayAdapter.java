@@ -144,7 +144,7 @@ public class ChordsDisplayAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         @Override
         public void run() {
-            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord);
+            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord,false);
             if(bitmap!=null)
                 listener.onThumbGenerated(index,bitmap,chord);
         }

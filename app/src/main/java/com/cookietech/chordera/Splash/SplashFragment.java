@@ -28,6 +28,9 @@ import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSplashBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,6 +78,14 @@ public class SplashFragment extends ChorderaFragment {
 
         }
     };
+
+    /**
+     * This function assumes logger is an instance of AppEventsLogger and has been
+     * created using AppEventsLogger.newLogger() call.
+     */
+    public void logSentFriendRequestEvent () {
+        AppEventsLogger.newLogger(requireContext()).logEvent("sentFriendRequest");
+    }
 
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
@@ -131,7 +142,7 @@ public class SplashFragment extends ChorderaFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        logSentFriendRequestEvent();
         Uri video = Uri.parse("android.resource://" + getContext().getPackageName() + "/"
                 + R.raw.chordera_splash);
 

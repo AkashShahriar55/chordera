@@ -9,4 +9,7 @@
     <string name="saved_song">Saved Songs</string>
 
 
+    <string name="facebook_app_id">781485665786268</string>
+    <string name="fb_login_protocol_scheme">fb781485665786268</string>
+
 </resources>

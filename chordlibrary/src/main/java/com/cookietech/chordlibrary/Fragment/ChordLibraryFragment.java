@@ -401,7 +401,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
                         sendPlayNote(midiNote);
                     }
                 },interval);
-                interval += 50;
+                interval += 100;
             }
 
         }
