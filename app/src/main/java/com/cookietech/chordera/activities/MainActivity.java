@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     }
 
     private void navigateTo(String tag,int containerId) {

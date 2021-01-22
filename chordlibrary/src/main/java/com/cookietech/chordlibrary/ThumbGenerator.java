@@ -45,7 +45,7 @@ public class ThumbGenerator {
         fingers = chord.getFingers();
         int firstFret = chord.getFirstFret();
         this.hasInfo = hasInfo;
-        if(firstFret > 2){
+        if(firstFret > 1){
             if(hasInfo ){
                 for (int i = 0; i < notes.size()-1; i++) {
                     addFretNo(i,chord.getFirstFret()+i-1);

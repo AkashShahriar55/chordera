@@ -82,7 +82,7 @@ public class ChordVariationFragment extends Fragment {
         Log.d("variation_debug", "onViewCreated: variation fragment created");
         if(variation != null){
             TextView textView = view.findViewById(R.id.variation_name);
-            binding.variationName.setText("Fret " +variation.getFirstFret());
+            binding.variationName.setText("Variation " +position);
             binding.chordName.setText(name);
 
         }

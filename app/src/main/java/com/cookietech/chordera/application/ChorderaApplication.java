@@ -13,6 +13,9 @@ import androidx.multidex.MultiDexApplication;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordlibrary.ChordFactory;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +38,7 @@ public class ChorderaApplication extends MultiDexApplication {
     public void onCreate() {
         APP_CONTEXT = this;
         super.onCreate();
+        MobileAds.initialize(this);
         chordFactory = new ChordFactory(this);
         chordFactory.decodeChordDatabase();
         AppSharedComponents.setRoots(chordFactory.getRoots());

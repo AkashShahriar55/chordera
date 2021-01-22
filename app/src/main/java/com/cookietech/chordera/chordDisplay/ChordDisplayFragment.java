@@ -18,6 +18,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,8 +42,10 @@ import android.widget.Toast;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.Util.NativeAdsFragment;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.chordDisplay.chordDetails.ChordDetailsDialogFragment;
 import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
@@ -128,6 +132,8 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
         toggleMode();
 
+        if(RemoteConfigManager.shouldShowChordDisplayNativeAds())
+            setUpNativeAdFragment();
 
 
 
@@ -269,6 +275,13 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
 
 
+    }
+
+    private void setUpNativeAdFragment() {
+        FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+        Fragment adFragment = NativeAdsFragment.newInstance();
+        transaction.add(binding.nativeAdHolder.getId(),adFragment);
+        transaction.commitAllowingStateLoss();
     }
 
     private void initializeAutoScrollSpeedUi() {
@@ -424,16 +437,26 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                switch (databaseResponse.getResponse()){
                    case Storing:
                        Log.d("download_debug", "onChanged: song data storing");
+                       binding.downloadBtn.setVisibility(View.INVISIBLE);
+                       binding.downloadProgress.setVisibility(View.VISIBLE);
                         break;
                    case Stored:
                        Log.d("download_debug", "onChanged: song data stored");
                        Map<String,String> songDataMap = new HashMap<>();
                        songDataMap.put(tabData.getData_type(),tabData.getId());
                        mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap,selectedSong.getYoutube_id()));
+                       binding.downloadBtn.setVisibility(View.VISIBLE);
+                       binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                       binding.downloadProgress.setVisibility(View.INVISIBLE);
+                       binding.downloadBtn.setOnClickListener(null);
                        break;
                    case Already_exist:
                        Log.d("download_debug", "onChanged: song data already exist");
                        Toast.makeText(requireContext(), "You Already downloaded this chord", Toast.LENGTH_SHORT).show();
+                       binding.downloadBtn.setVisibility(View.VISIBLE);
+                       binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                       binding.downloadProgress.setVisibility(View.INVISIBLE);
+                       binding.downloadBtn.setOnClickListener(null);
                        break;
 
                }

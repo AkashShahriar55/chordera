@@ -88,6 +88,7 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.d("akash_debug", "onClick: ");
+
                 mainViewModel.setNavigation(NavigatorTags.CHORD_LIBRARY_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });

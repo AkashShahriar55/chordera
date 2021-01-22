@@ -8,6 +8,9 @@
         <key>chord_library_exit_full_screen_ads_show</key>
         <value>1</value>
 
+        <key>chord_display_native_ads</key>
+        <value>1</value>
+
     </entry>
 
 </defaultsMap><!-- END xml_defaults -->
