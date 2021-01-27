@@ -47,6 +47,7 @@ dependencies {
     implementation project(path: ':MidiDriver-1.14')
     implementation project(path: ':cookietechmetronomelibrary')
     implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -89,6 +90,10 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
+
+    // Declare the dependency for the Cloud Functions library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-functions'
 
     //for database
     implementation 'com.google.firebase:firebase-firestore'

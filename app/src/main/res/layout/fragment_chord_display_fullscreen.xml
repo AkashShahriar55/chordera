@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fullscreen_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/white"
     android:theme="@style/ThemeOverlay.Chordera.FullscreenContainer"
     tools:context=".chordDisplay.ChordDisplayFullscreenFragment">
 
@@ -12,43 +14,109 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
 
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
+        android:id="@+id/fullscreen_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/top_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.01" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/left_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.02" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/right_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.98" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/fullscreen_rv_chords"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/right_guideline"
+            app:layout_constraintStart_toStartOf="@id/left_guideline"
+            app:layout_constraintTop_toTopOf="@id/top_guideline">
+
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/rv_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="fullscreen_rv_chords" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/fullscreen_scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/right_guideline"
+            app:layout_constraintStart_toStartOf="@id/left_guideline"
+            app:layout_constraintTop_toBottomOf="@+id/rv_barrier">
+
+            <com.cookietech.chordera.chordDisplay.TabulatorTextView
+                android:id="@+id/fullscreen_tv_song_chords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/_12ssp">
+
+            </com.cookietech.chordera.chordDisplay.TabulatorTextView>
+
+        </androidx.core.widget.NestedScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottom_controls"
+            android:id="@+id/fullscreen_content_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent"
-            android:paddingBottom="@dimen/_32sdp">
+            tools:ignore="UselessParent">
 
             <ImageView
-                android:id="@+id/cancel_btn"
+                android:id="@+id/fullscreen_cancel_btn"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/todo"
                 android:src="@drawable/light_mode_cancel_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:contentDescription="@string/todo">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
             </ImageView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
+
+
 
 </FrameLayout>

@@ -2,11 +2,13 @@ package com.cookietech.chordera.architecture;
 
 
 
+import android.app.Application;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -23,15 +25,21 @@ import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.ChordClass;
 import com.google.gson.JsonStreamParser;
+/*import com.google.gson.JsonStreamParser;
+import com.jakewharton.rxbinding2.widget.RxTextView;*/
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+/*import java.util.concurrent.TimeUnit;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;*/
 
 
-
-public class MainViewModel extends ViewModel {
+public class MainViewModel extends AndroidViewModel {
     private WeakReference<EditText> searchBox;
     private SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
     private DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -40,11 +48,13 @@ public class MainViewModel extends ViewModel {
     private SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
     private MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
     private SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
+    private SingleLiveEvent<Boolean> isDarkModeActivated = new SingleLiveEvent<>();
+    private SingleLiveEvent<Integer> transposeValue = new SingleLiveEvent<>();
 
-    public MainViewModel() {
+    public MainViewModel(@NonNull Application application) {
+        super(application);
         navigation.setValue(new Navigator("none",0));
     }
-
 
 
     public MutableLiveData<Navigator> getNavigation() {
@@ -219,7 +229,26 @@ public class MainViewModel extends ViewModel {
         return databaseRepository.getObservableTabDisplayChords();
     }
 
+    public void getSearchResults(String searchString) {
+        databaseRepository.getSearchResults(searchString);
+    }
     public SingleLiveEvent<ArrayList<ChordClass>> getObservableTransposedTabDisplayChords() {
         return databaseRepository.getTransposedTabDisplayChords();
+    }
+
+    public SingleLiveEvent<Boolean> getObservableIsDarkModeActivated() {
+        return isDarkModeActivated;
+    }
+
+    public void setIsDarkModeActivated(Boolean isDarkModeActivated) {
+        this.isDarkModeActivated.setValue(isDarkModeActivated);
+    }
+
+    public void setTransposeValue(int transposeValue) {
+        this.transposeValue.setValue(transposeValue);
+    }
+
+    public SingleLiveEvent<Integer> getObservableTransposeValue() {
+        return transposeValue;
     }
 }

@@ -85,6 +85,9 @@ public class ChordsDisplayAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
+        if(chords ==null){
+            return 0;
+        }
         return chords.size();
     }
 
