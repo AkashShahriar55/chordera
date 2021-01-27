@@ -156,6 +156,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                                 lastSelectedTranspose = transpose;
                                 lastSelectedTransposeType = transposeType;
                                 if(transposeType.equalsIgnoreCase(ChordDisplayTransposeModal.TRANSPOSE_KEY)){
+                                    mainViewModel.setTransposeValue(transpose);
                                     binding.tvSongChords.setTranspose(transpose);
                                     mainViewModel.transposeChords(initialChordList,transpose);
                                 }

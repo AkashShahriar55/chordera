@@ -2,11 +2,13 @@ package com.cookietech.chordera.architecture;
 
 
 
+import android.app.Application;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -37,7 +39,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;*/
 
 
-public class MainViewModel extends ViewModel {
+public class MainViewModel extends AndroidViewModel {
     private WeakReference<EditText> searchBox;
     private SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
     private DatabaseRepository databaseRepository = new DatabaseRepository();
@@ -47,11 +49,12 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
     private SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
     private SingleLiveEvent<Boolean> isDarkModeActivated = new SingleLiveEvent<>();
+    private SingleLiveEvent<Integer> transposeValue = new SingleLiveEvent<>();
 
-    public MainViewModel() {
+    public MainViewModel(@NonNull Application application) {
+        super(application);
         navigation.setValue(new Navigator("none",0));
     }
-
 
 
     public MutableLiveData<Navigator> getNavigation() {
@@ -239,5 +242,13 @@ public class MainViewModel extends ViewModel {
 
     public void setIsDarkModeActivated(Boolean isDarkModeActivated) {
         this.isDarkModeActivated.setValue(isDarkModeActivated);
+    }
+
+    public void setTransposeValue(int transposeValue) {
+        this.transposeValue.setValue(transposeValue);
+    }
+
+    public SingleLiveEvent<Integer> getObservableTransposeValue() {
+        return transposeValue;
     }
 }

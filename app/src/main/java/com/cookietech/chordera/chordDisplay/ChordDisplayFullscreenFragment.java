@@ -1,5 +1,7 @@
 package com.cookietech.chordera.chordDisplay;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -109,7 +112,31 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
             if (actionBar != null) {
                 actionBar.show();
             }
-            binding.fullscreenContentControls.setVisibility(View.VISIBLE);
+
+            ObjectAnimator hideAnimation = ObjectAnimator.ofFloat(binding.fullscreenContentControls, "translationY", binding.fullscreenContentControls.getHeight(),0f);
+            hideAnimation.setDuration(100);
+            hideAnimation.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    binding.fullscreenContentControls.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            hideAnimation.start();
+
         }
     };
     private boolean mVisible;
@@ -119,6 +146,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
             hide();
         }
     };
+    private boolean theViewIsDestroyed = false;
 
     public ChordDisplayFullscreenFragment() {
         // Required empty public constructor
@@ -152,13 +180,31 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mVisible = true;
+        theViewIsDestroyed = false;
 
 
         // Set up the user interaction to manually show or hide the system UI.
+
+        GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener(){
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                Log.d("bishal", "onClick: toggle hocche");
+                toggle();
+                return super.onSingleTapUp(e);
+
+            }
+        });
+        binding.fullscreenScrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return false;
+            }
+        });
         binding.fullscreenContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Log.d("bishal", "onClick: " + mainViewModel.getObservableTransposedTabDisplayChords().getValue());
+                Log.d("bishal", "onClick: toggle cancel" + mainViewModel.getObservableTransposedTabDisplayChords().getValue());
                 toggle();
             }
         });
@@ -181,7 +227,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        //delayedHide(100);
+        delayedHide(100);
     }
 
     @Override
@@ -203,6 +249,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
 
     private void toggle() {
         if (mVisible) {
+
             hide();
         } else {
             show();
@@ -215,7 +262,31 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         if (actionBar != null) {
             actionBar.hide();
         }
-        binding.fullscreenContentControls.setVisibility(View.GONE);
+        ObjectAnimator hideAnimation = ObjectAnimator.ofFloat(binding.fullscreenContentControls, "translationY", 0f,binding.fullscreenContentControls.getHeight());
+        hideAnimation.setDuration(100);
+        hideAnimation.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                binding.fullscreenContentControls.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        hideAnimation.start();
+
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
@@ -296,9 +367,16 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                 if (mainViewModel.getObservableIsDarkModeActivated().getValue()){
                     activateDarkMode();
                 }
+
+                if(mainViewModel.getObservableTransposeValue().getValue() != null){
+                    binding.fullscreenTvSongChords.setTranspose(mainViewModel.getObservableTransposeValue().getValue());
+                }
+
                 else if (!mainViewModel.getObservableIsDarkModeActivated().getValue()){
                     activateLightMode();
                 }
+
+
 
                 if (mainViewModel.getObservableSelectedSong().getValue() != null){
                     song_duration = mainViewModel.getObservableSelectedSong().getValue().getSong_duration();
@@ -315,10 +393,13 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
 
         });
 
+
+
+
         binding.fullscreenScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                binding.fullscreenScrollView.post(new Runnable() {
+              /*  binding.fullscreenScrollView.postDelayed(new Runnable() {
                     public void run() {
                         Log.d("bishal_debug", "run: called");
                         int bottom = binding.fullscreenScrollView.getHeight();
@@ -330,7 +411,11 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                         binding.fullscreenScrollView.smoothScrollTo(0,bottom);
                         binding.fullscreenScrollView.fullScroll(View.FOCUS_DOWN);
                     }
-                });
+                },2000);*/
+
+
+                binding.fullscreenScrollView.post(new ScrollRunnable());
+
                 binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -352,6 +437,17 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
 
     }
 
+
+    private class ScrollRunnable implements Runnable{
+
+        @Override
+        public void run() {
+            binding.fullscreenScrollView.smoothScrollBy(0,1);
+            if(!theViewIsDestroyed)
+                binding.fullscreenScrollView.postDelayed(this,50);
+        }
+    }
+
     private void activateLightMode(){
         binding.fullscreenRoot.setBackgroundColor(getResources().getColor(R.color.white));
         binding.fullscreenTvSongChords.setMode(TabulatorTextView.Mode.Light);
@@ -360,5 +456,12 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
     private void activateDarkMode (){
         binding.fullscreenRoot.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         binding.fullscreenTvSongChords.setMode(TabulatorTextView.Mode.Dark);
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        theViewIsDestroyed = true;
     }
 }

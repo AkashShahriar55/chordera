@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         View root = binding.getRoot();
         setContentView(root);
 
-        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         navigationObserver = new Observer<Navigator>() {
             @Override
