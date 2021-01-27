@@ -13,12 +13,14 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.CircularArray;
 import androidx.core.content.ContextCompat;
 
 import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FretboardOverlay extends View {
 
@@ -27,7 +29,10 @@ public class FretboardOverlay extends View {
     private Context context;
     private int canvasWidth;
     private int canvasHeight;
-
+    private Boolean isNotesVisible = false;
+    private ArrayList<String> notes = new ArrayList<>(Arrays.asList("A","A#","B","C","C#","D","D#","E","F","F#","G","G#"));
+    private ArrayList<String> strings = new ArrayList<>(Arrays.asList("E","A","D","G","B","E"));
+    private Rect textRect = new Rect();
 
     public static final double fretboardRatio = 7; // height = width * 7
 
@@ -35,8 +40,9 @@ public class FretboardOverlay extends View {
     private ArrayList<Integer> allStringMiddlePosition = new ArrayList<>();
 
     int[] fingerDotIds = {R.drawable.finger_dot_1,R.drawable.finger_dot_2,R.drawable.finger_dot_3,R.drawable.finger_dot_4};
+    int noFingerDotId = R.drawable.finger_dot;
     int[] stringIds = {R.drawable.string_6,R.drawable.string_5,R.drawable.string_4,R.drawable.string_3,R.drawable.string_2,R.drawable.string_1};
-
+    Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 
     private int leftOffset;
@@ -184,9 +190,30 @@ public class FretboardOverlay extends View {
         int changedWidth = (100 * canvasWidth) / 600;
         int offSet = changedWidth / 2;
         //add fingers
-        Bitmap fingerDot = BitmapFactory.decodeResource(getResources(),fingerDotIds[finger-1]);
-        fingerDot = Bitmap.createScaledBitmap(fingerDot,changedWidth, changedWidth,false);
-        mCanvas.drawBitmap(fingerDot, allStringMiddlePosition.get(OccurrenceString) - offSet,allFretMiddlePosition.get(fret-1)-offSet,null);
+        if(isNotesVisible){
+            Bitmap fingerDot = BitmapFactory.decodeResource(getResources(),noFingerDotId);
+            fingerDot = Bitmap.createScaledBitmap(fingerDot,changedWidth, changedWidth,false);
+            mCanvas.drawBitmap(fingerDot, allStringMiddlePosition.get(OccurrenceString) - offSet,allFretMiddlePosition.get(fret-1)-offSet,null);
+            float textSize = changedWidth/2.5f;
+            textPaint.setTextSize(textSize);
+            textPaint.setColor(Color.WHITE);
+
+            int rootPosition = notes.indexOf(strings.get(OccurrenceString));
+            int notePosition = (fret%12);
+            ArrayList<String> changedNotes = new ArrayList<>(notes.subList(rootPosition, notes.size()));
+            changedNotes.addAll(notes.subList(0,rootPosition));
+            Log.d("akash_notes_debug", "addFinger: " + changedNotes);
+            String note = changedNotes.get(notePosition);
+            Log.d("akash_notes_debug", "addFinger: " + note);
+            textPaint.getTextBounds(note,0,note.length(),textRect);
+
+            mCanvas.drawText(note, allStringMiddlePosition.get(OccurrenceString)-textRect.width()/2f,allFretMiddlePosition.get(fret-1)+textRect.height()/2f,textPaint);
+        }else{
+            Bitmap fingerDot = BitmapFactory.decodeResource(getResources(),fingerDotIds[finger-1]);
+            fingerDot = Bitmap.createScaledBitmap(fingerDot,changedWidth, changedWidth,false);
+            mCanvas.drawBitmap(fingerDot, allStringMiddlePosition.get(OccurrenceString) - offSet,allFretMiddlePosition.get(fret-1)-offSet,null);
+        }
+
 
     }
 
@@ -248,4 +275,8 @@ public class FretboardOverlay extends View {
     }
 
 
+    public void setNotesVisible(Boolean bool) {
+        isNotesVisible = bool;
+        invalidate();
+    }
 }

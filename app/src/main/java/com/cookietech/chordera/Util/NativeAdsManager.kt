@@ -31,6 +31,7 @@ class NativeAdsManager(val context:Context) {
         val adLoader = AdLoader.Builder(context, finalAdId)
                 .forNativeAd { ad ->
                     nativeAdListener.onAdLoaded(ad)
+                    nativeAd = ad
                 }
                 .withAdListener(object : AdListener() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -41,5 +42,9 @@ class NativeAdsManager(val context:Context) {
                 .withNativeAdOptions(nativeAdOptions)
                 .build()
         adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    fun destroyNativeAd() {
+        nativeAd.destroy()
     }
 }

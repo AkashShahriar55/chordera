@@ -13,14 +13,17 @@ import kotlinx.android.synthetic.main.fragment_native_ads.*
 
 
 class NativeAdsFragment : Fragment() {
-
+    lateinit var nativeAdsManager:NativeAdsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        nativeAdsManager = NativeAdsManager(requireContext())
         arguments?.let {
 
         }
     }
+
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -43,12 +46,14 @@ class NativeAdsFragment : Fragment() {
 
         }
 
-        val nativeAdsManager = NativeAdsManager(requireContext())
+
         nativeAdsManager.fetchNativeAd(nativeAdListener)
     }
 
     private fun setUpNativeAd(nativeAd: NativeAd) {
         ad_heading.text = nativeAd.headline
+        ad_view.mediaView = ad_media
+        ad_view.callToActionView = ad_button
         nativeAd.starRating?.let { rating->
             ad_rating.rating = rating.toFloat()
         } ?: let {
@@ -92,6 +97,11 @@ class NativeAdsFragment : Fragment() {
 
         ad_view.setNativeAd(nativeAd)
         native_ad_container.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.enter_animation_native_ad));
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        nativeAdsManager.destroyNativeAd();
     }
 
     companion object {

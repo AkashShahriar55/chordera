@@ -17,13 +17,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Util.NativeAdsFragment;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.databinding.FragmentSongLyricsBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.models.TabPOJO;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -32,6 +38,8 @@ public class SongLyricsFragment extends ChorderaFragment {
 
     private SongsPOJO selectedSong;
     private boolean isDarkModeActivated = false;
+    private SelectionType selectedTab;
+    private TabPOJO lyricsData;
 
     public SongLyricsFragment(){};
 
@@ -56,10 +64,44 @@ public class SongLyricsFragment extends ChorderaFragment {
         initialize();
         initializeObserver();
         setupMenuSelector();
+        if(RemoteConfigManager.shouldShowChordDisplayNativeAds())
+            setUpNativeAdFragment();
+    }
+
+    private void setUpNativeAdFragment() {
+        FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+        Fragment adFragment = NativeAdsFragment.newInstance();
+        transaction.add(binding.nativeAdContainer.getId(),adFragment);
+        transaction.commitAllowingStateLoss();
     }
 
     private void initializeObserver() {
         selectedSong = mainViewModel.getObservableSelectedSong().getValue();
+        mainViewModel.getObservableSelectedSong().observe(fragmentLifecycleOwner, new Observer<SongsPOJO>() {
+            @Override
+            public void onChanged(SongsPOJO songsPOJO) {
+                Log.d("tab_debug", "onChanged: " + songsPOJO.getSong_name());
+                selectedSong = songsPOJO;
+                updateView();
+            }
+        });
+
+        mainViewModel.getObservableSelectedTab().observe(fragmentLifecycleOwner, new Observer<SelectionType>() {
+            @Override
+            public void onChanged(SelectionType selectionType) {
+                selectedTab = selectionType;
+                mainViewModel.loadTab(selectedTab);
+
+            }
+        });
+
+        mainViewModel.getObservableSelectedTabLiveData().observe(fragmentLifecycleOwner, new Observer<TabPOJO>() {
+            @Override
+            public void onChanged(TabPOJO lyricsPOJO) {
+                lyricsData = lyricsPOJO;
+                updateView();
+            }
+        });
     }
 
     private void initialize() {
@@ -161,10 +203,10 @@ public class SongLyricsFragment extends ChorderaFragment {
                         //TODO if you have new selection type you should add here logic for that
                         Log.d("sohan_debug", (String) item.getTitle());
                         SelectionType selectionType = selectionTypeArrayList.get(item.getItemId());
-                        if(((String) item.getTitle()).equals(SelectionType.displaySelectionNameMap.get("lyrics")))
+                        if(((String) item.getTitle()).equals(SelectionType.displaySelectionNameMap.get("guitar_chord")))
                         {
                             mainViewModel.setSelectedTab(selectionType);
-                            mainViewModel.setNavigation(NavigatorTags.SONG_DETAIL_FRAGMENT,1);
+                            mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FRAGMENT,1);
                         }
                         return true;
                     }
@@ -174,19 +216,35 @@ public class SongLyricsFragment extends ChorderaFragment {
 
     }
 
+
+    private void updateView() {
+        if(selectedSong != null){
+            binding.tvSongName.setText(selectedSong.getSong_name());
+            binding.tvBandName.setText(selectedSong.getArtist_name());
+            binding.tvGenre.setText("Genre: "+ selectedSong.getGenre());
+        }
+
+        if(lyricsData != null){
+            String data = lyricsData.getData();
+            data = data.replace("\\n","\n");
+            binding.tvSongLyrics.setText(data);
+        }
+    }
+
+
     private void activateLightMode(){
         binding.rootLayout.setBackgroundColor(getResources().getColor(R.color.white));
         binding.tvSongName.setTextColor(getResources().getColor(R.color.colorPrimary));
-        binding.tvChords.setTextColor(getResources().getColor(R.color.colorPrimary));
-        binding.tvSongChords.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvSongLyrics.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.tvLyrics.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
     }
 
     private void activateDarkMode(){
         binding.rootLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         binding.tvSongName.setTextColor(getResources().getColor(R.color.white));
-        binding.tvChords.setTextColor(getResources().getColor(R.color.white));
-        binding.tvSongChords.setTextColor(getResources().getColor(R.color.white));
+        binding.tvSongLyrics.setTextColor(getResources().getColor(R.color.white));
+        binding.tvLyrics.setTextColor(getResources().getColor(R.color.white));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
     }
 

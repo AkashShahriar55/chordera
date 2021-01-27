@@ -24,6 +24,7 @@ public class LightsView extends View {
     private float radius;
     private float distanceBtnTwoCenter;
     private boolean isToggling = false;
+    private long previousTriggerTime = -1;
 
     private int bpm = 80;
     private int subdivision = 1;
@@ -100,8 +101,12 @@ public class LightsView extends View {
         long timeLoss = drawEnd - drawStart;
 
         if(isToggling){
+            if(previousTriggerTime>0)
+                timeLoss = SystemClock.currentThreadTimeMillis() - previousTriggerTime;
             toggleLight();
-            postInvalidateDelayed(togglingDelay - timeLoss);
+            Log.d("akash_light_debug", "onDraw: " + timeLoss);
+            postInvalidateDelayed(togglingDelay - timeLoss );
+            previousTriggerTime = SystemClock.currentThreadTimeMillis();
         }
 
     }
@@ -130,6 +135,10 @@ public class LightsView extends View {
             lightPointer = 1;
         }
 
+    }
+
+    public void reset(){
+        lightPointer = 1;
     }
 
 

@@ -139,6 +139,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         IntentFilter filter = new IntentFilter();
         filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_QUIT);
         filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_TOGGLE);
+        filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_LIGHT);
         requireContext().registerReceiver(broadcastReceiver, filter);
 
     }
@@ -521,6 +522,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     public class MetronomeFragmentBroadcastReceiver extends BroadcastReceiver {
         public static final String ACTION_TOGGLE = "com.blz.cookietech.TOGGLE";
         public static final String ACTION_QUIT = "com.blz.cookietech.QUIT";
+        public static final String ACTION_LIGHT = "com.blz.cookietech.LIGHT";
 
 
         @Override
@@ -552,6 +554,10 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                         backButtonPressed();
                         Intent service = new Intent(requireContext(),MetronomeService.class);
                         requireActivity().stopService(service);
+                        break;
+                    case ACTION_LIGHT:
+                        Log.d("notification_debug", "fragment onReceive: ");
+                        //lightsView.reset();
                         break;
                 }
             }

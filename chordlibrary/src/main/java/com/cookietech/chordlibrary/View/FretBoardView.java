@@ -50,6 +50,10 @@ public class FretBoardView extends ScrollView {
         smoothScrollTo(0,scrollIngDistance);
     }
 
+    public void setNotesVisible(Boolean bool){
+        binding.fretboardForeground.setNotesVisible(bool);
+    }
+
 
 
     @Override

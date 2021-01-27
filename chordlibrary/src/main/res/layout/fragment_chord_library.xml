@@ -126,9 +126,9 @@
             android:layout_height="match_parent"
             android:visibility="visible" />
 
-        <include
+        <!--<include
             android:id="@+id/bottom_sheet"
-            layout="@layout/layout_chord_library_bottom_sheet" />
+            layout="@layout/layout_chord_library_bottom_sheet" />-->
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
@@ -231,19 +231,18 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/setting_popup_window"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
             app:cardCornerRadius="10dp"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/popup_vertical_guideline"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/popup_inside_guideline"
@@ -252,7 +251,7 @@
                     android:orientation="horizontal"
                     app:layout_constraintGuide_percent=".6" />
 
-                <TextView
+                <!--<TextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -327,7 +326,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/popup_inside_guideline" />
 
-
+-->
 
 
                 <CheckBox
@@ -338,14 +337,14 @@
                     android:drawablePadding="10dp"
                     android:id="@+id/note_checkbox"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="60dp"
                     android:button="@null"
                     android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/popup_inside_guideline" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

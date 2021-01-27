@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -103,7 +104,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         // Inflate the layout for this fragment
         processingTime = System.currentTimeMillis();
         binding = FragmentChordLibraryBinding.inflate(getLayoutInflater(),container,false);
-        bottomSheetBinding = binding.bottomSheet;
+//        bottomSheetBinding = binding.bottomSheet;
         return binding.getRoot();
     }
 
@@ -163,10 +164,6 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-
-
-
-
         binding.chordSelector.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,7 +211,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             }
         });
 
-        binding.negativeBtn.setOnClickListener(new View.OnClickListener() {
+       /* binding.negativeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentTranspose > Constants.MIN_TRANSPOSE){
@@ -235,7 +232,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
                 }
 
             }
-        });
+        });*/
 
         binding.popupContainer.bindTouch(binding.settingPopupWindow, new TouchInterceptorConstraintLayout.TouchBoundListener() {
             @Override
@@ -249,7 +246,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         });
 
         /**Bottom Sheet Section **/
-        bottomSheetBinding.chordBtn.setOnClickListener(new View.OnClickListener() {
+      /*  bottomSheetBinding.chordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setUpChordsSection();
@@ -261,6 +258,14 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             public void onClick(View v) {
 
                 setUpScalesSection();
+            }
+        });*/
+
+
+        binding.noteCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                binding.fretbardContainer.setNotesVisible(isChecked);
             }
         });
         
@@ -296,8 +301,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.show_popup);
         binding.settingPopupWindow.startAnimation(animation);
         binding.settingPopupWindow.setClickable(true);
-        binding.positiveBtn.setClickable(true);
-        binding.negativeBtn.setClickable(true);
+//        binding.positiveBtn.setClickable(true);
+//        binding.negativeBtn.setClickable(true);
         binding.noteCheckbox.setClickable(true);
     }
 
@@ -306,8 +311,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         binding.settingPopupWindow.startAnimation(animation);
         binding.settingPopupWindow.setClickable(false);
-        binding.positiveBtn.setClickable(false);
-        binding.negativeBtn.setClickable(false);
+//        binding.positiveBtn.setClickable(false);
+//        binding.negativeBtn.setClickable(false);
         binding.noteCheckbox.setClickable(false);
 
     }

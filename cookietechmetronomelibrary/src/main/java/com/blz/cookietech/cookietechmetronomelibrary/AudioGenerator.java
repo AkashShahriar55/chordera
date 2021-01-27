@@ -58,13 +58,24 @@ public class AudioGenerator {
                     AudioTrack.MODE_STREAM);
         }
 
+
+
+
         //audioTrack.play();
     }
 
-    public void writeSound(byte[] samples) {
+    public void setAudioTrackMarkerListener(AudioTrack.OnPlaybackPositionUpdateListener playbackPositionUpdateListener){
+        audioTrack.setPlaybackPositionUpdateListener(playbackPositionUpdateListener);
+
+    }
+
+    public void writeSound(byte[] samples,boolean isTick) {
         Log.d("akash_debug", "writeSound: " + System.currentTimeMillis());
         int count = 0;
+        if(isTick)
+            audioTrack.setNotificationMarkerPosition(samples.length);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
             count = audioTrack.write(samples, 0, samples.length, AudioTrack.WRITE_BLOCKING);
         }else{
             count = audioTrack.write(samples, 0, samples.length);

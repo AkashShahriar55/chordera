@@ -1,5 +1,6 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
+import android.media.AudioTrack;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -24,14 +25,16 @@ public class Metronome extends HandlerThread {
     private final AudioGenerator audioGenerator = new AudioGenerator(44100);
     public Looper looper;
     public Handler handler;
+    private AudioTrack.OnPlaybackPositionUpdateListener listener;
     // handler is associated with the message queue of this thread
 
     BeatGenerator beatGenerator = new BeatGenerator();
 
-    public Metronome(double[] tick, double[] tock, int bpm, int subdivision, int timeSignature) {
+    public Metronome(double[] tick, double[] tock, int bpm, int subdivision, int timeSignature, AudioTrack.OnPlaybackPositionUpdateListener listener) {
         super(NAME, Process.THREAD_PRIORITY_FOREGROUND);
         this.tick = tick;
         this.tock = tock;
+        this.listener= listener;
         beatGenerator.setBpm(bpm);
         beatGenerator.setSubDivision(subdivision);
         beatGenerator.setTimeSignature(timeSignature);
@@ -47,6 +50,7 @@ public class Metronome extends HandlerThread {
         audioGenerator.createPlayer();
         tickByte = get16BitPcm(tick);
         tockByte = get16BitPcm(tock);
+        audioGenerator.setAudioTrackMarkerListener(listener);
         //handler will only work if there is a looper
         Looper.prepare(); // it creates both looper and msg queue
 
@@ -162,8 +166,10 @@ public class Metronome extends HandlerThread {
                 byte[] sample = new byte[beatSlice];
                 if(timeSignaturePointer == 1){
                     System.arraycopy(tickByte, 0, sample, 0, Math.min(beatSlice, tickByte.length));
+                    audioGenerator.writeSound(sample,true);
                 }else{
                     System.arraycopy(tockByte, 0, sample, 0, Math.min(beatSlice, tockByte.length));
+                    audioGenerator.writeSound(sample,false);
                 }
 
                 if(timeSignaturePointer >= timeSignature*subDivision){
@@ -173,7 +179,7 @@ public class Metronome extends HandlerThread {
                 }
 
 
-                audioGenerator.writeSound(sample);
+
             }while (playing);
 
 

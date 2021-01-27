@@ -556,7 +556,17 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                     "(x4)\n" +
                     "{Verse 1}\n" +
                     "[Em]   Nona [C]Shopne Gora[Am]a To[D]mar Swmriti\n");*/
-            binding.tvSongChords.setFormattedText(tabData.getData());
+            binding.tvSongChords.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(binding.tvSongChords.getWidth()>0){
+                        binding.tvSongChords.setFormattedText(tabData.getData());
+                        binding.tvSongChords.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+
+                }
+            });
+
         }
     }
 

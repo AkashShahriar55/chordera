@@ -112,7 +112,7 @@
                     android:id="@+id/ad_heading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="2dp"
                     android:text="Main headline"
                     android:textColor="@color/colorPrimary"
@@ -127,8 +127,9 @@
                     android:layout_height="0dp"
                     android:padding="@dimen/_5sdp"
                     android:src="@drawable/youtube"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/ad_button"
                     app:layout_constraintDimensionRatio="1:1"
-                    app:layout_constraintEnd_toStartOf="@+id/logo_guideline"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/ad_media" />
 
