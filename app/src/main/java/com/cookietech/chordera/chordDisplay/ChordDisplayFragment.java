@@ -121,49 +121,21 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lastSelectedTranspose = 0;
-        setDummyChords();
+        setUpViews();
         initializeObserver();
         initializeChordsRecyclerView();
         initializeAutoScrollSpeedUi();
-
         setupMenuSelector();
 
-        toggleMode();
 
 
 
 
-        binding.modeSwitch.setChecked(isDarkModeActivated);
         binding.modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                isDarkModeActivated = isChecked;
-                toggleMode();
-
-                if(isDarkModeActivated){
-                    binding.modeAnimationView.setText("Dark");
-                    binding.modeAnimationView.setTextColor(Color.WHITE);
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
-                    ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
-                    ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(250);
-                    animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
-                    animatorSet.start();
-
-                }else{
-                    binding.modeAnimationView.setText("Light");
-                    binding.modeAnimationView.setTextColor(Color.parseColor("#22374C"));
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
-                    ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
-                    ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(250);
-                    animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
-                    animatorSet.start();
-                }
-
+                mainViewModel.setIsDarkModeActivated(isChecked);
             }
         });
 
@@ -274,6 +246,11 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
 
 
+    }
+
+    private void setUpViews() {
+        mainViewModel.setIsDarkModeActivated(isDarkModeActivated);
+        binding.modeSwitch.setChecked(isDarkModeActivated);
     }
 
     private void initializeAutoScrollSpeedUi() {
@@ -491,7 +468,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
            @Override
            public void onChanged(ArrayList<ChordClass> chordClasses) {
                initialChordList = chordClasses;
-               chordsDisplayAdapter.setChords(chordClasses);
+               mainViewModel.transposeChords(initialChordList,0);
            }
        });
 
@@ -500,6 +477,17 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
            @Override
            public void onChanged(ArrayList<ChordClass> chordClassArrayList) {
                chordsDisplayAdapter.setChords(chordClassArrayList);
+           }
+       });
+
+       mainViewModel.getObservableIsDarkModeActivated().observe(fragmentLifecycleOwner, new Observer<Boolean>() {
+           @Override
+           public void onChanged(Boolean aBoolean) {
+               Log.d("bishal_debug", "onChanged: called");
+               Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
+               isDarkModeActivated = aBoolean;
+               Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
+               toggleMode();
            }
        });
 
@@ -542,148 +530,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         }
     }
 
-    private void setDummyChords(){
-        chords.clear();
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(2);
-                add(0);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(4);
-                add(0);
-            }
-        }));
 
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(1);
-                add(0);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(1);
-                add(0);
-            }
-        }));
-
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(-1);
-                add(-1);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(0);
-                add(0);
-            }
-        }));
-
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(2);
-                add(0);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(4);
-                add(0);
-            }
-        }));
-
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(1);
-                add(0);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(1);
-                add(0);
-            }
-        }));
-
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(-1);
-                add(-1);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(0);
-                add(0);
-            }
-        }));
-
-        chords.add(new Variation( new ArrayList<Integer>(){
-            {
-                add(-1);
-                add(0);
-                add(2);
-                add(2);
-                add(1);
-                add(0);
-            }
-        },new ArrayList<Integer>(){
-            {
-                add(0);
-                add(0);
-                add(2);
-                add(3);
-                add(1);
-                add(0);
-            }
-        }));
-    }
 
     @Override
     public void onChordSelected(ChordClass chordClass) {
@@ -699,6 +546,15 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         binding.tvSongChords.setMode(TabulatorTextView.Mode.Light);
         binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.modeAnimationView.setText(Constants.LIGHT_MODE);
+        binding.modeAnimationView.setTextColor(Color.parseColor("#22374C"));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
+        ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
+        ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(250);
+        animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
+        animatorSet.start();
     }
 
     private void activateDarkMode(){
@@ -710,9 +566,19 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         binding.tvSongChords.setMode(TabulatorTextView.Mode.Dark);
         binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
         binding.tvCapo.setTextColor(getResources().getColor(R.color.white));
+        binding.modeAnimationView.setText(Constants.DARK_MODE);
+        binding.modeAnimationView.setTextColor(Color.WHITE);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
+        ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
+        ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(250);
+        animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
+        animatorSet.start();
     }
 
     private void toggleMode() {
+        Log.d("bishal_bedug", "toggleMode: called");
 
         if (!isDarkModeActivated){
             activateLightMode();

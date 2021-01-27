@@ -46,6 +46,7 @@ public class MainViewModel extends ViewModel {
     private SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
     private MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
     private SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
+    private SingleLiveEvent<Boolean> isDarkModeActivated = new SingleLiveEvent<>();
 
     public MainViewModel() {
         navigation.setValue(new Navigator("none",0));
@@ -232,4 +233,11 @@ public class MainViewModel extends ViewModel {
         return databaseRepository.getTransposedTabDisplayChords();
     }
 
+    public SingleLiveEvent<Boolean> getObservableIsDarkModeActivated() {
+        return isDarkModeActivated;
+    }
+
+    public void setIsDarkModeActivated(Boolean isDarkModeActivated) {
+        this.isDarkModeActivated.setValue(isDarkModeActivated);
+    }
 }
