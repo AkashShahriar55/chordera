@@ -6,9 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -18,14 +16,11 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.SpannableStringBuilder;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -47,7 +41,6 @@ import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.chordDisplay.chordDetails.ChordDetailsDialogFragment;
-import com.cookietech.chordera.chordDisplay.chordFormatter.ChordFormater;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.SelectionType;
@@ -58,13 +51,10 @@ import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.ChordClass;
 import com.cookietech.chordlibrary.Variation;
 
-import com.cookietech.chordlibrary.ChordsAdapter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -234,7 +224,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             @Override
             public void onClick(View v) {
                 //Toast.makeText(requireContext(), "Hey Baby", Toast.LENGTH_SHORT).show();
-                downloadSong();
+                downloadSongData();
             }
         });
 
@@ -354,7 +344,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
     }
 
-    private void downloadSong() {
+    private void downloadSongData() {
         mainViewModel.roomInsertSongData(new SongDataEntity(tabData.getId(),tabData.getData(),tabData.getKey(),tabData.getTuning(),tabData.getData_type()));
     }
 
@@ -408,6 +398,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             }
         });
 
+        /** Observer to get downloadSongDataResponse**/
        mainViewModel.getObservableDownloadSongDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
            @Override
            public void onChanged(DatabaseResponse databaseResponse) {
@@ -422,10 +413,6 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                        Map<String,String> songDataMap = new HashMap<>();
                        songDataMap.put(tabData.getData_type(),tabData.getId());
                        mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap,selectedSong.getYoutube_id()));
-                       binding.downloadBtn.setVisibility(View.VISIBLE);
-                       binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
-                       binding.downloadProgress.setVisibility(View.INVISIBLE);
-                       binding.downloadBtn.setOnClickListener(null);
                        break;
                    case Already_exist:
                        Log.d("download_debug", "onChanged: song data already exist");
@@ -450,13 +437,73 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                        break;
                    case Stored:
                        Log.d("download_debug", "onChanged: song stored");
+                       Toast.makeText(requireContext(), "Downloaded ", Toast.LENGTH_SHORT).show();
+                       binding.downloadBtn.setVisibility(View.VISIBLE);
+                       binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                       binding.downloadProgress.setVisibility(View.INVISIBLE);
+                       binding.downloadBtn.setOnClickListener(null);
                        break;
                    case Already_exist:
                        Log.d("download_debug", "onChanged: song already exist");
+                       mainViewModel.roomFetchASong(selectedSong.getId());
 
                }
            }
        });
+
+        mainViewModel.getObservableRoomFetchedSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Fetching:
+                        Log.d("download_debug", "onChanged: Song Fetching For update");
+                        break;
+                    case Fetched:
+                        Log.d("download_debug", "onChanged: song Fetched to update");
+                        SongsEntity fetchedSong = mainViewModel.getObservableRoomFetchedSong().getValue();
+                        Map<String,String> fetchedSongData = fetchedSong.getSong_data();
+                        fetchedSongData.put(tabData.getData_type(),tabData.getId());
+                        fetchedSong.setSong_data(fetchedSongData);
+                        mainViewModel.roomUpdateExistingSongData(fetchedSong);
+
+                        break;
+                    case Error:
+                        /**Implement Toast Here to show error message to user**/
+                        Log.d("download_debug", "onChanged: song fetching error. Not able to update");
+                        Toast.makeText(requireContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+
+        mainViewModel.getObservableRoomUpdateSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Updating:
+                        Log.d("download_debug", "onChanged: song updating");
+                        break;
+                    case Updated:
+                        Log.d("download_debug", "onChanged: Update Completed");
+                        Toast.makeText(requireContext(), "Downloaded ", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        binding.downloadBtn.setOnClickListener(null);
+                        break;
+                    case Error:
+                        Log.d("download_debug", "onChanged: Error in update");
+                        Toast.makeText(requireContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+
+
        mainViewModel.getObservableTabDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
            @Override
            public void onChanged(DatabaseResponse databaseResponse) {

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +23,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.Room.SongDataEntity;
+import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.Util.NativeAdsFragment;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.databinding.FragmentSongLyricsBinding;
@@ -30,8 +34,10 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SongLyricsFragment extends ChorderaFragment {
@@ -61,7 +67,7 @@ public class SongLyricsFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initialize();
+        initializeClicks();
         initializeObserver();
         setupMenuSelector();
         if(RemoteConfigManager.shouldShowChordDisplayNativeAds())
@@ -102,9 +108,129 @@ public class SongLyricsFragment extends ChorderaFragment {
                 updateView();
             }
         });
+
+        /** Observer to get downloadSongDataResponse**/
+        mainViewModel.getObservableDownloadSongDataResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+
+                    case Storing:
+                        Log.d("download_debug", "onChanged: song data storing");
+                        binding.downloadBtn.setVisibility(View.INVISIBLE);
+                        binding.downloadProgress.setVisibility(View.VISIBLE);
+                        break;
+                    case Stored:
+                        Log.d("download_debug", "onChanged: song data stored");
+                        Map<String,String> songDataMap = new HashMap<>();
+                        songDataMap.put(lyricsData.getData_type(),lyricsData.getId());
+                        mainViewModel.roomInsertSong(new SongsEntity(selectedSong.getId(),selectedSong.getArtist_name(),selectedSong.getSong_name(), selectedSong.getGenre(),selectedSong.getImage_url(),selectedSong.getSong_duration(),songDataMap,selectedSong.getYoutube_id()));
+
+                        break;
+                    case Already_exist:
+                        Log.d("download_debug", "onChanged: song data already exist");
+                        Toast.makeText(requireContext(), "You Already downloaded this chord", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        binding.downloadBtn.setOnClickListener(null);
+                        break;
+                }
+            }
+        });
+
+        mainViewModel.getObservableDownloadSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Storing:
+                        Log.d("download_debug", "onChanged: song storing");
+                        break;
+                    case Stored:
+                        Log.d("download_debug", "onChanged: song stored");
+                        Toast.makeText(requireContext(), "Downloaded ", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        binding.downloadBtn.setOnClickListener(null);
+                        break;
+                    case Already_exist:
+                        Log.d("download_debug", "onChanged: song already exist");
+                        mainViewModel.roomFetchASong(selectedSong.getId());
+
+                }
+            }
+        });
+
+        mainViewModel.getObservableRoomFetchedSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Fetching:
+                        Log.d("download_debug", "onChanged: Song Fetching For update");
+                        break;
+                    case Fetched:
+                        Log.d("download_debug", "onChanged: song Fetched to update");
+                        SongsEntity fetchedSong = mainViewModel.getObservableRoomFetchedSong().getValue();
+                        Map<String,String> fetchedSongData = fetchedSong.getSong_data();
+                        fetchedSongData.put(lyricsData.getData_type(),lyricsData.getId());
+                        fetchedSong.setSong_data(fetchedSongData);
+                        mainViewModel.roomUpdateExistingSongData(fetchedSong);
+
+                        break;
+                    case Error:
+                        /**Implement Toast Here to show error message to user**/
+                        Log.d("download_debug", "onChanged: song fetching error. Not able to update");
+                        Toast.makeText(requireContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+
+        /*mainViewModel.getObservableRoomFetchedSong().observe(fragmentLifecycleOwner, new Observer<SongsEntity>() {
+        });*/
+
+        mainViewModel.getObservableRoomUpdateSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Updating:
+                        Log.d("download_debug", "onChanged: song updating");
+                        break;
+                    case Updated:
+                        Log.d("download_debug", "onChanged: Update Completed");
+                        Toast.makeText(requireContext(), "Downloaded ", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadBtn.setImageResource(R.drawable.downloaded_icon);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        binding.downloadBtn.setOnClickListener(null);
+                        break;
+                    case Error:
+                        Log.d("download_debug", "onChanged: Error in update");
+                        Toast.makeText(requireContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        binding.downloadBtn.setVisibility(View.VISIBLE);
+                        binding.downloadProgress.setVisibility(View.INVISIBLE);
+                        break;
+                }
+            }
+        });
+
+        Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
+        mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, new Observer<String>() {
+            @Override
+            public void onChanged(String fromWhere) {
+                if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+                    binding.downloadBtn.setVisibility(View.GONE);
+                }else{
+                    binding.downloadBtn.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
-    private void initialize() {
+    private void initializeClicks() {
         binding.modeSwitch.setChecked(isDarkModeActivated);
         binding.modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -138,10 +264,22 @@ public class SongLyricsFragment extends ChorderaFragment {
 
             }
         });
+
+
         binding.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requireActivity().onBackPressed();
+            }
+        });
+
+
+        /*** Download section **/
+        binding.downloadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(getActivity(), "Download clicked", Toast.LENGTH_SHORT).show();
+                downloadSongData();
             }
         });
     }
@@ -256,6 +394,10 @@ public class SongLyricsFragment extends ChorderaFragment {
         else {
             activateDarkMode();
         }
+    }
+
+    private void downloadSongData() {
+        mainViewModel.roomInsertSongData(new SongDataEntity(lyricsData.getId(),lyricsData.getData(),lyricsData.getKey(),lyricsData.getTuning(),lyricsData.getData_type()));
     }
 
 }

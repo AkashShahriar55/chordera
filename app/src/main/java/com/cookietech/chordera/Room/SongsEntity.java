@@ -92,6 +92,7 @@ public class SongsEntity {
     }
 
     public void setSong_data(Map<String, String> song_data) {
+        this.song_data = null;
         this.song_data = song_data;
     }
 

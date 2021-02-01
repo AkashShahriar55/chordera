@@ -31,6 +31,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;*/
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 /*import java.util.concurrent.TimeUnit;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
@@ -193,12 +194,24 @@ public class MainViewModel extends AndroidViewModel {
         databaseRepository.fetchAllSongs();
     }
 
+    public SingleLiveEvent<SongsEntity> getObservableRoomFetchedSong() {
+        return databaseRepository.getObservableRoomFetchedSong();
+    }
+
     public SingleLiveEvent<List<SongsEntity>> getObservableAllSongs() {
         return databaseRepository.getObservableAllSongs();
     }
 
     public SingleLiveEvent<DatabaseResponse> getObservableFetchAllSongsResponse() {
         return databaseRepository.getObservableFetchAllSongsResponse();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableRoomFetchedSongResponse() {
+        return databaseRepository.getObservableRoomFetchedSongResponse();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableRoomUpdateSongResponse() {
+        return databaseRepository.getObservableRoomUpdateSongResponse();
     }
 
 
@@ -250,5 +263,18 @@ public class MainViewModel extends AndroidViewModel {
 
     public SingleLiveEvent<Integer> getObservableTransposeValue() {
         return transposeValue;
+    }
+
+    public void roomFetchASong(String id) {
+        databaseRepository.roomFetchASong(id);
+    }
+
+
+   /* public void roomUpdateExistingSongData(String id, Map<String, String> fetchedSongData) {
+        databaseRepository.roomUpdateExistingSongData(id,fetchedSongData);
+    }*/
+
+    public void roomUpdateExistingSongData(SongsEntity fetchedSong) {
+        databaseRepository.roomUpdateExistingSongData(fetchedSong);
     }
 }
