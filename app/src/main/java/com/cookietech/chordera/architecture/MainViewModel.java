@@ -3,6 +3,7 @@ package com.cookietech.chordera.architecture;
 
 
 import android.app.Application;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -53,7 +54,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        navigation.setValue(new Navigator("none",0));
+        navigation.setValue(new Navigator("none",0,null));
     }
 
 
@@ -61,8 +62,20 @@ public class MainViewModel extends AndroidViewModel {
         return navigation;
     }
 
-    public void setNavigation(String navigateTo,int containerId){
-        navigation.setValue(new Navigator(navigateTo,containerId));
+    public void setNavigation(String navigateTo,int containerId,Bundle arg){
+        navigation.setValue(new Navigator(navigateTo,containerId,arg));
+    }
+
+    public void setNavigation(String navigateTo,Bundle arg){
+        navigation.setValue(new Navigator(navigateTo,1,arg));
+    }
+
+    public void setNavigation(String navigateTo, int containerId){
+        navigation.setValue(new Navigator(navigateTo,containerId,null));
+    }
+
+    public void setNavigation(String navigateTo){
+        setNavigation(navigateTo,1,null);
     }
 
     public void bindSearchBox(EditText edtSearchBox) {
@@ -250,5 +263,13 @@ public class MainViewModel extends AndroidViewModel {
 
     public SingleLiveEvent<Integer> getObservableTransposeValue() {
         return transposeValue;
+    }
+    public SingleLiveEvent<DatabaseResponse> fetchNewSongsData() {
+        return databaseRepository.fetchNewSongsData();
+    }
+
+
+    public SingleLiveEvent<ArrayList<SongsPOJO>> getNewSongsData(){
+        return databaseRepository.getNewSongsLiveData();
     }
 }

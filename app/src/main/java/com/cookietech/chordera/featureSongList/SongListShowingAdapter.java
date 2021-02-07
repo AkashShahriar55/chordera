@@ -21,6 +21,7 @@ import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
+import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
 import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
 
@@ -163,7 +164,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
                 @Override
                 public void onClick(View v) {
                     Log.e("sohan_debug","one song clicked");
-                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT,1);
+                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songList.get(position)));
                     mainViewModel.setSelectedSong(songList.get(position));
                 }
             });

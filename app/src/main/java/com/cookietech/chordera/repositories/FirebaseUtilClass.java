@@ -24,6 +24,7 @@ import java.util.List;
 public class FirebaseUtilClass {
     public static final String VIEWS = "views";
     private static final String MY_TAG = "bishal_db_debug";
+    public static final String UPDATE_DATE = "update_date";
 
     private static FirebaseUtilClass firebaseUtilClass;
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -47,6 +48,10 @@ public class FirebaseUtilClass {
 
     public ListenerRegistration queryTopTenSongData(EventListener<QuerySnapshot> listener){
         return songsCollection.orderBy(VIEWS, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
+    }
+
+    public ListenerRegistration queryNewSongsData(EventListener<QuerySnapshot> listener){
+        return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
     }
 
     public ListenerRegistration queryTab(String tabId,EventListener<DocumentSnapshot> listener) {
