@@ -53,6 +53,8 @@ public class DatabaseRepository {
     private SingleLiveEvent<DatabaseResponse> downloadSongDataResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> downloadSongResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> fetchAllSongsResponse = new SingleLiveEvent<>();
+    private SingleLiveEvent<DatabaseResponse> newSongsResponse =new SingleLiveEvent<>();
+    private SingleLiveEvent<ArrayList<SongsPOJO>> newSongsLiveData = new SingleLiveEvent<>();
 
     public DatabaseRepository(){
         SongsDatabase database = SongsDatabase.getInstance(ChorderaApplication.getContext());
@@ -65,6 +67,7 @@ public class DatabaseRepository {
     private final SingleLiveEvent<ArrayList<ChordClass>> transposedTabDisplayChords = new SingleLiveEvent<>();
     private ListenerRegistration topTenListenerRegistration;
     private ListenerRegistration tabDataListenerRegistration;
+    private ListenerRegistration newSongDataListenerRegistration;
 
     public void queryTopTenSongs(){
         topTenResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetching));
@@ -172,6 +175,47 @@ public class DatabaseRepository {
 
     public SingleLiveEvent<List<SongsEntity>> roomFetchAllSongs(){
         return allSongs;
+    }
+
+    public SingleLiveEvent<DatabaseResponse> fetchNewSongsData() {
+        newSongsResponse.setValue(new DatabaseResponse("new_song_response",null, DatabaseResponse.Response.Fetching));
+        if(newSongDataListenerRegistration != null)
+            stopListeningNewSongs();
+        newSongDataListenerRegistration = firebaseUtilClass.queryNewSongsData((snapshots, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                newSongsResponse.setValue(new DatabaseResponse("new_song_response",error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            ArrayList<SongsPOJO> songs = new ArrayList<>();
+            if (snapshots != null) {
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    try{
+                        SongsPOJO song = doc.toObject(SongsPOJO.class);
+                        song.setId(doc.getId());
+                        songs.add(song);
+                    }catch (Exception e){
+
+                    }
+
+                }
+                newSongsLiveData.setValue(songs);
+                newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetched));
+            }else{
+                newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Invalid_data));
+            }
+        });
+
+        return newSongsResponse;
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getNewSongsResponse() {
+        return newSongsResponse;
+    }
+
+    public SingleLiveEvent<ArrayList<SongsPOJO>> getNewSongsLiveData() {
+        return newSongsLiveData;
     }
 
     private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
@@ -327,6 +371,12 @@ public class DatabaseRepository {
     public void stopListeningTopTen(){
         topTenListenerRegistration.remove();
     }
+
+    public void stopListeningNewSongs(){
+        newSongDataListenerRegistration.remove();
+    }
+
+
 
     public void stopListeningTabData(){
         tabDataListenerRegistration.remove();

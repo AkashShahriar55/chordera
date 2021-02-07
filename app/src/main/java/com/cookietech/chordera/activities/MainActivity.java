@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     Observer<Navigator> navigationObserver;
     long lastBackButtonPressed = 0;
     private SearchSuggestionFragment searchSuggestionFragment;
+    private PendingIntent pendingIntent;
 
 
     //skifjoaisdhjfo
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         navigationObserver = new Observer<Navigator>() {
             @Override
             public void onChanged(Navigator navigator) {
-                navigateTo(navigator.getNavigatorTag(),navigator.getContainerId());
+                navigateTo(navigator);
             }
 
         };
@@ -88,30 +89,21 @@ public class MainActivity extends AppCompatActivity {
         mainViewModel.getNavigation().observe(this,navigationObserver);
 
         cookieTechFragmentManager = CookieTechFragmentManager.getInstance();
-        splashFragment = SplashFragment.newInstance();
-        landingFragment = LandingFragment.newInstance();
-        searchSuggestionFragment = new SearchSuggestionFragment();
-        chordLibraryFragment = ChordLibraryFragment.newInstance(AppSharedComponents.getRoots());
+
+
+
+
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setAction(Intent.ACTION_MAIN);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        metronomeFragment = MetronomeFragment.newInstance(pendingIntent, AppSharedComponents.getTick(),AppSharedComponents.getTock());
-        searchResultFragment = SearchResultFragment.newInstance();
-        topSongListFragment = TopSongListFragment.newInstance();
-        savedSongListFragment = SavedSongListFragment.newInstance();
-        songLyricsFragment = SongLyricsFragment.newInstance();
-        selectionTypeFragment = SelectionTypeFragment.newInstance();
-        chordDisplayFragment = ChordDisplayFragment.newInstance();
-        chordDisplayFullscreenFragment = ChordDisplayFullscreenFragment.newInstance();
 
-        collectionSongListShowFragment = CollectionSongListShowFragment.newInstance();
         cookieTechFragmentManager.initCookieTechFragmentManager(getSupportFragmentManager());
         if(savedInstanceState == null){
-            navigateTo(NavigatorTags.LANDING_FRAGMENT,binding.mainFragmentHolder.getId());
-            mainViewModel.setNavigation(NavigatorTags.SPLASH_FRAGMENT,binding.mainFragmentHolder.getId());
+            navigateTo(new Navigator(NavigatorTags.LANDING_FRAGMENT,binding.mainFragmentHolder.getId(),null));
+            mainViewModel.setNavigation(NavigatorTags.SPLASH_FRAGMENT);
         }else{
             Log.d("akash_test_debug", "onCreate: restart ");
         }
@@ -146,9 +138,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void navigateTo(String tag,int containerId) {
 
-        if(containerId == 1){
+    private void navigateTo(Navigator navigator ) {
+        String tag = navigator.getNavigatorTag();
+        int containerId = navigator.getContainerId();
+        Bundle arg = navigator.getBundle();
+        if(navigator.getContainerId() == 1){
             containerId = binding.mainFragmentHolder.getId();
         }
 
@@ -156,40 +151,66 @@ public class MainActivity extends AppCompatActivity {
             cookieTechFragmentManager.popFragmentExclusive(tag);
         }else{
             if(tag.equals(NavigatorTags.LANDING_FRAGMENT)){
+                if(landingFragment == null)
+                    landingFragment = LandingFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(landingFragment, NavigatorTags.LANDING_FRAGMENT,containerId, R.anim.enter_zoom_in_fade_in,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_zoom_out_fade_out);
             }else if(tag.equalsIgnoreCase(NavigatorTags.SPLASH_FRAGMENT)){
+                if(splashFragment == null)
+                    splashFragment = SplashFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(splashFragment, NavigatorTags.SPLASH_FRAGMENT,containerId,0,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_left);
             }else if(tag.equalsIgnoreCase(NavigatorTags.CHORD_LIBRARY_FRAGMENT)){
+                if(chordLibraryFragment == null)
+                    chordLibraryFragment = ChordLibraryFragment.newInstance(AppSharedComponents.getRoots());
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordLibraryFragment,NavigatorTags.CHORD_LIBRARY_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.METRONOME_FRAGMENT)){
+                if(metronomeFragment == null)
+                    metronomeFragment = MetronomeFragment.newInstance(pendingIntent, AppSharedComponents.getTick(),AppSharedComponents.getTock());
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(metronomeFragment,NavigatorTags.METRONOME_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equals(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
+                if(searchResultFragment == null)
+                    searchResultFragment = SearchResultFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(searchResultFragment,NavigatorTags.SEARCH_RESULT_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT)){
+                if(collectionSongListShowFragment == null)
+                    collectionSongListShowFragment = CollectionSongListShowFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionSongListShowFragment,NavigatorTags.COLLECTION_SONG_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.TOP_SONG_LIST_FRAGMENT)){
+                if(topSongListFragment == null)
+                    topSongListFragment = TopSongListFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(topSongListFragment,NavigatorTags.TOP_SONG_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.SEARCH_VIEW_FRAGMENT)){
+                if(searchSuggestionFragment == null)
+                    searchSuggestionFragment = new SearchSuggestionFragment();
                 cookieTechFragmentManager.addFragmentToBackStack(searchSuggestionFragment,NavigatorTags.SEARCH_VIEW_FRAGMENT,containerId);
             }
             else if(tag.equals(NavigatorTags.SAVED_SONG_LIST_FRAGMENT)){
+                if(savedSongListFragment == null)
+                    savedSongListFragment = SavedSongListFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(savedSongListFragment,NavigatorTags.SAVED_SONG_LIST_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.SONG_DETAIL_FRAGMENT)){
+                if(songLyricsFragment == null)
+                    songLyricsFragment = SongLyricsFragment.newInstance();
                 if(cookieTechFragmentManager.getIsFragmentAvailable(NavigatorTags.CHORD_DISPLAY_FRAGMENT))
                     cookieTechFragmentManager.popFragment(NavigatorTags.CHORD_DISPLAY_FRAGMENT);
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(songLyricsFragment,NavigatorTags.SONG_DETAIL_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.SELECTION_TYPE_FRAGMENT)){
+                if(selectionTypeFragment == null)
+                    selectionTypeFragment = SelectionTypeFragment.newInstance(arg);
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(selectionTypeFragment,NavigatorTags.SELECTION_TYPE_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FRAGMENT)){
+                if(chordDisplayFragment == null)
+                    chordDisplayFragment = ChordDisplayFragment.newInstance();
                 if(cookieTechFragmentManager.getIsFragmentAvailable(NavigatorTags.SONG_DETAIL_FRAGMENT))
                     cookieTechFragmentManager.popFragment(NavigatorTags.SONG_DETAIL_FRAGMENT);
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFragment,NavigatorTags.CHORD_DISPLAY_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if (tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT)){
+                if(chordDisplayFullscreenFragment == null)
+                    chordDisplayFullscreenFragment = ChordDisplayFullscreenFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFullscreenFragment,NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }

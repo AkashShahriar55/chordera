@@ -35,14 +35,30 @@ public class SelectionTypeFragment extends ChorderaFragment{
     RecyclerView recyclerView;
     SelectionTypeShowingAdapter adapter;
     SongsPOJO selectedSong;
+    public static final String SONGS_POJO = "songs_pojo";
 
     public SelectionTypeFragment(){};
 
-    public static SelectionTypeFragment newInstance(){return new SelectionTypeFragment();};
+    public static Bundle createBundle(SongsPOJO songsPOJO){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SONGS_POJO,songsPOJO);
+        return bundle;
+    }
+
+    public static SelectionTypeFragment newInstance(Bundle args){
+        SelectionTypeFragment fragment = new SelectionTypeFragment();
+        fragment.setArguments(args);
+        return fragment;
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getArguments()!=null){
+            if(getArguments().getParcelable(SONGS_POJO) != null){
+                selectedSong = getArguments().getParcelable(SONGS_POJO);
+            }
+        }
     }
 
     @Nullable
@@ -99,7 +115,7 @@ public class SelectionTypeFragment extends ChorderaFragment{
         recyclerView.setAdapter(adapter);
 
         getData();
-
+        updateView();
 
         binding.btnBack.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -29,6 +30,10 @@ import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
+
+import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
@@ -178,8 +183,44 @@ public class LandingFragment extends ChorderaFragment {
         newItemAdapter = new NewItemAdapter(binding.rvNewItems);
         binding.rvNewItems.setHasFixedSize(true);
         binding.rvNewItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
-        binding.rvNewItems.setAdapter(newItemAdapter);
+        binding.rvNewItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.rvNewItems.setAdapter(newItemAdapter);
+                binding.rvNewItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvNewItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        mainViewModel.fetchNewSongsData().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                DatabaseResponse.Response response = databaseResponse.getResponse();
+                switch (response){
+                    case Error:
+                        break;
+                    case Fetched:
+                        break;
+                    case Fetching:
+                        break;
+                    case No_internet:
+                        break;
+                    case Invalid_data:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        mainViewModel.getNewSongsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<SongsPOJO>>() {
+            @Override
+            public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
+                newItemAdapter.setNewSongsData(songsPOJOS);
+            }
+        });
+
+
+
     }
 
 
