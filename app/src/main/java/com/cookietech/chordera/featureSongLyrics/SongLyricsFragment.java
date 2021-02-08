@@ -67,11 +67,19 @@ public class SongLyricsFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setUpViews();
         initializeClicks();
         initializeObserver();
         setupMenuSelector();
         if(RemoteConfigManager.shouldShowChordDisplayNativeAds())
             setUpNativeAdFragment();
+    }
+
+    private void setUpViews() {
+        isDarkModeActivated = mainViewModel.getObservableIsDarkModeActivated().getValue();
+        //mainViewModel.setIsDarkModeActivated(isDarkModeActivated);
+        binding.modeSwitch.setChecked(isDarkModeActivated);
+        toggleMode();
     }
 
     private void setUpNativeAdFragment() {
@@ -228,40 +236,26 @@ public class SongLyricsFragment extends ChorderaFragment {
                 }
             }
         });
+
+        /** View_Mode Observer for dark and light mode**/
+
+        mainViewModel.getObservableIsDarkModeActivated().observe(fragmentLifecycleOwner, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                Log.d("bishal_debug", "onChanged: called");
+                Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
+                isDarkModeActivated = aBoolean;
+                Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
+                toggleMode();
+            }
+        });
     }
 
     private void initializeClicks() {
-        binding.modeSwitch.setChecked(isDarkModeActivated);
         binding.modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                isDarkModeActivated = isChecked;
-                toggleMode();
-
-                if(isDarkModeActivated){
-                    binding.modeAnimationView.setText("Dark");
-                    binding.modeAnimationView.setTextColor(Color.WHITE);
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
-                    ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
-                    ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(250);
-                    animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
-                    animatorSet.start();
-
-                }else{
-                    binding.modeAnimationView.setText("Light");
-                    binding.modeAnimationView.setTextColor(Color.parseColor("#22374C"));
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
-                    ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
-                    ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
-                    AnimatorSet animatorSet = new AnimatorSet();
-                    animatorSet.setDuration(250);
-                    animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
-                    animatorSet.start();
-                }
-
+                mainViewModel.setIsDarkModeActivated(isChecked);
             }
         });
 
@@ -376,6 +370,15 @@ public class SongLyricsFragment extends ChorderaFragment {
         binding.tvSongLyrics.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvLyrics.setTextColor(getResources().getColor(R.color.colorPrimary));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.colorPrimary));
+        binding.modeAnimationView.setText(Constants.LIGHT_MODE);
+        binding.modeAnimationView.setTextColor(Color.parseColor("#22374C"));
+        ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
+        ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
+        ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(250);
+        animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
+        animatorSet.start();
     }
 
     private void activateDarkMode(){
@@ -384,6 +387,15 @@ public class SongLyricsFragment extends ChorderaFragment {
         binding.tvSongLyrics.setTextColor(getResources().getColor(R.color.white));
         binding.tvLyrics.setTextColor(getResources().getColor(R.color.white));
         binding.tvGenre.setTextColor(getResources().getColor(R.color.white));
+        binding.modeAnimationView.setText(Constants.DARK_MODE);
+        binding.modeAnimationView.setTextColor(Color.WHITE);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(binding.modeAnimationView, View.ALPHA, 0f,1f,0f);
+        ObjectAnimator zoomAnimationX = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_X, 0.5f,1f);
+        ObjectAnimator zoomAnimationY = ObjectAnimator.ofFloat(binding.modeAnimationView, View.SCALE_Y, 0.5f,1f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(250);
+        animatorSet.playTogether(animation,zoomAnimationX,zoomAnimationY);
+        animatorSet.start();
     }
 
     private void toggleMode() {

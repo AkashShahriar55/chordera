@@ -247,8 +247,10 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         transaction.commitAllowingStateLoss();
     }
     private void setUpViews() {
-        mainViewModel.setIsDarkModeActivated(isDarkModeActivated);
+        isDarkModeActivated = mainViewModel.getObservableIsDarkModeActivated().getValue();
+        //mainViewModel.setIsDarkModeActivated(isDarkModeActivated);
         binding.modeSwitch.setChecked(isDarkModeActivated);
+        toggleMode();
     }
 
     private void initializeAutoScrollSpeedUi() {
