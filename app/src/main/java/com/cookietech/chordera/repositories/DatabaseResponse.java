@@ -9,7 +9,9 @@ public class DatabaseResponse {
         Invalid_data,
         Stored,
         Storing,
-        Already_exist
+        Already_exist,
+        Updating,
+        Updated
     }
     String identifier;
     Exception errorException;

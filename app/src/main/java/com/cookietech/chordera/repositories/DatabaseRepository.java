@@ -4,7 +4,6 @@ import android.database.Observable;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +18,6 @@ import com.cookietech.chordera.Util.StringManipulationHelper;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
-import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.SearchData;
@@ -28,8 +26,6 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.cookietech.chordera.models.TabulatorChordStructure;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.cookietech.chordlibrary.ChordClass;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -37,10 +33,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
-import com.google.gson.JsonObject;
-import com.google.gson.internal.bind.TreeTypeAdapter;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +42,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,12 +53,14 @@ public class DatabaseRepository {
     private final SingleLiveEvent<TabPOJO> selectedTabLiveData = new SingleLiveEvent<>();
     private final SingleLiveEvent<DatabaseResponse> topTenResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<List<SongsEntity>> allSongs = new SingleLiveEvent<>();
-    private SongDataEntity songData;
+    private SingleLiveEvent<SongsEntity> roomFetchedSong  = new SingleLiveEvent<>();
     private SongsDao songsDao;
     private SongDataDao songDataDao;
     private SingleLiveEvent<DatabaseResponse> downloadSongDataResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> downloadSongResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> fetchAllSongsResponse = new SingleLiveEvent<>();
+    private SingleLiveEvent<DatabaseResponse> roomFetchedSongResponse = new SingleLiveEvent<>();
+    private SingleLiveEvent<DatabaseResponse> roomUpdateSongResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> newSongsResponse =new SingleLiveEvent<>();
     private SingleLiveEvent<ArrayList<SongsPOJO>> newSongsLiveData = new SingleLiveEvent<>();
 
@@ -186,8 +181,13 @@ public class DatabaseRepository {
 
     }
 
-    public SingleLiveEvent<List<SongsEntity>> roomFetchAllSongs(){
-        return allSongs;
+
+    public void roomFetchASong(String id) {
+        new RoomFetchASongAsyncTask().execute(id);
+    }
+
+    public void roomUpdateExistingSongData(SongsEntity fetchedSong) {
+        new roomUpdateExistingSongDataAsyncTask().execute(fetchedSong);
     }
 
     public SingleLiveEvent<DatabaseResponse> fetchNewSongsData() {
@@ -284,8 +284,6 @@ public class DatabaseRepository {
                 downloadSongDataResponse.postValue(new DatabaseResponse("song_data_download",null, DatabaseResponse.Response.Already_exist));
                 return false;
             }
-
-
         }
 
         @Override
@@ -309,6 +307,11 @@ public class DatabaseRepository {
         new RoomFetchAllSongsAsyncTask().execute();
     }
 
+
+
+    /**AsyncTask Section**/
+
+    /**AsyncTask for fetching all saved songs from Room Database**/
     private class RoomFetchAllSongsAsyncTask extends AsyncTask<SongDataEntity,Void,Void> {
 
 
@@ -331,13 +334,92 @@ public class DatabaseRepository {
         }
     }
 
+
+    /**AsyncTask for fetching a Song by a song ID from Room Database**/
+    private class RoomFetchASongAsyncTask extends AsyncTask<String,Void,Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            roomFetchedSongResponse.setValue(new DatabaseResponse("room_fetch_a_song_response",null, DatabaseResponse.Response.Fetching ));
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                roomFetchedSong.postValue(songsDao.roomFetchASong(strings[0]));
+                return true;
+            }catch (SQLiteConstraintException exception){
+                Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
+                roomFetchedSongResponse.postValue(new DatabaseResponse("room_fetch_a_song_response",null, DatabaseResponse.Response.Error));
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                roomFetchedSongResponse.setValue(new DatabaseResponse("room_fetch_a_song_response",null, DatabaseResponse.Response.Fetched));
+            super.onPostExecute(isSuccess);
+        }
+
+    }
+
+    /**AsyncTask for updating song_data field **/
+    //roomUpdateSongResponse
+
+    private class roomUpdateExistingSongDataAsyncTask extends AsyncTask<SongsEntity,Void,Boolean>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            roomUpdateSongResponse.setValue(new DatabaseResponse("room_update_song_response",null, DatabaseResponse.Response.Updating));
+        }
+
+        @Override
+        protected Boolean doInBackground(SongsEntity... songsEntities) {
+            try{
+                //roomFetchedSong.postValue(songsDao.roomFetchASong(songsEntities[0]));
+                songsDao.roomUpdateExistingSongData(songsEntities[0].getSong_id(),songsEntities[0].getSong_data());
+                return true;
+            }catch (SQLiteConstraintException exception){
+                Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
+                roomUpdateSongResponse.postValue(new DatabaseResponse("room_update_song_response",null, DatabaseResponse.Response.Error));
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                roomUpdateSongResponse.setValue(new DatabaseResponse("room_update_song_response",null, DatabaseResponse.Response.Updated));
+            super.onPostExecute(isSuccess);
+        }
+    }
+
     public SingleLiveEvent<List<SongsEntity>> getObservableAllSongs() {
         return allSongs;
     }
 
+    public SingleLiveEvent<SongsEntity> getObservableRoomFetchedSong() {
+        return roomFetchedSong;
+    }
+
+
     public SingleLiveEvent<DatabaseResponse> getObservableFetchAllSongsResponse() {
         return fetchAllSongsResponse;
+
     }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableRoomFetchedSongResponse() {
+        return roomFetchedSongResponse;
+    }
+
+
+    public SingleLiveEvent<DatabaseResponse> getObservableRoomUpdateSongResponse() {
+        return roomUpdateSongResponse;
+    }
+
 
     private void fetchSongData(String song_data_id){
        new RoomFetchSongDataAsyncTask().execute(song_data_id);
@@ -359,17 +441,6 @@ public class DatabaseRepository {
             fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch", null, DatabaseResponse.Response.Storing));
         }
 
-        /*@Override
-        protected Void doInBackground(SongDataEntity... songDataEntities) {
-            allSongs.postValue(songsDao.roomFetchAllSongs());
-            return null;
-        }*/
-
-        /*@Override
-        protected void onPostExecute(Void aVoid) {
-            fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch",null, DatabaseResponse.Response.Stored));
-            super.onPostExecute(aVoid);
-        }*/
 
         @Override
         protected void onPostExecute(SongDataEntity entity) {
@@ -525,4 +596,6 @@ public class DatabaseRepository {
         });*/
 
     }
+
+
 }

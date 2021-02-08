@@ -21,6 +21,7 @@ import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Splash.SplashFragment;
 import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.chordDisplay.ChordDisplayFragment;
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(root);
 
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        /** Bishal Work**/
+        /**For sharedpref**/
+
+        setUpFromSharedPref();
 
         navigationObserver = new Observer<Navigator>() {
             @Override
@@ -137,6 +143,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void setUpFromSharedPref() {
+        mainViewModel.setIsDarkModeActivated(SharedPreferenceManager.getSharedPrefViewMode());
+    }
+
+    private void saveToSharedPref(){
+
+        SharedPreferenceManager.addSharedPrefViewModel(mainViewModel.getObservableIsDarkModeActivated().getValue());
     }
 
 
@@ -225,6 +240,11 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        saveToSharedPref();
+    }
 
     @Override
     public void onBackPressed() {

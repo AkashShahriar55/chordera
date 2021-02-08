@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class SharedPreferenceManager {
     public static final String SEARCH_HISTORY = "search_history";
+    public static final String VIEW_MODE = "view_mode";
 
     public static void addSharedPrefSearchHistory(String keyword){
         SharedPreferences myPreference = PreferenceManager.getDefaultSharedPreferences(ChorderaApplication.getContext());
@@ -26,5 +27,17 @@ public class SharedPreferenceManager {
     public static Set<String> getSharedPrefSearchHistory() {
         SharedPreferences myPreference = PreferenceManager.getDefaultSharedPreferences(ChorderaApplication.getContext());
         return myPreference.getStringSet(SEARCH_HISTORY,null);
+    }
+
+    public static void addSharedPrefViewModel(boolean isDarkModeActivated){
+        SharedPreferences myPreference = PreferenceManager.getDefaultSharedPreferences(ChorderaApplication.getContext());
+        SharedPreferences.Editor editor = myPreference.edit();
+        editor.putBoolean(VIEW_MODE,isDarkModeActivated);
+        editor.apply();
+    }
+
+    public static boolean getSharedPrefViewMode(){
+        SharedPreferences myPreference = PreferenceManager.getDefaultSharedPreferences(ChorderaApplication.getContext());
+        return myPreference.getBoolean(VIEW_MODE, false);
     }
 }
