@@ -31,6 +31,7 @@ import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 
@@ -83,8 +84,7 @@ public class LandingFragment extends ChorderaFragment {
         initializeViews();
         adJustViews();
         initializeClickEvents();
-
-
+        mainViewModel.bindSearch(binding.edtSearchBox);
     }
 
     private void initializeClickEvents() {
@@ -133,6 +133,7 @@ public class LandingFragment extends ChorderaFragment {
            }
        });
 
+
         binding.edtSearchBox.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -178,7 +179,8 @@ public class LandingFragment extends ChorderaFragment {
     private void initializeViews() {
         initializeNewRecyclerView();
         initializeCollectionRecyclerView();
-        mainViewModel.bindSearchBox(binding.edtSearchBox);
+
+        //mainViewModel.bindSearchBox(binding.edtSearchBox);
     }
 
     private void initializeCollectionRecyclerView() {

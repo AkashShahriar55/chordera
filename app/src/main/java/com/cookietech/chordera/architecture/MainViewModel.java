@@ -4,53 +4,49 @@ package com.cookietech.chordera.architecture;
 
 import android.app.Application;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 import com.cookietech.chordlibrary.ChordClass;
-import com.google.gson.JsonStreamParser;
-/*import com.google.gson.JsonStreamParser;
-import com.jakewharton.rxbinding2.widget.RxTextView;*/
+import com.jakewharton.rxbinding4.widget.RxTextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-/*import java.util.concurrent.TimeUnit;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;*/
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.functions.Consumer;
 
 
 public class MainViewModel extends AndroidViewModel {
     private WeakReference<EditText> searchBox;
-    private SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
-    private DatabaseRepository databaseRepository = new DatabaseRepository();
-    @NonNull private SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
-    private SingleLiveEvent<SongsPOJO> selectedSong = new SingleLiveEvent<>();
-    private SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
-    private MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
-    private SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
-    private SingleLiveEvent<Boolean> isDarkModeActivated = new SingleLiveEvent<>();
-    private SingleLiveEvent<Integer> transposeValue = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> searchKeyword = new SingleLiveEvent<>();
+    private final DatabaseRepository databaseRepository = new DatabaseRepository();
+    @NonNull private final SingleLiveEvent<Navigator> navigation = new SingleLiveEvent<>();
+    private final SingleLiveEvent<SongsPOJO> selectedSong = new SingleLiveEvent<>();
+    private final SingleLiveEvent<SelectionType> selectedType = new SingleLiveEvent<>();
+    private final MutableLiveData<String> songListShowingCalledFrom = new MutableLiveData<>();
+    private final SingleLiveEvent<String> loadTabCalledFor = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Boolean> isDarkModeActivated = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Integer> transposeValue = new SingleLiveEvent<>();
+    private final MutableLiveData<Boolean> mLoadingLiveData = new MutableLiveData<>();
 
     public MainViewModel(@NonNull Application application) {
         super(application);
@@ -78,8 +74,8 @@ public class MainViewModel extends AndroidViewModel {
         setNavigation(navigateTo,1,null);
     }
 
-    public void bindSearchBox(EditText edtSearchBox) {
-/*        RxTextView.textChanges(edtSearchBox)
+/*    public void bindSearchBox(EditText edtSearchBox) {
+*//*        RxTextView.textChanges(edtSearchBox)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(it -> {
@@ -108,7 +104,7 @@ public class MainViewModel extends AndroidViewModel {
                     public void onComplete() {
 
                     }
-                });*/
+                });*//*
         searchBox = new WeakReference<EditText>(edtSearchBox);
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -128,7 +124,7 @@ public class MainViewModel extends AndroidViewModel {
         };
 
         searchBox.get().addTextChangedListener(textWatcher);
-    }
+    }*/
 
 
     public SingleLiveEvent<String> getObservableSearchKeyword(){
@@ -271,5 +267,33 @@ public class MainViewModel extends AndroidViewModel {
 
     public SingleLiveEvent<ArrayList<SongsPOJO>> getNewSongsData(){
         return databaseRepository.getNewSongsLiveData();
+    }
+
+
+
+    ///searching
+    private final MutableLiveData<DatabaseResponse> mSearchResponses = new MutableLiveData<>();
+
+    public MutableLiveData<DatabaseResponse> getObservableSearchResponses() {
+        return databaseRepository.getObservableSearchResponse();
+    }
+
+    public void bindSearch(EditText searchView){
+        RxTextView.textChanges(searchView)
+                .skipInitialValue()
+                .debounce(500,TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<CharSequence>() {
+                    @Override
+                    public void accept(CharSequence charSequence) throws Throwable {
+                        Log.d("debounce_debug", "accept: " + charSequence);
+                        if(!TextUtils.isEmpty(charSequence))
+                            databaseRepository.getSearchResults(charSequence.toString());
+                    }
+                });
+    }
+
+    public SingleLiveEvent<ArrayList<SearchData>> getObservableSearchResult() {
+        return databaseRepository.getObservableSearchResults();
     }
 }

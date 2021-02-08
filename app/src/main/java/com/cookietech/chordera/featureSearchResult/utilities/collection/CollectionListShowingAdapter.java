@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
-import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.databinding.FragmentSearchResultRecyclerViewBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.models.Collection;

@@ -1,5 +1,6 @@
 package com.cookietech.chordera.repositories;
 
+import android.database.Observable;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.application.ChorderaApplication;
+import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
@@ -36,7 +38,13 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.FirebaseFunctionsException;
+import com.google.firebase.functions.HttpsCallableResult;
+import com.google.gson.JsonObject;
 import com.google.gson.internal.bind.TreeTypeAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,6 +230,8 @@ public class DatabaseRepository {
     public SingleLiveEvent<ArrayList<SongsPOJO>> getNewSongsLiveData() {
         return newSongsLiveData;
     }
+
+
 
     private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
 
@@ -451,13 +461,54 @@ public class DatabaseRepository {
         return tabDisplayChords;
     }
 
+    private final SingleLiveEvent<ArrayList<SearchData>> searchResults = new SingleLiveEvent<>();
+
+    public SingleLiveEvent<ArrayList<SearchData>> getObservableSearchResults() {
+        return searchResults;
+    }
+
+    private final SingleLiveEvent<DatabaseResponse> searchResponse = new SingleLiveEvent<>();
+
+    public SingleLiveEvent<DatabaseResponse> getObservableSearchResponse() {
+        return searchResponse;
+    }
+
     public void getSearchResults(String searchString){
-        firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(new OnCompleteListener<String>() {
+        searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetching));
+        firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(new OnCompleteListener<HttpsCallableResult>() {
+            @Override
+            public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                if(task.isSuccessful()){
+                    ArrayList<SearchData> allData = new ArrayList<>();
+                    String jsonString = task.getResult().getData().toString();
+                    try {
+                        JSONObject jsonObject = new JSONObject(jsonString);
+                        JSONArray jsonArray = jsonObject.getJSONArray("data");
+                        if(jsonArray.length()<=0)
+                            searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Invalid_data));
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            SearchData singleData = SearchData.fromJson(object);
+                            if(singleData!= null)
+                                allData.add(singleData);
+                                Log.d("search_result", "onComplete: " + singleData);
+                        }
+                        searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetched));
+                        searchResults.setValue(allData);
+                    } catch (JSONException e) {
+                        searchResponse.setValue(new DatabaseResponse("search_response",e, DatabaseResponse.Response.Error));
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+    /*.addOnCompleteListener(new OnCompleteListener<String>() {
 
             @Override
             public void onComplete(@NonNull Task<String> task) {
                 if (task.isSuccessful()){
-                    Log.d(MY_TAG, "onComplete: task successful");
+                    Log.d(MY_TAG, "onComplete: task successful" + task.getResult());
                 }
                 else {
                     Log.d(MY_TAG, "onComplete: task is not successful");
@@ -471,7 +522,7 @@ public class DatabaseRepository {
                     }
                 }
             }
-        });
+        });*/
 
     }
 }
