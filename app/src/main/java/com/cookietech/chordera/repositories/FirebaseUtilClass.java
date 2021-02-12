@@ -98,6 +98,10 @@ public class FirebaseUtilClass {
                 });*/
     }
 
+    public void querySearchedSong(String id,EventListener<DocumentSnapshot> eventListener) {
+        songsCollection.document(id).addSnapshotListener(eventListener);
+    }
+
 
     public interface DatabaseUpdateListener{
         void onTopTenDataUpdated(List<SongsPOJO> songsPOJOList);

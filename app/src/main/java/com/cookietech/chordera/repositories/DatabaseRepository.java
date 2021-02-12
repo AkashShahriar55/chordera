@@ -232,6 +232,41 @@ public class DatabaseRepository {
     }
 
 
+    private SingleLiveEvent<SongsPOJO> searchSelectedSong = new SingleLiveEvent<>();
+    private SingleLiveEvent<DatabaseResponse> searchSelectionResponse = new SingleLiveEvent<>();
+    public SingleLiveEvent<SongsPOJO> getObservableSearchSelectedSong(){
+        return  searchSelectedSong;
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableSearchSelectionResponse(){
+        return searchSelectionResponse;
+    }
+    public void downloadSearchedDataAndNavigate(SearchData data) {
+        Log.d("search_debug", "downloadSearchedDataAndNavigate: start");
+        firebaseUtilClass.querySearchedSong(data.getId(), (value, error) -> {
+            Log.d("search_debug", "downloadSearchedDataAndNavigate: " + error);
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            if (value != null) {
+                try{
+                    SongsPOJO song = value.toObject(SongsPOJO.class);
+                    song.setId(value.getId());
+                    searchSelectedSong.setValue(song);
+                    Log.d("search_debug", "downloadSearchedDataAndNavigate: " + song);
+                }catch (Exception e){
+                    searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",e, DatabaseResponse.Response.Error));
+                }
+
+            }else{
+                searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",null, DatabaseResponse.Response.Invalid_data));
+            }
+        });
+    }
+
 
     private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
 
@@ -545,27 +580,33 @@ public class DatabaseRepository {
     }
 
     public void getSearchResults(String searchString){
+        Log.d("search_debug", "downloadSearchedDataAndNavigate: start");
         searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetching));
         firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(new OnCompleteListener<HttpsCallableResult>() {
             @Override
             public void onComplete(@NonNull Task<HttpsCallableResult> task) {
+                Log.d("search_debug", "downloadSearchedDataAndNavigate: start" + task.getResult().getData());
                 if(task.isSuccessful()){
                     ArrayList<SearchData> allData = new ArrayList<>();
                     String jsonString = task.getResult().getData().toString();
                     try {
                         JSONObject jsonObject = new JSONObject(jsonString);
                         JSONArray jsonArray = jsonObject.getJSONArray("data");
-                        if(jsonArray.length()<=0)
+                        if(jsonArray.length()<=0){
                             searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Invalid_data));
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject object = jsonArray.getJSONObject(i);
-                            SearchData singleData = SearchData.fromJson(object);
-                            if(singleData!= null)
-                                allData.add(singleData);
-                                Log.d("search_result", "onComplete: " + singleData);
                         }
-                        searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetched));
-                        searchResults.setValue(allData);
+                        else{
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                SearchData singleData = SearchData.fromJson(object);
+                                if(singleData!= null)
+                                    allData.add(singleData);
+                                Log.d("search_result", "onComplete: " + singleData);
+                            }
+                            searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetched));
+                            searchResults.setValue(allData);
+                        }
+
                     } catch (JSONException e) {
                         searchResponse.setValue(new DatabaseResponse("search_response",e, DatabaseResponse.Response.Error));
                         e.printStackTrace();

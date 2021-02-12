@@ -44,8 +44,8 @@ public class CollectionItemAdapter extends RecyclerView.Adapter<CollectionItemAd
             super(itemView);
             newItemHolder = itemView.findViewById(R.id.cv_new_item_holder);
 
-            newItemHolder.getLayoutParams().width = (int) (size*1.4);
-            newItemHolder.getLayoutParams().height= size;
+//            newItemHolder.getLayoutParams().width = (int) (size*1.4);
+//            newItemHolder.getLayoutParams().height= size;
         }
     }
 }

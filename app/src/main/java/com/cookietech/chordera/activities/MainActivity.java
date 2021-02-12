@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(topSongListFragment,NavigatorTags.TOP_SONG_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.SEARCH_VIEW_FRAGMENT)){
                 if(searchSuggestionFragment == null)
-                    searchSuggestionFragment = new SearchSuggestionFragment();
+                    searchSuggestionFragment = SearchSuggestionFragment.newInstance(arg);
                 cookieTechFragmentManager.addFragmentToBackStack(searchSuggestionFragment,NavigatorTags.SEARCH_VIEW_FRAGMENT,containerId);
             }
             else if(tag.equals(NavigatorTags.SAVED_SONG_LIST_FRAGMENT)){
@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("flow_debug", "onBackPressed: ");
         if(Objects.requireNonNull(mainViewModel.getNavigation().getValue()).getNavigatorTag().equalsIgnoreCase( NavigatorTags.SPLASH_FRAGMENT)){
             return;
         }
@@ -263,8 +264,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Fragment topFragment = cookieTechFragmentManager.getTopFragment();
+        Log.d("flow_debug", "onBackPressed: "+ topFragment);
         if(topFragment instanceof ChorderaFragment){
-
+            Log.d("flow_debug", "onBackPressed: topFragment instanceof ChorderaFragment ");
             boolean handled = ((ChorderaFragment) topFragment).onBackPressed(mainViewModel.getNavigation().getValue());
             Log.d("akash_debug", "main onBackPressed: " + handled + " "+topFragment.getTag());
             if(handled){

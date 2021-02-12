@@ -1,5 +1,7 @@
 package com.cookietech.chordera.SearchSuggestion;
 
+import android.graphics.ImageDecoder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.Landing.NewItemAdapter;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.models.SearchData;
 
 import java.util.ArrayList;
@@ -19,10 +22,15 @@ import java.util.ArrayList;
 public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapter.SearchResultViewHolder> {
 
     private ArrayList<SearchData> searchData = new ArrayList<>();
+    private MainViewModel mainViewModel;
+    public SearchResultAdapter(MainViewModel mainViewModel) {
+        this.mainViewModel = mainViewModel;
+    }
 
     public void setSearchData(ArrayList<SearchData> searchData) {
         this.searchData = searchData;
-        notifyDataSetChanged();
+
+        Log.d("search_result", "setSearchData: "+ this.searchData.size());
     }
 
     @NonNull
@@ -35,21 +43,24 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     @Override
     public void onBindViewHolder(@NonNull SearchResultViewHolder holder, int position) {
+            Log.d("search_result", "onBindViewHolder: " + position);
             SearchData data = searchData.get(position);
             holder.bind(data);
     }
 
     @Override
     public int getItemCount() {
+        Log.d("search_result", "reset: ");
         return searchData.size();
     }
 
     public void reset() {
+        Log.d("search_result", "reset: ");
         searchData.clear();
         notifyDataSetChanged();
     }
 
-    public static class SearchResultViewHolder extends RecyclerView.ViewHolder{
+    public class SearchResultViewHolder extends RecyclerView.ViewHolder{
 
         public TextView tvViews;
         public TextView tvSongName;
@@ -67,6 +78,12 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             tvSongName.setText(data.getSong_name());
             tvArtistName.setText(data.getArtist_name());
             tvViews.setText(String.valueOf(data.getViews()));
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mainViewModel.downloadSearchedDataAndNavigate(data);
+                }
+            });
         }
     }
 }

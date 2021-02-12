@@ -241,7 +241,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     }
 
     private void setUpNativeAdFragment() {
-        FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+        FragmentTransaction transaction =   getChildFragmentManager().beginTransaction();
         Fragment adFragment = NativeAdsFragment.newInstance();
         transaction.add(binding.nativeAdHolder.getId(), adFragment);
         transaction.commitAllowingStateLoss();

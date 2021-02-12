@@ -22,8 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.SearchSuggestion.SearchSongCommunicator;
 import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Util.ViewUtils;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
@@ -51,8 +53,6 @@ public class LandingFragment extends ChorderaFragment {
     private FragmentLandingBinding binding;
     private NewItemAdapter newItemAdapter;
     private CollectionItemAdapter collectionItemAdapter;
-    private CookieTechFragmentManager fragmentManager;
-    private SearchSuggestionFragment searchSuggestionFragment;
 
     public LandingFragment() {
         // Required empty public constructor
@@ -79,8 +79,7 @@ public class LandingFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fragmentManager = CookieTechFragmentManager.getInstance();
-        searchSuggestionFragment = new SearchSuggestionFragment();
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
         initializeViews();
         adJustViews();
         initializeClickEvents();
@@ -112,8 +111,24 @@ public class LandingFragment extends ChorderaFragment {
            public void onFocusChange(View v, boolean hasFocus) {
 
                if(hasFocus){
+                   Log.d("flow_debug", "onSearchedSongSelected: ");
                    binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
-                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId());
+                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId(),SearchSuggestionFragment.createBundle(new SearchSongCommunicator() {
+                       @Override
+                       public void onSearchedSongSelected() {
+                           Log.d("flow_debug", "onSearchedSongSelected: ");
+                           ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+                       }
+
+                       @Override
+                       public void onBackButtonClicked() {
+                           Log.d("flow_debug", "onBackButtonClicked: ");
+                           binding.edtSearchBox.setText("");
+                           binding.edtSearchBox.clearFocus();
+                           binding.ivCancelSearchButton.setVisibility(View.GONE);
+                           ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+                       }
+                   }));
                }else{
                    binding.ivCancelSearchButton.setVisibility(View.GONE);
                }
@@ -126,8 +141,10 @@ public class LandingFragment extends ChorderaFragment {
        binding.ivCancelSearchButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               Log.d("flow_debug", "ivCancelSearchButton: ");
+               binding.edtSearchBox.setText("");
                binding.edtSearchBox.clearFocus();
-               v.setVisibility(View.GONE);
+               binding.ivCancelSearchButton.setVisibility(View.GONE);
                ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,binding.searchFragmentContainer.getId() );
            }
@@ -140,9 +157,10 @@ public class LandingFragment extends ChorderaFragment {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     Log.i("akash_debug","Enter pressed");
                     ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
-                    mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
-                    binding.edtSearchBox.setText("");
-                    mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT,1);
+                    //next version
+//                    mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
+//                    binding.edtSearchBox.setText("");
+//                    mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT,1);
                 }
                 return false;
             }
@@ -192,7 +210,7 @@ public class LandingFragment extends ChorderaFragment {
     }
 
     private void initializeNewRecyclerView() {
-        newItemAdapter = new NewItemAdapter(binding.rvNewItems);
+        newItemAdapter = new NewItemAdapter(binding.rvNewItems,mainViewModel);
         binding.rvNewItems.setHasFixedSize(true);
         binding.rvNewItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         binding.rvNewItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -230,7 +248,6 @@ public class LandingFragment extends ChorderaFragment {
                 newItemAdapter.setNewSongsData(songsPOJOS);
             }
         });
-
 
 
     }
@@ -285,6 +302,12 @@ public class LandingFragment extends ChorderaFragment {
 
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("akash_debug", "onResume: ");
     }
 
     @Override

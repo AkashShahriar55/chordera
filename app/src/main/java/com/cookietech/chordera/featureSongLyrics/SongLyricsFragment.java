@@ -83,7 +83,7 @@ public class SongLyricsFragment extends ChorderaFragment {
     }
 
     private void setUpNativeAdFragment() {
-        FragmentTransaction transaction = requireFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         Fragment adFragment = NativeAdsFragment.newInstance();
         transaction.add(binding.nativeAdContainer.getId(),adFragment);
         transaction.commitAllowingStateLoss();

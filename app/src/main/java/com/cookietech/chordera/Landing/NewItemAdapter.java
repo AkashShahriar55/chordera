@@ -1,8 +1,10 @@
 package com.cookietech.chordera.Landing;
 
+import android.graphics.ImageDecoder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,16 +14,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.architecture.MainViewModel;
+import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
 import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;
 
 public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemViewHolder> {
+    private final MainViewModel mainViewModel;
     RecyclerView newItemRecyclerView;
     ArrayList<SongsPOJO> newSongsData= new ArrayList<>();
 
-    public NewItemAdapter(RecyclerView newItemRecyclerView) {
+    public NewItemAdapter(RecyclerView newItemRecyclerView, MainViewModel mainViewModel) {
         this.newItemRecyclerView = newItemRecyclerView;
+        this.mainViewModel = mainViewModel;
     }
 
 
@@ -45,6 +52,13 @@ public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemV
         holder.tvViews.setText(""+songsPOJO.getViews());
         holder.tvArtistName.setText(songsPOJO.getArtist_name());
         holder.tvSongName.setText(songsPOJO.getSong_name());
+        holder.newItemHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songsPOJO));
+                mainViewModel.setSelectedSong(songsPOJO);
+            }
+        });
         Glide.with(holder.itemView).load(songsPOJO.getImage_url()).thumbnail(0.5f).centerCrop().into(holder.ivBackground);
     }
 
@@ -68,9 +82,17 @@ public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemV
             tvSongName = itemView.findViewById(R.id.tv_song_name);
             tvArtistName = itemView.findViewById(R.id.tv_artist);
             ivBackground = itemView.findViewById(R.id.iv_background);
-            newItemHolder.getLayoutParams().width = (int) (size*0.8);
-            newItemHolder.getLayoutParams().height= size;
-            newItemHolder.setRadius(10);
+//            itemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                @Override
+//                public void onGlobalLayout() {
+//                    newItemHolder.getLayoutParams().width = (int) (size*0.8);
+//                    newItemHolder.getLayoutParams().height= size;
+//                    newItemHolder.setRadius(10);
+//                    itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//                }
+//            });
+
+
         }
     }
 }

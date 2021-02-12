@@ -321,4 +321,18 @@ public class MainViewModel extends AndroidViewModel {
     public SingleLiveEvent<ArrayList<SearchData>> getObservableSearchResult() {
         return databaseRepository.getObservableSearchResults();
     }
+
+
+
+    public void downloadSearchedDataAndNavigate(SearchData data) {
+        databaseRepository.downloadSearchedDataAndNavigate(data);
+    }
+
+    public SingleLiveEvent<SongsPOJO> getObservableSearchSelectedSong(){
+        return  databaseRepository.getObservableSearchSelectedSong();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableSearchSelectionResponse(){
+        return databaseRepository.getObservableSearchSelectionResponse();
+    }
 }
