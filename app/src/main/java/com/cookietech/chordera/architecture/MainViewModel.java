@@ -10,12 +10,14 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
+import com.cookietech.chordera.models.CollectionsPOJO;
 import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SelectionType;
@@ -334,5 +336,41 @@ public class MainViewModel extends AndroidViewModel {
 
     public SingleLiveEvent<DatabaseResponse> getObservableSearchSelectionResponse(){
         return databaseRepository.getObservableSearchSelectionResponse();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> fetchCollectionsData() {
+        return databaseRepository.fetchCollectionsData();
+    }
+    public SingleLiveEvent<ArrayList<CollectionsPOJO>> getObservableCollectionsData() {
+        return databaseRepository.getObservableCollectionsData();
+    }
+
+    public void stopListeningNewSongs(){
+        databaseRepository.stopListeningNewSongs();
+    }
+
+    private void stopListeningAllNewSongs() {
+        databaseRepository.stopListeningAllNewSongs();
+    }
+
+    public SingleLiveEvent<ArrayList<SongsPOJO>> getObservableAllNewSongsLiveData() {
+        return databaseRepository.getObservableAllNewSongsLiveData();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> fetchAllNewSongsData() {
+        return databaseRepository.fetchAllNewSongsData();
+    }
+
+
+    public SingleLiveEvent<DatabaseResponse> fetchCollectionSongs(String response) {
+        return databaseRepository.fetchCollectionSongs(response);
+    }
+
+    public void stopListeningCollectionSongsData() {
+        databaseRepository.stopListeningCollectionSongsData();
+    }
+
+    public LiveData<ArrayList<SongsPOJO>> getObservableCollectionSongsData() {
+        return databaseRepository.getObservableCollectionSongsData();
     }
 }

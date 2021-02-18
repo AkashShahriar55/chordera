@@ -1,12 +1,12 @@
 package com.cookietech.chordera.repositories;
 
-import android.database.Observable;
 import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 
 
 import com.cookietech.chordera.Room.SongDataDao;
@@ -20,6 +20,7 @@ import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.application.ChorderaApplication;
+import com.cookietech.chordera.models.CollectionsPOJO;
 import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
@@ -215,12 +216,57 @@ public class DatabaseRepository {
                 }
                 newSongsLiveData.setValue(songs);
                 newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetched));
+                stopListeningNewSongs();
             }else{
                 newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Invalid_data));
             }
         });
 
         return newSongsResponse;
+    }
+
+    SingleLiveEvent<DatabaseResponse> allNewSongsResponse = new SingleLiveEvent<>();
+    private ListenerRegistration allNewSongListenerRegistration;
+    SingleLiveEvent<ArrayList<SongsPOJO>> allNewSongsLiveData = new SingleLiveEvent<>();
+    public SingleLiveEvent<DatabaseResponse> fetchAllNewSongsData() {
+        allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Fetching));
+        if(allNewSongListenerRegistration != null)
+            stopListeningAllNewSongs();
+        newSongDataListenerRegistration = firebaseUtilClass.queryAllNewSongsData((snapshots, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            ArrayList<SongsPOJO> songs = new ArrayList<>();
+            if (snapshots != null) {
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    try{
+                        SongsPOJO song = doc.toObject(SongsPOJO.class);
+                        song.setId(doc.getId());
+                        songs.add(song);
+                    }catch (Exception e){
+
+                    }
+
+                }
+                allNewSongsLiveData.setValue(songs);
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Fetched));
+            }else{
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Invalid_data));
+            }
+        });
+
+        return allNewSongsResponse;
+    }
+
+    public void stopListeningAllNewSongs() {
+        allNewSongListenerRegistration.remove();
+    }
+
+    public SingleLiveEvent<ArrayList<SongsPOJO>> getObservableAllNewSongsLiveData() {
+        return allNewSongsLiveData;
     }
 
     public SingleLiveEvent<DatabaseResponse> getNewSongsResponse() {
@@ -265,6 +311,99 @@ public class DatabaseRepository {
                 searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",null, DatabaseResponse.Response.Invalid_data));
             }
         });
+    }
+
+    private final SingleLiveEvent<DatabaseResponse> collectionResponse = new SingleLiveEvent<>();
+    private final SingleLiveEvent<ArrayList<CollectionsPOJO>> collectionsData = new SingleLiveEvent<>();
+    private ListenerRegistration collectionDataListenerRegistration;
+    public SingleLiveEvent<DatabaseResponse> fetchCollectionsData() {
+        collectionResponse.setValue(new DatabaseResponse("collections_response",null, DatabaseResponse.Response.Fetching));
+        if(collectionDataListenerRegistration != null)
+            stopListeningCollectionData();
+        collectionDataListenerRegistration = firebaseUtilClass.queryCollectionsData((snapshots, error) -> {
+            if (error != null) {
+                Log.d("collection_debug", "fetchCollectionsData: "+ error);
+                collectionResponse.setValue(new DatabaseResponse("collections_response",error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            ArrayList<CollectionsPOJO> collections = new ArrayList<>();
+            if (snapshots != null) {
+                Log.d("collection_debug", "fetchCollectionsData: "+ snapshots.size());
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    try{
+                        CollectionsPOJO collection = doc.toObject(CollectionsPOJO.class);
+                        collection.setId(doc.getId());
+                        collections.add(collection);
+
+                    }catch (Exception e){
+                        Log.d("collection_debug", "fetchCollectionsData: "+ e);
+                    }
+
+                }
+                collectionsData.setValue(collections);
+                collectionResponse.setValue(new DatabaseResponse("collections_response",null, DatabaseResponse.Response.Fetched));
+            }else{
+                collectionResponse.setValue(new DatabaseResponse("collections_response",null, DatabaseResponse.Response.Invalid_data));
+            }
+        });
+
+        return collectionResponse;
+    }
+
+    public SingleLiveEvent<ArrayList<CollectionsPOJO>> getObservableCollectionsData() {
+        return collectionsData;
+    }
+
+    private void stopListeningCollectionData() {
+        collectionDataListenerRegistration.remove();
+    }
+
+
+    private SingleLiveEvent<DatabaseResponse> collectionSongsDatabaseResponse = new SingleLiveEvent<>();
+    private SingleLiveEvent<ArrayList<SongsPOJO>> collectionSongsData = new SingleLiveEvent<>();
+    private ListenerRegistration collectionSongsListenerRegistration;
+    public SingleLiveEvent<DatabaseResponse> fetchCollectionSongs(String response) {
+        collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response",null, DatabaseResponse.Response.Fetching));
+        if(collectionSongsListenerRegistration != null)
+            stopListeningCollectionSongsData();
+        collectionSongsListenerRegistration = firebaseUtilClass.queryCollectionSongsData(response,(snapshots, error) -> {
+            if (error != null) {
+                Log.d("collection_debug", "fetchCollectionsData: "+ error);
+                collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response",error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            ArrayList<SongsPOJO> collectionSongs = new ArrayList<>();
+            if (snapshots != null) {
+                Log.d("collection_debug", "fetchCollectionsData: "+ snapshots.size());
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    try{
+                        SongsPOJO collectionSong = doc.toObject(SongsPOJO.class);
+                        collectionSong.setId(doc.getId());
+                        collectionSongs.add(collectionSong);
+
+                    }catch (Exception e){
+                        Log.d("collection_debug", "fetchCollectionsData: "+ e);
+                    }
+
+                }
+                this.collectionSongsData.setValue(collectionSongs);
+                collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response",null, DatabaseResponse.Response.Fetched));
+            }else{
+                collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response",null, DatabaseResponse.Response.Invalid_data));
+            }
+        });
+
+        return collectionResponse;
+    }
+
+    public void stopListeningCollectionSongsData() {
+        collectionSongsListenerRegistration.remove();
+    }
+
+    public LiveData<ArrayList<SongsPOJO>> getObservableCollectionSongsData() {
+        return collectionSongsData;
     }
 
 

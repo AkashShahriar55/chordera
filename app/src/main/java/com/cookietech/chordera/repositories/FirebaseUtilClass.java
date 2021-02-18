@@ -31,6 +31,7 @@ public class FirebaseUtilClass {
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
     public CollectionReference songsCollection = db.collection("songs");
     public CollectionReference tabsCollection = db.collection("song_data");
+    public CollectionReference collectionsCollection = db.collection("collections");
     //For Cloud Funtions
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
@@ -52,7 +53,19 @@ public class FirebaseUtilClass {
     }
 
     public ListenerRegistration queryNewSongsData(EventListener<QuerySnapshot> listener){
-        return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(10).addSnapshotListener(listener);
+        return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).addSnapshotListener(listener);
+    }
+
+    public ListenerRegistration queryAllNewSongsData(EventListener<QuerySnapshot> listener){
+        return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).addSnapshotListener(listener);
+    }
+
+    public ListenerRegistration queryCollectionsData(EventListener<QuerySnapshot> listener){
+        return collectionsCollection.limit(10).addSnapshotListener(listener);
+    }
+
+    public ListenerRegistration queryCollectionSongsData(String reference,EventListener<QuerySnapshot> listener){
+        return songsCollection.whereArrayContains("collections",reference).addSnapshotListener(listener);
     }
 
     public ListenerRegistration queryTab(String tabId,EventListener<DocumentSnapshot> listener) {

@@ -32,9 +32,11 @@ import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.CollectionsPOJO;
 import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
@@ -87,7 +89,12 @@ public class LandingFragment extends ChorderaFragment {
     }
 
     private void initializeClickEvents() {
-
+        binding.newExploreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
+            }
+        });
 
         binding.cvChordlibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,13 +207,49 @@ public class LandingFragment extends ChorderaFragment {
 
         //mainViewModel.bindSearchBox(binding.edtSearchBox);
     }
-
+    Observer< DatabaseResponse > databaseResponseObserver= new Observer<DatabaseResponse>() {
+        @Override
+        public void onChanged(DatabaseResponse databaseResponse) {
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            Log.d("collection_debug", "fetchCollectionsData: "+ response);
+            switch (response){
+                case Error:
+                    break;
+                case Fetched:
+                    break;
+                case Fetching:
+                    break;
+                case No_internet:
+                    break;
+                case Invalid_data:
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     private void initializeCollectionRecyclerView() {
-        collectionItemAdapter = new CollectionItemAdapter(binding.rvCollectionItems);
+        collectionItemAdapter = new CollectionItemAdapter(binding.rvCollectionItems,mainViewModel);
         binding.rvCollectionItems.setHasFixedSize(true);
         binding.rvCollectionItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
-        binding.rvCollectionItems.setAdapter(collectionItemAdapter);
+        binding.rvCollectionItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.rvCollectionItems.setAdapter(collectionItemAdapter);
+                binding.rvCollectionItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvCollectionItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+
+        mainViewModel.fetchCollectionsData().observe(fragmentLifecycleOwner, databaseResponseObserver);
+
+        mainViewModel.getObservableCollectionsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<CollectionsPOJO>>() {
+            @Override
+            public void onChanged(ArrayList<CollectionsPOJO> collections) {
+                Log.d("collection_debug", "onChanged: "+ collections.size());
+                collectionItemAdapter.setCollections(collections);
+            }
+        });
     }
 
     private void initializeNewRecyclerView() {

@@ -218,6 +218,13 @@ public class SplashFragment extends ChorderaFragment {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
+                     if (getActivity() != null && getActivity().getWindow() != null) {
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+                // Clear the systemUiVisibility flag
+                getActivity().getWindow().getDecorView().setSystemUiVisibility(0);
+            }
+            show();
                 mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,NavigatorTags.CONTAINER_ID_DEFAULT);
             }
         }, delayInSeconds);
@@ -233,13 +240,7 @@ public class SplashFragment extends ChorderaFragment {
             binding.splashVideoView.setBackgroundColor(requireActivity().getResources().getColor(R.color.splashBackgroundColor));
         }
 
-        if (getActivity() != null && getActivity().getWindow() != null) {
-            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
-            // Clear the systemUiVisibility flag
-            getActivity().getWindow().getDecorView().setSystemUiVisibility(0);
-        }
-        show();
 
     }
 

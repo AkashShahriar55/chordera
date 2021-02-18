@@ -59,6 +59,8 @@
                     android:gravity="center_vertical"
                     android:paddingStart="5dp"
                     android:text="ami akash pathabo"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="@color/color_white"
                     android:textSize="@dimen/_8ssp" />
 
@@ -69,6 +71,8 @@
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:text="avoid rafa"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color_highlight"
                     android:textSize="@dimen/_6ssp" />
             </LinearLayout>
