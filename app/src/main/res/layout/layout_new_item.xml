@@ -3,22 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_new_item_holder"
-        android:layout_width="80dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginEnd="10dp"
         app:cardBackgroundColor="@color/colorPrimary"
         app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="0.8:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+            android:foreground="?android:attr/selectableItemBackground"
             android:layout_height="match_parent">
 
             <ImageView
@@ -57,6 +59,8 @@
                     android:gravity="center_vertical"
                     android:paddingStart="5dp"
                     android:text="ami akash pathabo"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="@color/color_white"
                     android:textSize="@dimen/_8ssp" />
 
@@ -67,6 +71,8 @@
                     android:layout_weight="1"
                     android:paddingStart="5dp"
                     android:text="avoid rafa"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="@color/text_color_highlight"
                     android:textSize="@dimen/_6ssp" />
             </LinearLayout>

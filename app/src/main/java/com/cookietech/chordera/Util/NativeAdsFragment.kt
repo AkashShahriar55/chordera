@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.fragment_native_ads.*
 
 
 class NativeAdsFragment : Fragment() {
+    private var isFragmentDestroyed: Boolean = false
     lateinit var nativeAdsManager:NativeAdsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,10 +35,14 @@ class NativeAdsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         native_ad_container.visibility = View.GONE
+        isFragmentDestroyed = false
         val nativeAdListener = object : NativeAdListener{
             override fun onAdLoaded(nativeAd: NativeAd) {
-                setUpNativeAd(nativeAd)
-                native_ad_container.visibility = View.VISIBLE
+                if(!isFragmentDestroyed){
+                    setUpNativeAd(nativeAd)
+                    native_ad_container.visibility = View.VISIBLE
+                }
+
             }
 
             override fun onAdLoadFailed(adError: LoadAdError) {
@@ -101,6 +106,7 @@ class NativeAdsFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        isFragmentDestroyed = true
         nativeAdsManager.destroyNativeAd();
     }
 

@@ -22,16 +22,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.SearchSuggestion.SearchSongCommunicator;
 import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Util.ViewUtils;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
+import com.cookietech.chordera.models.CollectionsPOJO;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
@@ -50,8 +55,6 @@ public class LandingFragment extends ChorderaFragment {
     private FragmentLandingBinding binding;
     private NewItemAdapter newItemAdapter;
     private CollectionItemAdapter collectionItemAdapter;
-    private CookieTechFragmentManager fragmentManager;
-    private SearchSuggestionFragment searchSuggestionFragment;
 
     public LandingFragment() {
         // Required empty public constructor
@@ -78,17 +81,20 @@ public class LandingFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fragmentManager = CookieTechFragmentManager.getInstance();
-        searchSuggestionFragment = new SearchSuggestionFragment();
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
         initializeViews();
         adJustViews();
         initializeClickEvents();
-
-
+        mainViewModel.bindSearch(binding.edtSearchBox);
     }
 
     private void initializeClickEvents() {
-
+        binding.newExploreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
+            }
+        });
 
         binding.cvChordlibraryButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,8 +118,24 @@ public class LandingFragment extends ChorderaFragment {
            public void onFocusChange(View v, boolean hasFocus) {
 
                if(hasFocus){
+                   Log.d("flow_debug", "onSearchedSongSelected: ");
                    binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
-                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId());
+                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId(),SearchSuggestionFragment.createBundle(new SearchSongCommunicator() {
+                       @Override
+                       public void onSearchedSongSelected() {
+                           Log.d("flow_debug", "onSearchedSongSelected: ");
+                           ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+                       }
+
+                       @Override
+                       public void onBackButtonClicked() {
+                           Log.d("flow_debug", "onBackButtonClicked: ");
+                           binding.edtSearchBox.setText("");
+                           binding.edtSearchBox.clearFocus();
+                           binding.ivCancelSearchButton.setVisibility(View.GONE);
+                           ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
+                       }
+                   }));
                }else{
                    binding.ivCancelSearchButton.setVisibility(View.GONE);
                }
@@ -126,12 +148,15 @@ public class LandingFragment extends ChorderaFragment {
        binding.ivCancelSearchButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               Log.d("flow_debug", "ivCancelSearchButton: ");
+               binding.edtSearchBox.setText("");
                binding.edtSearchBox.clearFocus();
-               v.setVisibility(View.GONE);
+               binding.ivCancelSearchButton.setVisibility(View.GONE);
                ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
                mainViewModel.setNavigation(NavigatorTags.LANDING_FRAGMENT,binding.searchFragmentContainer.getId() );
            }
        });
+
 
         binding.edtSearchBox.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -139,9 +164,10 @@ public class LandingFragment extends ChorderaFragment {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
                     Log.i("akash_debug","Enter pressed");
                     ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
-                    mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
-                    binding.edtSearchBox.setText("");
-                    mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT,1);
+                    //next version
+//                    mainViewModel.SaveSearchKeyWordHistory(binding.edtSearchBox.getText().toString());
+//                    binding.edtSearchBox.setText("");
+//                    mainViewModel.setNavigation(NavigatorTags.SEARCH_RESULT_FRAGMENT,1);
                 }
                 return false;
             }
@@ -178,19 +204,56 @@ public class LandingFragment extends ChorderaFragment {
     private void initializeViews() {
         initializeNewRecyclerView();
         initializeCollectionRecyclerView();
-        mainViewModel.bindSearchBox(binding.edtSearchBox);
-    }
 
+        //mainViewModel.bindSearchBox(binding.edtSearchBox);
+    }
+    Observer< DatabaseResponse > databaseResponseObserver= new Observer<DatabaseResponse>() {
+        @Override
+        public void onChanged(DatabaseResponse databaseResponse) {
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            Log.d("collection_debug", "fetchCollectionsData: "+ response);
+            switch (response){
+                case Error:
+                    break;
+                case Fetched:
+                    break;
+                case Fetching:
+                    break;
+                case No_internet:
+                    break;
+                case Invalid_data:
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     private void initializeCollectionRecyclerView() {
-        collectionItemAdapter = new CollectionItemAdapter(binding.rvCollectionItems);
+        collectionItemAdapter = new CollectionItemAdapter(binding.rvCollectionItems,mainViewModel);
         binding.rvCollectionItems.setHasFixedSize(true);
         binding.rvCollectionItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
-        binding.rvCollectionItems.setAdapter(collectionItemAdapter);
+        binding.rvCollectionItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.rvCollectionItems.setAdapter(collectionItemAdapter);
+                binding.rvCollectionItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvCollectionItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+
+        mainViewModel.fetchCollectionsData().observe(fragmentLifecycleOwner, databaseResponseObserver);
+
+        mainViewModel.getObservableCollectionsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<CollectionsPOJO>>() {
+            @Override
+            public void onChanged(ArrayList<CollectionsPOJO> collections) {
+                Log.d("collection_debug", "onChanged: "+ collections.size());
+                collectionItemAdapter.setCollections(collections);
+            }
+        });
     }
 
     private void initializeNewRecyclerView() {
-        newItemAdapter = new NewItemAdapter(binding.rvNewItems);
+        newItemAdapter = new NewItemAdapter(binding.rvNewItems,mainViewModel);
         binding.rvNewItems.setHasFixedSize(true);
         binding.rvNewItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         binding.rvNewItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -228,7 +291,6 @@ public class LandingFragment extends ChorderaFragment {
                 newItemAdapter.setNewSongsData(songsPOJOS);
             }
         });
-
 
 
     }
@@ -283,6 +345,12 @@ public class LandingFragment extends ChorderaFragment {
 
 
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("akash_debug", "onResume: ");
     }
 
     @Override

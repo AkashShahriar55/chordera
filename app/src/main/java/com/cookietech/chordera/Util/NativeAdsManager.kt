@@ -45,6 +45,7 @@ class NativeAdsManager(val context:Context) {
     }
 
     fun destroyNativeAd() {
-        nativeAd.destroy()
+        if(this::nativeAd.isInitialized)
+            nativeAd.destroy()
     }
 }

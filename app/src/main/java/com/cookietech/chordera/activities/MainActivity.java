@@ -15,7 +15,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
+import com.cookietech.chordera.Landing.Collection.CollectionFragment;
 import com.cookietech.chordera.Landing.LandingFragment;
+import com.cookietech.chordera.Landing.NewExplore.NewSongsExploreFragment;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Splash.SplashFragment;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     SearchResultFragment searchResultFragment;
     CollectionSongListShowFragment collectionSongListShowFragment;
     TopSongListFragment topSongListFragment;
+    NewSongsExploreFragment newSongsExploreFragment;
     SavedSongListFragment savedSongListFragment;
     SongLyricsFragment songLyricsFragment;
     SelectionTypeFragment selectionTypeFragment;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     long lastBackButtonPressed = 0;
     private SearchSuggestionFragment searchSuggestionFragment;
     private PendingIntent pendingIntent;
+    private CollectionFragment collectionFragment;
 
 
     //skifjoaisdhjfo
@@ -198,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(topSongListFragment,NavigatorTags.TOP_SONG_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.SEARCH_VIEW_FRAGMENT)){
                 if(searchSuggestionFragment == null)
-                    searchSuggestionFragment = new SearchSuggestionFragment();
+                    searchSuggestionFragment = SearchSuggestionFragment.newInstance(arg);
                 cookieTechFragmentManager.addFragmentToBackStack(searchSuggestionFragment,NavigatorTags.SEARCH_VIEW_FRAGMENT,containerId);
             }
             else if(tag.equals(NavigatorTags.SAVED_SONG_LIST_FRAGMENT)){
@@ -230,6 +234,16 @@ public class MainActivity extends AppCompatActivity {
                 else
                     chordDisplayFullscreenFragment.setArguments(arg);
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFullscreenFragment,NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            } else if(tag.equals(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT)){
+                if(newSongsExploreFragment == null)
+                    newSongsExploreFragment = NewSongsExploreFragment.newInstance();
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(newSongsExploreFragment,NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            } else if(tag.equals(NavigatorTags.COLLECTION_FRAGMENT)){
+                if(collectionFragment == null)
+                    collectionFragment = CollectionFragment.newInstance(arg);
+                else
+                    collectionFragment.setArguments(arg);
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionFragment,NavigatorTags.COLLECTION_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }
 
@@ -250,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        Log.d("flow_debug", "onBackPressed: ");
         if(Objects.requireNonNull(mainViewModel.getNavigation().getValue()).getNavigatorTag().equalsIgnoreCase( NavigatorTags.SPLASH_FRAGMENT)){
             return;
         }
@@ -265,8 +280,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Fragment topFragment = cookieTechFragmentManager.getTopFragment();
+        Log.d("flow_debug", "onBackPressed: "+ topFragment);
         if(topFragment instanceof ChorderaFragment){
-
+            Log.d("flow_debug", "onBackPressed: topFragment instanceof ChorderaFragment ");
             boolean handled = ((ChorderaFragment) topFragment).onBackPressed(mainViewModel.getNavigation().getValue());
             Log.d("akash_debug", "main onBackPressed: " + handled + " "+topFragment.getTag());
             if(handled){
