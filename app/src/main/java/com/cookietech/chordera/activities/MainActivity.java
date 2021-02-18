@@ -226,7 +226,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT)){
                 if(chordDisplayFullscreenFragment == null)
-                    chordDisplayFullscreenFragment = ChordDisplayFullscreenFragment.newInstance();
+                    chordDisplayFullscreenFragment = ChordDisplayFullscreenFragment.newInstance(arg);
+                else
+                    chordDisplayFullscreenFragment.setArguments(arg);
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordDisplayFullscreenFragment,NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
         }

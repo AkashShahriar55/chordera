@@ -200,7 +200,10 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             @Override
             public void onClick(View v) {
                 //Toast.makeText(requireContext(), "Hey", Toast.LENGTH_SHORT).show();
-                mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,1);
+                Log.d("test_debug", "onClick: " + autoScrollSpeed);
+                Bundle bundle = new Bundle();
+                bundle.putDouble("auto_scroll_speed", autoScrollSpeed);
+                mainViewModel.setNavigation(NavigatorTags.CHORD_DISPLAY_FULLSCREEN_FRAGMENT,1, bundle);
             }
         });
 

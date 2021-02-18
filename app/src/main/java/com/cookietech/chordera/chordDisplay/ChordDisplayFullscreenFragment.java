@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ScrollSpeedController;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentChordDisplayFullscreenBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -60,6 +61,9 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
      */
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+
+    private int scrollViewHeight = 0;
+    private long scrollDelayPerPixel = 0;
 
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -147,6 +151,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         }
     };
     private boolean theViewIsDestroyed = false;
+    private double scrollSpeed = 1;
 
     public ChordDisplayFullscreenFragment() {
         // Required empty public constructor
@@ -156,13 +161,13 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-
+            Bundle arg = getArguments();
+            scrollSpeed = arg.getDouble("auto_scroll_speed");
         }
     }
 
-    public static ChordDisplayFullscreenFragment newInstance() {
+    public static ChordDisplayFullscreenFragment newInstance(Bundle args) {
         ChordDisplayFullscreenFragment fragment = new ChordDisplayFullscreenFragment();
-        Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
@@ -414,9 +419,25 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                 },2000);*/
 
 
-                binding.fullscreenScrollView.post(new ScrollRunnable());
+                //binding.fullscreenScrollView.post(new ScrollRunnable());
 
-                binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                //binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                Log.d("auto_speed_debug", "onGlobalLayout: child: " + binding.fullscreenScrollView.getChildAt(0).getHeight());
+                Log.d("auto_speed_debug", "onGlobalLayout: scroll: " + binding.fullscreenScrollView.getHeight());
+                Log.d("auto_speed_debug", "onGlobalLayout: text: " + binding.fullscreenTvSongChords.getHeight());
+
+
+                if(scrollViewHeight >= binding.fullscreenScrollView.getChildAt(0).getHeight()){
+                    //Log.d("auto_speed_debug", "onGlobalLayout: delay : " + ScrollSpeedController.getDelayForScroll(1,song_duration,scrollViewHeight));
+                    scrollDelayPerPixel = ScrollSpeedController.getDelayForScroll(scrollSpeed,song_duration,scrollViewHeight);
+                    binding.fullscreenScrollView.post(new ScrollRunnable());
+                    binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+                else {
+                    scrollViewHeight =  binding.fullscreenScrollView.getChildAt(0).getHeight();
+                }
+
             }
         });
 
@@ -444,7 +465,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         public void run() {
             binding.fullscreenScrollView.smoothScrollBy(0,1);
             if(!theViewIsDestroyed)
-                binding.fullscreenScrollView.postDelayed(this,50);
+                binding.fullscreenScrollView.postDelayed(this,scrollDelayPerPixel);
         }
     }
 
