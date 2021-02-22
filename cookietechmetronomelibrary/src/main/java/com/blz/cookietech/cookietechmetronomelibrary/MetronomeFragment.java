@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -209,6 +212,11 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         timerWheel.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
+                if (isPlaying){
+                    stopMetronome();
+                }
+
                 TimerDialog timerDialog = new TimerDialog(isTimerEnabled, minutes);
                 timerDialog.show(getChildFragmentManager(),"Timer Dialog");
                 return true;
@@ -218,7 +226,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         timerWheel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lightsView.toggleLight();
+                //lightsView.toggleLight();
+                shakeItBaby();
             }
         });
 
@@ -382,11 +391,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             public void onClick(View v) {
 
 
-
                 if (!isPlaying){
-
-
-
 
                    playMetronome();
 
@@ -593,6 +598,17 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         resetPlayPauseBtn();
         timerWheel.stopTimer();
         lightsView.stopToggling();
+    }
+
+    private void shakeItBaby(){
+        Vibrator v = (Vibrator) requireActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(100);
+        }
     }
 
 
