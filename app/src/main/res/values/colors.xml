@@ -11,6 +11,7 @@
     <color name="button_bg_light">#345776</color>
     <color name="text_color_highlight">#3495FF</color>
     <color name="green">#00D49A</color>
+    <color name="grayColor">#939393</color>
     <color name="indicator_color">#3495FF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>

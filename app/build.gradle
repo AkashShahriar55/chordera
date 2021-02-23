@@ -120,6 +120,9 @@ dependencies {
 
     //rxbinding
     implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
+
+    //rounded image
+    implementation 'com.makeramen:roundedimageview:2.3.0'
 }
 repositories {
     mavenCentral()

@@ -1,5 +1,6 @@
 package com.cookietech.chordlibrary.Fragment;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,6 +85,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     private int currentTranspose = 0;
     private boolean isChordSectionSelected = true;
     private boolean isScaleSectionSelected = false;
+    private int[] previousSelectedChords = {0,0};
 
     public static ChordLibraryFragment newInstance(ArrayList<Root> rootList) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
@@ -129,21 +133,13 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         midiDriver.setOnMidiStartListener(this);
 
 
-
-        //chordFactory = new ChordFactory(requireContext());
-        //rootArrayList = chordFactory.getRoots();
         if(!rootArrayList.isEmpty()){
             homeList = new ArrayList<>();
             for (Root root:rootArrayList){
                 homeList.add(root.getName());
             }
         }
-
-
-
         updateChordTypeList(selectedHomeIndex);
-
-
 
 
         chords = rootArrayList.get(0).getChordClasses().get(0).getVariations();
@@ -371,20 +367,11 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
     private void setChord(final Variation chord) {
-      /*  fretBoardGenerator.generateChord(chord);
-        int scrollingDistance = FretBoardGenerator.getScrollIngDistance();
-        dy = scrollingDistance - previouslyScrolled;
-      *//*  binding.ivFretboard.invalidate();
-        binding.fretBoardScroller.smoothScrollBy(0,dy);*/
 
         binding.fretbardContainer.setChord(chord);
         playChord(chord);
 
         setChordInfo(chord);
-
-        //previouslyScrolled += dy;
-
-
 
     }
 
@@ -416,7 +403,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a program change to select the instrument on channel 1:
         event = new byte[2];
-        event[0] = (byte)(0xC0 | 0x00); // 0xC0 = program change, 0x00 = channel 1
+        event[0] = (byte)(0xC0); // 0xC0 = program change, 0x00 = channel 1
         event[1] = (byte)25;
 
         // Send the MIDI event to the synthesizer.
@@ -424,7 +411,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a note ON message for the middle C at maximum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x90 | 0x00);  // 0x90 = note On, 0x00 = channel 1
+        event[0] = (byte) (0x90);  // 0x90 = note On, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
         event[2] = (byte) 50;  // 0x7F = the maximum velocity (127)
 
@@ -497,12 +484,27 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             @Override
             public void onItemSelected(WheelPicker parentView, int[] position) {
                 // 选中后的回调
-                chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getVariations();
-                updateChordTypeList(position[0]);
-                Variation chord = chords.get(0);
-                binding.fretbardContainer.setChord(chord);
-                chordsAdapter.setChords(chords);
-                changeTheTopChordText(position[0],position[1]);
+                try{
+                    if(position[0] == previousSelectedChords[0] && position[1]==previousSelectedChords[1])
+                        return;
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(binding.chordsRecyclerview, View.ALPHA, 0.0f, 0.5f, 1f);
+                    animator.setInterpolator(new LinearInterpolator());
+                    animator.setDuration(1000);
+                    animator.setStartDelay(200);
+                    animator.start();
+                    chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getVariations();
+                    updateChordTypeList(position[0]);
+                    Variation chord = chords.get(0);
+                    binding.fretbardContainer.setChord(chord);
+                    chordsAdapter.setChords(chords);
+                    playChord(chord);
+                    changeTheTopChordText(position[0],position[1]);
+                    previousSelectedChords[0] = position[0];
+                    previousSelectedChords[1] = position[1];
+                }catch (Exception e){
+                    Toast.makeText(requireContext(),"Something was wrong!",Toast.LENGTH_SHORT).show();
+                }
+
 
             }
         });
@@ -522,9 +524,9 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a note OFF message for the middle C at minimum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x80 | 0x00);  // 0x80 = note Off, 0x00 = channel 1
+        event[0] = (byte) (0x80);  // 0x80 = note Off, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
-        event[2] = (byte) 0x00;  // 0x00 = the minimum velocity (0)
+        // 0x00 = the minimum velocity (0)
 
         // Send the MIDI event to the synthesizer.
         midiDriver.write(event);

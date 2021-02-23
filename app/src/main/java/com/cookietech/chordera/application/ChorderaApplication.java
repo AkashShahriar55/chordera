@@ -16,6 +16,8 @@ import com.cookietech.chordlibrary.ChordFactory;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,6 +47,10 @@ public class ChorderaApplication extends MultiDexApplication {
         AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
         createNotificationChannels();
         readTickTock();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
         networkReceiver = new ConnectionManager.NetworkReceiver();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(networkReceiver, filter);

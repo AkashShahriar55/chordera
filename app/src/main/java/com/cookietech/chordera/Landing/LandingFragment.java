@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -21,27 +20,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cookietech.chordera.R;
 import com.cookietech.chordera.SearchSuggestion.SearchSongCommunicator;
 import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Util.ViewUtils;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
-import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
-import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
-import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentLandingBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.CollectionsPOJO;
 import com.cookietech.chordera.models.Navigator;
-import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SongsPOJO;
-import com.cookietech.chordera.repositories.DatabaseRepository;
 import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
-
-import javax.xml.namespace.QName;
 
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
@@ -55,6 +47,8 @@ public class LandingFragment extends ChorderaFragment {
     private FragmentLandingBinding binding;
     private NewItemAdapter newItemAdapter;
     private CollectionItemAdapter collectionItemAdapter;
+    private boolean isCollectionLoaded = false;
+    private boolean isNewLoaded = false;
 
     public LandingFragment() {
         // Required empty public constructor
@@ -85,14 +79,124 @@ public class LandingFragment extends ChorderaFragment {
         initializeViews();
         adJustViews();
         initializeClickEvents();
+        fetchDataAndObserve();
         mainViewModel.bindSearch(binding.edtSearchBox);
+    }
+
+
+
+
+    private void fetchDataAndObserve() {
+        fetchCollectionDataAndObserve();
+        fetchNewDataAndObserve();
+
+        ConnectionManager.getObservableNetworkAvailability().observe(fragmentLifecycleOwner, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(!aBoolean && !isCollectionLoaded){
+                    fetchCollectionDataAndObserve();
+                }
+
+                if(!aBoolean && !isNewLoaded){
+                    fetchNewDataAndObserve();
+                }
+            }
+        });
+    }
+
+    Observer< DatabaseResponse > newDataResponseObserver= new Observer<DatabaseResponse>() {
+        @Override
+        public void onChanged(DatabaseResponse databaseResponse) {
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            switch (response){
+                case Error:
+                case No_internet:
+                case Invalid_data:
+                    isNewLoaded = false;
+                    binding.newErrorMessage.constraintLayout.setVisibility(View.VISIBLE);
+                    break;
+                case Fetched:
+                    isNewLoaded = true;
+                    binding.newErrorMessage.constraintLayout.setVisibility(View.GONE);
+                    break;
+                case Fetching:
+                    binding.newErrorMessage.constraintLayout.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+    Observer< ArrayList<SongsPOJO> > newDataObserver= new Observer<ArrayList<SongsPOJO>>() {
+        @Override
+        public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
+            newItemAdapter.setNewSongsData(songsPOJOS);
+        }
+    };
+    private void fetchNewDataAndObserve() {
+        mainViewModel.fetchNewSongsData().observe(fragmentLifecycleOwner, newDataResponseObserver);
+        mainViewModel.getNewSongsData().observe(fragmentLifecycleOwner, newDataObserver);
+    }
+
+
+    Observer< DatabaseResponse > collectionDataResponseObserver = new Observer<DatabaseResponse>() {
+        @Override
+        public void onChanged(DatabaseResponse databaseResponse) {
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            Log.d("collection_debug", "fetchCollectionsData: "+ response);
+            switch (response){
+                case Error:
+                case No_internet:
+                case Invalid_data:
+                    binding.collectionErrorMessage.constraintLayout.setVisibility(View.VISIBLE);
+                    isCollectionLoaded = false;
+                    break;
+                case Fetched:
+                    isCollectionLoaded = true;
+                    binding.collectionErrorMessage.constraintLayout.setVisibility(View.GONE);
+                    break;
+                case Fetching:
+                    binding.collectionErrorMessage.constraintLayout.setVisibility(View.GONE);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    Observer< ArrayList<CollectionsPOJO> > collectionDataObserver = new Observer<ArrayList<CollectionsPOJO>>() {
+        @Override
+        public void onChanged(ArrayList<CollectionsPOJO> collections) {
+            Log.d("collection_debug", "onChanged: "+ collections.size());
+            collectionItemAdapter.setCollections(collections);
+        }
+    };
+
+    private void fetchCollectionDataAndObserve() {
+        mainViewModel.fetchCollectionsData().observe(fragmentLifecycleOwner, collectionDataResponseObserver);
+        mainViewModel.getObservableCollectionsData().observe(fragmentLifecycleOwner, collectionDataObserver);
     }
 
     private void initializeClickEvents() {
         binding.newExploreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!ConnectionManager.isOnline(requireContext())){
+                    Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
+            }
+        });
+
+        binding.collectionExploreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!ConnectionManager.isOnline(requireContext())){
+                    Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
             }
         });
 
@@ -118,6 +222,11 @@ public class LandingFragment extends ChorderaFragment {
            public void onFocusChange(View v, boolean hasFocus) {
 
                if(hasFocus){
+                   if(!ConnectionManager.isOnline(requireContext())){
+                       Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                       binding.edtSearchBox.clearFocus();
+                       return;
+                   }
                    Log.d("flow_debug", "onSearchedSongSelected: ");
                    binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
                    mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId(),SearchSuggestionFragment.createBundle(new SearchSongCommunicator() {
@@ -177,6 +286,10 @@ public class LandingFragment extends ChorderaFragment {
             @Override
             public void onClick(View v) {
                 Log.e("sohan debug","top ten pressed");
+                if(!ConnectionManager.isOnline(requireContext())){
+                    Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mainViewModel.setNavigation(NavigatorTags.TOP_SONG_LIST_FRAGMENT,((ViewGroup)getView().getParent()).getId());
             }
         });
@@ -207,29 +320,9 @@ public class LandingFragment extends ChorderaFragment {
 
         //mainViewModel.bindSearchBox(binding.edtSearchBox);
     }
-    Observer< DatabaseResponse > databaseResponseObserver= new Observer<DatabaseResponse>() {
-        @Override
-        public void onChanged(DatabaseResponse databaseResponse) {
-            DatabaseResponse.Response response = databaseResponse.getResponse();
-            Log.d("collection_debug", "fetchCollectionsData: "+ response);
-            switch (response){
-                case Error:
-                    break;
-                case Fetched:
-                    break;
-                case Fetching:
-                    break;
-                case No_internet:
-                    break;
-                case Invalid_data:
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+
     private void initializeCollectionRecyclerView() {
-        collectionItemAdapter = new CollectionItemAdapter(binding.rvCollectionItems,mainViewModel);
+        collectionItemAdapter = new CollectionItemAdapter(requireContext(),binding.rvCollectionItems,mainViewModel);
         binding.rvCollectionItems.setHasFixedSize(true);
         binding.rvCollectionItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         binding.rvCollectionItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -240,20 +333,10 @@ public class LandingFragment extends ChorderaFragment {
             }
         });
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvCollectionItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-
-        mainViewModel.fetchCollectionsData().observe(fragmentLifecycleOwner, databaseResponseObserver);
-
-        mainViewModel.getObservableCollectionsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<CollectionsPOJO>>() {
-            @Override
-            public void onChanged(ArrayList<CollectionsPOJO> collections) {
-                Log.d("collection_debug", "onChanged: "+ collections.size());
-                collectionItemAdapter.setCollections(collections);
-            }
-        });
     }
 
     private void initializeNewRecyclerView() {
-        newItemAdapter = new NewItemAdapter(binding.rvNewItems,mainViewModel);
+        newItemAdapter = new NewItemAdapter(requireContext(),binding.rvNewItems,mainViewModel);
         binding.rvNewItems.setHasFixedSize(true);
         binding.rvNewItems.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         binding.rvNewItems.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -264,33 +347,7 @@ public class LandingFragment extends ChorderaFragment {
             }
         });
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvNewItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-        mainViewModel.fetchNewSongsData().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
-            @Override
-            public void onChanged(DatabaseResponse databaseResponse) {
-                DatabaseResponse.Response response = databaseResponse.getResponse();
-                switch (response){
-                    case Error:
-                        break;
-                    case Fetched:
-                        break;
-                    case Fetching:
-                        break;
-                    case No_internet:
-                        break;
-                    case Invalid_data:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
 
-        mainViewModel.getNewSongsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<SongsPOJO>>() {
-            @Override
-            public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
-                newItemAdapter.setNewSongsData(songsPOJOS);
-            }
-        });
 
 
     }
@@ -352,6 +409,8 @@ public class LandingFragment extends ChorderaFragment {
         super.onResume();
         Log.d("akash_debug", "onResume: ");
     }
+
+
 
     @Override
     public boolean onBackPressed(Navigator topNavigation) {

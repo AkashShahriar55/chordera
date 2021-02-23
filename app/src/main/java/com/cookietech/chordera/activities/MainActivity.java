@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
@@ -37,6 +39,7 @@ import com.cookietech.chordera.featureSongList.saved.SavedSongListFragment;
 import com.cookietech.chordera.featureSongList.top10.TopSongListFragment;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
+import com.cookietech.chordera.views.CustomExitDialog;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -267,12 +270,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         if(Objects.requireNonNull(mainViewModel.getNavigation().getValue()).getNavigatorTag().equalsIgnoreCase( NavigatorTags.LANDING_FRAGMENT)){
-            Toast.makeText(this,"Double tap to exit",Toast.LENGTH_SHORT).show();
+           /* Toast.makeText(this,"Double tap to exit",Toast.LENGTH_SHORT).show();
             long interval = System.currentTimeMillis() - lastBackButtonPressed;
             if(interval < 1500 && interval > 0){
                 finish();
             }else{
                 lastBackButtonPressed = System.currentTimeMillis();
+            }*/
+
+            CustomExitDialog customExitDialog = new CustomExitDialog(this, new CustomExitDialog.ExitDialogCommunicator() {
+                @Override
+                public void onPositiveButtonClicked() {
+                    finish();
+                }
+            });
+            customExitDialog.show();
+            Window window = customExitDialog.getWindow();
+            if (window != null) {
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             }
             return;
         }

@@ -204,6 +204,10 @@ public class DatabaseRepository {
 
             ArrayList<SongsPOJO> songs = new ArrayList<>();
             if (snapshots != null) {
+                if(snapshots.isEmpty()){
+                    newSongsResponse.setValue(new DatabaseResponse("top_ten_response",error, DatabaseResponse.Response.No_internet));
+                    return;
+                }
                 for (QueryDocumentSnapshot doc : snapshots) {
                     try{
                         SongsPOJO song = doc.toObject(SongsPOJO.class);
@@ -216,7 +220,6 @@ public class DatabaseRepository {
                 }
                 newSongsLiveData.setValue(songs);
                 newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Fetched));
-                stopListeningNewSongs();
             }else{
                 newSongsResponse.setValue(new DatabaseResponse("top_ten_response",null, DatabaseResponse.Response.Invalid_data));
             }
@@ -329,7 +332,11 @@ public class DatabaseRepository {
 
             ArrayList<CollectionsPOJO> collections = new ArrayList<>();
             if (snapshots != null) {
-                Log.d("collection_debug", "fetchCollectionsData: "+ snapshots.size());
+                if(snapshots.isEmpty()){
+                    collectionResponse.setValue(new DatabaseResponse("collections_response",error, DatabaseResponse.Response.No_internet));
+                    return;
+                }
+
                 for (QueryDocumentSnapshot doc : snapshots) {
                     try{
                         CollectionsPOJO collection = doc.toObject(CollectionsPOJO.class);
