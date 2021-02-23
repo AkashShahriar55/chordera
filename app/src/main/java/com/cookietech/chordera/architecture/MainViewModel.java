@@ -339,6 +339,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public SingleLiveEvent<DatabaseResponse> fetchCollectionsData() {
+
         return databaseRepository.fetchCollectionsData();
     }
     public SingleLiveEvent<ArrayList<CollectionsPOJO>> getObservableCollectionsData() {

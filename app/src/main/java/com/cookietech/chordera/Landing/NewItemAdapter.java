@@ -1,19 +1,25 @@
 package com.cookietech.chordera.Landing;
 
+import android.content.Context;
 import android.graphics.ImageDecoder;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
@@ -24,11 +30,13 @@ import java.util.ArrayList;
 public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemViewHolder> {
     private final MainViewModel mainViewModel;
     RecyclerView newItemRecyclerView;
+    Context context;
     ArrayList<SongsPOJO> newSongsData= new ArrayList<>();
 
-    public NewItemAdapter(RecyclerView newItemRecyclerView, MainViewModel mainViewModel) {
+    public NewItemAdapter(Context context, RecyclerView newItemRecyclerView, MainViewModel mainViewModel) {
         this.newItemRecyclerView = newItemRecyclerView;
         this.mainViewModel = mainViewModel;
+        this.context = context;
     }
 
 
@@ -55,11 +63,23 @@ public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemV
         holder.newItemHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!ConnectionManager.isOnline(context)){
+                    Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songsPOJO));
                 mainViewModel.setSelectedSong(songsPOJO);
             }
         });
-        Glide.with(holder.itemView).load(songsPOJO.getImage_url()).thumbnail(0.5f).centerCrop().into(holder.ivBackground);
+
+        Glide.with(holder.itemView)
+                .load(songsPOJO.getImage_url())
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .thumbnail(0.5f)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(holder.ivBackground);
     }
 
     @Override

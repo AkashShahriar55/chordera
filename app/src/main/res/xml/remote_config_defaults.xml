@@ -11,6 +11,9 @@
         <key>chord_display_native_ads</key>
         <value>1</value>
 
+        <key>native_ad_at_exit</key>
+        <value>1</value>
+
     </entry>
 
 </defaultsMap><!-- END xml_defaults -->

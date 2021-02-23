@@ -13,6 +13,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -61,8 +62,13 @@ public class FirebaseUtilClass {
     }
 
     public ListenerRegistration queryCollectionsData(EventListener<QuerySnapshot> listener){
-        return collectionsCollection.limit(10).addSnapshotListener(listener);
+        return collectionsCollection.limit(5).addSnapshotListener(listener);
     }
+
+    public ListenerRegistration queryAllCollectionsData(EventListener<QuerySnapshot> listener){
+        return collectionsCollection.addSnapshotListener(listener);
+    }
+
 
     public ListenerRegistration queryCollectionSongsData(String reference,EventListener<QuerySnapshot> listener){
         return songsCollection.whereArrayContains("collections",reference).addSnapshotListener(listener);
