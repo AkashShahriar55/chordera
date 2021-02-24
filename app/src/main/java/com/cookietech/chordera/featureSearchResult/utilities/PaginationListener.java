@@ -1,5 +1,7 @@
 package com.cookietech.chordera.featureSearchResult.utilities;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +37,7 @@ public abstract class PaginationListener extends RecyclerView.OnScrollListener {
             if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                     && firstVisibleItemPosition >= 0
                     && totalItemCount >= PAGE_SIZE) {
+                Log.d("pg_debug", "onScrolled:  last Item is visible");
                 loadMoreItems();
             }
         }

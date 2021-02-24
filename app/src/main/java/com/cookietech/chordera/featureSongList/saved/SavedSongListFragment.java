@@ -20,7 +20,6 @@ import com.cookietech.chordera.databinding.FragmentSavedSongBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
-import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
 
 import java.util.ArrayList;

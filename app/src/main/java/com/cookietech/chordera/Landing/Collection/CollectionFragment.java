@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.databinding.FragmentTopSongListBinding;

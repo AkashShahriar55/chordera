@@ -64,6 +64,7 @@ public class DatabaseRepository {
     private SingleLiveEvent<DatabaseResponse> roomUpdateSongResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> newSongsResponse =new SingleLiveEvent<>();
     private SingleLiveEvent<ArrayList<SongsPOJO>> newSongsLiveData = new SingleLiveEvent<>();
+    private QueryDocumentSnapshot lastFetchedNewSongDoc = null;
 
     public DatabaseRepository(){
         SongsDatabase database = SongsDatabase.getInstance(ChorderaApplication.getContext());
@@ -233,30 +234,36 @@ public class DatabaseRepository {
         if(allNewSongListenerRegistration != null)
             stopListeningAllNewSongs();
         newSongDataListenerRegistration = firebaseUtilClass.queryAllNewSongsData((snapshots, error) -> {
+            Log.d("new_explore_debug", "fetchAllNewSongsData: DatabaseRepository");
             if (error != null) {
                 Log.w(TAG, "Listen failed.", error);
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",error, DatabaseResponse.Response.Error));
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", error, DatabaseResponse.Response.Error));
                 return;
             }
 
             ArrayList<SongsPOJO> songs = new ArrayList<>();
             if (snapshots != null) {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot not null");
+                if(snapshots.size()<=0)
+                    return;
                 for (QueryDocumentSnapshot doc : snapshots) {
-                    try{
+                    try {
                         SongsPOJO song = doc.toObject(SongsPOJO.class);
                         song.setId(doc.getId());
                         songs.add(song);
-                    }catch (Exception e){
+                        lastFetchedNewSongDoc = doc;
+                    } catch (Exception e) {
 
                     }
 
                 }
                 allNewSongsLiveData.setValue(songs);
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Fetched));
-            }else{
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Invalid_data));
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", null, DatabaseResponse.Response.Fetched));
+            } else {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot null");
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", null, DatabaseResponse.Response.Invalid_data));
             }
-        });
+        },lastFetchedNewSongDoc);
 
         return allNewSongsResponse;
     }
@@ -404,6 +411,10 @@ public class DatabaseRepository {
 
     public LiveData<ArrayList<SongsPOJO>> getObservableCollectionSongsData() {
         return collectionSongsData;
+    }
+
+    public void resetLastNewSongDocument() {
+        lastFetchedNewSongDoc = null;
     }
 
 

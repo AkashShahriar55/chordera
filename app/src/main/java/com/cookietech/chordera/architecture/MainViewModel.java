@@ -358,6 +358,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public SingleLiveEvent<DatabaseResponse> fetchAllNewSongsData() {
+        Log.d("new_explore_debug", "fetchAllNewSongsData: view Model");
         return databaseRepository.fetchAllNewSongsData();
     }
 
@@ -372,5 +373,9 @@ public class MainViewModel extends AndroidViewModel {
 
     public LiveData<ArrayList<SongsPOJO>> getObservableCollectionSongsData() {
         return databaseRepository.getObservableCollectionSongsData();
+    }
+
+    public void resetLastNewSongDocument() {
+        databaseRepository.resetLastNewSongDocument();
     }
 }
