@@ -40,7 +40,6 @@ public class ChorderaApplication extends MultiDexApplication {
     public void onCreate() {
         APP_CONTEXT = this;
         super.onCreate();
-        MobileAds.initialize(this);
         chordFactory = new ChordFactory(this);
         chordFactory.decodeChordDatabase();
         AppSharedComponents.setRoots(chordFactory.getRoots());

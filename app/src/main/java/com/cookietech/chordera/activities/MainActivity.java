@@ -1,9 +1,9 @@
 package com.cookietech.chordera.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Toast;
 
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
 import com.cookietech.chordera.Landing.Collection.CollectionFragment;
@@ -25,6 +24,7 @@ import com.cookietech.chordera.SearchSuggestion.SearchSuggestionFragment;
 import com.cookietech.chordera.Splash.SplashFragment;
 import com.cookietech.chordera.appcomponents.CookieTechFragmentManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.appcomponents.RemoteConfigManager;
 import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.architecture.MainViewModel;
@@ -41,6 +41,14 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Navigator;
 import com.cookietech.chordera.views.CustomExitDialog;
 import com.cookietech.chordlibrary.Fragment.ChordLibraryFragment;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -74,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
     private SearchSuggestionFragment searchSuggestionFragment;
     private PendingIntent pendingIntent;
     private CollectionFragment collectionFragment;
+
+    private InterstitialAd mInterstitialAd;
+
 
 
     //skifjoaisdhjfo
@@ -147,9 +158,76 @@ public class MainActivity extends AppCompatActivity {
                 .onSameThread()
                 .check();
 
+        // Initialize the Mobile Ads SDK.
+        MobileAds.initialize(this);
+
+        // Set your test devices. Check your logcat output for the hashed device ID to
+        // get test ads on a physical device. e.g.
+        // "Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("ABCDEF012345"))
+        // to get test ads on this device."
+        MobileAds.setRequestConfiguration(
+                new RequestConfiguration.Builder()
+                        .build());
 
 
+        loadInterstitialAds();
 
+
+    }
+
+    private void loadInterstitialAds() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/8691691433", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                Log.i("interstitial_ad", "onAdLoaded");
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        // Called when fullscreen content is dismissed.
+                        Log.d("interstitial_ad", "The ad was dismissed.");
+                        loadInterstitialAds();
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                        // Called when fullscreen content failed to show.
+                        Log.d("interstitial_ad", "The ad failed to show.");
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        // Called when fullscreen content is shown.
+                        // Make sure to set your reference to null so you don't
+                        // show it a second time.
+                        mInterstitialAd = null;
+                        Log.d("interstitial_ad", "The ad was shown.");
+                    }
+                });
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.i("interstitial_ad", loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
+        });
+
+
+    }
+
+
+    private void showInterstitialAd(){
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(MainActivity.this);
+        } else {
+            Log.d("interstitial_ad", "The interstitial ad wasn't ready yet.");
+        }
     }
 
     private void setUpFromSharedPref() {
@@ -187,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(chordLibraryFragment,NavigatorTags.CHORD_LIBRARY_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.METRONOME_FRAGMENT)){
                 if(metronomeFragment == null)
-                    metronomeFragment = MetronomeFragment.newInstance(pendingIntent, AppSharedComponents.getTick(),AppSharedComponents.getTock());
+                    metronomeFragment = MetronomeFragment.newInstance(RemoteConfigManager.shouldShowMetronomeBannerAds(),pendingIntent, AppSharedComponents.getTick(),AppSharedComponents.getTock());
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(metronomeFragment,NavigatorTags.METRONOME_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equals(NavigatorTags.SEARCH_RESULT_FRAGMENT)){
                 if(searchResultFragment == null)
@@ -294,6 +372,15 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment topFragment = cookieTechFragmentManager.getTopFragment();
         Log.d("flow_debug", "onBackPressed: "+ topFragment);
+
+        if(topFragment instanceof ChordLibraryFragment && RemoteConfigManager.shouldShowChordLibraryExitFullScreenAds()){
+            showInterstitialAd();
+        }
+
+        if(topFragment instanceof MetronomeFragment && RemoteConfigManager.shouldShowMetronomeExitFullScreenAds()){
+            showInterstitialAd();
+        }
+
         if(topFragment instanceof ChorderaFragment){
             Log.d("flow_debug", "onBackPressed: topFragment instanceof ChorderaFragment ");
             boolean handled = ((ChorderaFragment) topFragment).onBackPressed(mainViewModel.getNavigation().getValue());
