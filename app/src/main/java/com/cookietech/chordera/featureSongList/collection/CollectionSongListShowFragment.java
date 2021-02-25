@@ -1,21 +1,16 @@
 package com.cookietech.chordera.featureSongList.collection;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentSavedSongBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 
@@ -23,7 +18,6 @@ import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
-import com.cookietech.chordera.repositories.SongRepositories;
 
 import java.util.ArrayList;
 
@@ -143,4 +137,5 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
         isLastPage = false;
         getData();
     }
+
 }

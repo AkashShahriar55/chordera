@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 
 import com.cookietech.chordera.Room.SongDataDao;
@@ -42,7 +44,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,7 @@ public class DatabaseRepository {
     private final SingleLiveEvent<ArrayList<SongsPOJO>> topTenLiveData = new SingleLiveEvent<>();
     private final SingleLiveEvent<TabPOJO> selectedTabLiveData = new SingleLiveEvent<>();
     private final SingleLiveEvent<DatabaseResponse> topTenResponse = new SingleLiveEvent<>();
-    private SingleLiveEvent<List<SongsEntity>> allSongs = new SingleLiveEvent<>();
+    private LiveData<PagedList<SongsEntity>> allSavedSongs;
     private SingleLiveEvent<SongsEntity> roomFetchedSong  = new SingleLiveEvent<>();
     private SongsDao songsDao;
     private SongDataDao songDataDao;
@@ -64,6 +65,7 @@ public class DatabaseRepository {
     private SingleLiveEvent<DatabaseResponse> roomUpdateSongResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> newSongsResponse =new SingleLiveEvent<>();
     private SingleLiveEvent<ArrayList<SongsPOJO>> newSongsLiveData = new SingleLiveEvent<>();
+    private QueryDocumentSnapshot lastFetchedNewSongDoc = null;
 
     public DatabaseRepository(){
         SongsDatabase database = SongsDatabase.getInstance(ChorderaApplication.getContext());
@@ -235,31 +237,41 @@ public class DatabaseRepository {
         allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Fetching));
         if(allNewSongListenerRegistration != null)
             stopListeningAllNewSongs();
-        newSongDataListenerRegistration = firebaseUtilClass.queryAllNewSongsData((snapshots, error) -> {
+        allNewSongListenerRegistration = firebaseUtilClass.queryAllNewSongsData((snapshots, error) -> {
+            Log.d("new_explore_debug", "fetchAllNewSongsData: DatabaseRepository");
             if (error != null) {
                 Log.w(TAG, "Listen failed.", error);
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",error, DatabaseResponse.Response.Error));
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", error, DatabaseResponse.Response.Error));
                 return;
             }
 
             ArrayList<SongsPOJO> songs = new ArrayList<>();
             if (snapshots != null) {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot not null");
+                if(snapshots.size()<=0){
+                    allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", null, DatabaseResponse.Response.LastSongFetched));
+                    return;
+                }
                 for (QueryDocumentSnapshot doc : snapshots) {
-                    try{
+                    try {
                         SongsPOJO song = doc.toObject(SongsPOJO.class);
                         song.setId(doc.getId());
                         songs.add(song);
-                    }catch (Exception e){
+                        lastFetchedNewSongDoc = doc;
+                    } catch (Exception e) {
 
                     }
 
                 }
                 allNewSongsLiveData.setValue(songs);
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Fetched));
-            }else{
-                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response",null, DatabaseResponse.Response.Invalid_data));
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", null, DatabaseResponse.Response.Fetched));
+            } else {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot null");
+                allNewSongsResponse.setValue(new DatabaseResponse("all_new_song_response", null, DatabaseResponse.Response.Invalid_data));
             }
-        });
+        },lastFetchedNewSongDoc);
+
+        Log.d("new_explore_debug", "fetchAllNewSongsData: DatabaseRepository  " + allNewSongListenerRegistration);
 
         return allNewSongsResponse;
     }
@@ -413,6 +425,10 @@ public class DatabaseRepository {
         return collectionSongsData;
     }
 
+    public void resetLastNewSongDocument() {
+        lastFetchedNewSongDoc = null;
+    }
+
 
     private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
 
@@ -484,8 +500,19 @@ public class DatabaseRepository {
     }
 
 
-    public void fetchAllSongs(){
-        new RoomFetchAllSongsAsyncTask().execute();
+    public void fetchAllSavedSongs(){
+        //new RoomFetchAllSongsAsyncTask().execute();
+        PagedList.Config savedSongPagingConfig = new PagedList.Config.Builder()
+                .setPageSize(5)
+                .setInitialLoadSizeHint(5)
+                .setEnablePlaceholders(false)
+                .build();
+        allSavedSongs = new LivePagedListBuilder<>(songsDao.roomFetchAllSongs(), savedSongPagingConfig).build();
+    }
+
+    public void refreshSavedSong() {
+        //savedSongDataSource.getValue().invalidate();
+        allSavedSongs.getValue().getDataSource().invalidate();
     }
 
 
@@ -493,7 +520,7 @@ public class DatabaseRepository {
     /**AsyncTask Section**/
 
     /**AsyncTask for fetching all saved songs from Room Database**/
-    private class RoomFetchAllSongsAsyncTask extends AsyncTask<SongDataEntity,Void,Void> {
+    /*private class RoomFetchAllSongsAsyncTask extends AsyncTask<SongDataEntity,Void,Void> {
 
 
         @Override
@@ -504,7 +531,9 @@ public class DatabaseRepository {
 
         @Override
         protected Void doInBackground(SongDataEntity... songDataEntities) {
-            allSongs.postValue(songsDao.roomFetchAllSongs());
+            //allSavedSongs.postValue(songsDao.roomFetchAllSongs());
+
+            allSavedSongs = new LivePagedListBuilder<>(songsDao.roomFetchAllSongs(), 5).build();
             return null;
         }
 
@@ -513,7 +542,7 @@ public class DatabaseRepository {
             fetchAllSongsResponse.setValue(new DatabaseResponse("all_songs_fetch",null, DatabaseResponse.Response.Stored));
             super.onPostExecute(aVoid);
         }
-    }
+    }*/
 
 
     /**AsyncTask for fetching a Song by a song ID from Room Database**/
@@ -578,8 +607,8 @@ public class DatabaseRepository {
         }
     }
 
-    public SingleLiveEvent<List<SongsEntity>> getObservableAllSongs() {
-        return allSongs;
+    public LiveData<PagedList<SongsEntity>> getObservableAllSavedSongs() {
+        return allSavedSongs;
     }
 
     public SingleLiveEvent<SongsEntity> getObservableRoomFetchedSong() {

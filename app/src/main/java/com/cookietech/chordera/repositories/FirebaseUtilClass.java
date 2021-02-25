@@ -57,8 +57,15 @@ public class FirebaseUtilClass {
         return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).addSnapshotListener(listener);
     }
 
-    public ListenerRegistration queryAllNewSongsData(EventListener<QuerySnapshot> listener){
-        return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).addSnapshotListener(listener);
+    public ListenerRegistration queryAllNewSongsData(EventListener<QuerySnapshot> listener, QueryDocumentSnapshot lastFetchedNewSongDoc){
+
+        if (lastFetchedNewSongDoc == null){
+
+            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).addSnapshotListener(listener);
+        }
+        else {
+            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).startAfter(lastFetchedNewSongDoc).addSnapshotListener(listener);
+        }
     }
 
     public ListenerRegistration queryCollectionsData(EventListener<QuerySnapshot> listener){

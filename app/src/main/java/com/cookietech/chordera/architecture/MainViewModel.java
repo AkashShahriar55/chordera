@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.PagedList;
 
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
@@ -30,7 +31,6 @@ import com.jakewharton.rxbinding4.widget.RxTextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -200,16 +200,16 @@ public class MainViewModel extends AndroidViewModel {
         return databaseRepository.getObservableDownloadSongResponse();
     }
 
-    public void fetchAllSongs(){
-        databaseRepository.fetchAllSongs();
+    public void fetchAllSavedSongs(){
+        databaseRepository.fetchAllSavedSongs();
     }
 
     public SingleLiveEvent<SongsEntity> getObservableRoomFetchedSong() {
         return databaseRepository.getObservableRoomFetchedSong();
     }
 
-    public SingleLiveEvent<List<SongsEntity>> getObservableAllSongs() {
-        return databaseRepository.getObservableAllSongs();
+    public LiveData<PagedList<SongsEntity>> getObservableAllSavedSongs() {
+        return databaseRepository.getObservableAllSavedSongs();
     }
 
     public SingleLiveEvent<DatabaseResponse> getObservableFetchAllSongsResponse() {
@@ -359,6 +359,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public SingleLiveEvent<DatabaseResponse> fetchAllNewSongsData() {
+        Log.d("new_explore_debug", "fetchAllNewSongsData: view Model");
         return databaseRepository.fetchAllNewSongsData();
     }
 
@@ -373,5 +374,14 @@ public class MainViewModel extends AndroidViewModel {
 
     public LiveData<ArrayList<SongsPOJO>> getObservableCollectionSongsData() {
         return databaseRepository.getObservableCollectionSongsData();
+    }
+
+    public void resetLastNewSongDocument() {
+        databaseRepository.resetLastNewSongDocument();
+    }
+
+    public void refreshSavedSong() {
+        //savedSongDataSource.getValue().invalidate();
+        databaseRepository.refreshSavedSong();
     }
 }

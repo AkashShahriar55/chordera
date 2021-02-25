@@ -2,6 +2,7 @@ package com.cookietech.chordera.Room;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.DataSource;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -21,7 +22,7 @@ public interface SongsDao {
     void roomDeleteSong(SongsEntity entity);
 
     @Query("SELECT * FROM songs")
-    List<SongsEntity> roomFetchAllSongs();
+    DataSource.Factory<Integer, SongsEntity> roomFetchAllSongs();
 
     @Query("SELECT * FROM songs WHERE song_id = :id")
     SongsEntity roomFetchASong(String id);
