@@ -22,6 +22,7 @@ public class RemoteConfigManager {
     public static final String NATIVE_AD_AT_EXIT = "native_ad_at_exit";
 
     private static final FirebaseRemoteConfig sFirebaseRemoteConfig;
+    private static final String METRONOME_EXIT_FULL_SCREEN_ADS = "metronome_exit_full_screen_ads_show";
 
     static {
         sFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
@@ -69,6 +70,10 @@ public class RemoteConfigManager {
 
     public static boolean shouldShowChordLibraryExitFullScreenAds() {
         return sFirebaseRemoteConfig.getBoolean(CHORD_LIBRARY_EXIT_FULL_SCREEN_ADS);
+    }
+
+    public static boolean shouldShowMetronomeExitFullScreenAds() {
+        return sFirebaseRemoteConfig.getBoolean(METRONOME_EXIT_FULL_SCREEN_ADS);
     }
 
     public static boolean shouldShowChordDisplayNativeAds(){

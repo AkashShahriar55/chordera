@@ -156,12 +156,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#4D000000"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/chord_selector_body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:animateLayoutChanges="true"
             android:background="@drawable/bg_chord_selector"
             android:clickable="true"
@@ -169,9 +170,10 @@
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHeight_percent="0.4"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.5">
 
             <TextView
                 android:id="@+id/selectedChord"
@@ -182,15 +184,15 @@
                 android:textColor="@color/deepTextColor"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <io.itimetraveler.widget.picker.WheelPicker
                 android:id="@+id/chord_picker"
-                android:layout_width="wrap_content"
-                android:layout_height="100dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="20dp"
+                app:layout_constraintBottom_toTopOf="@id/btnOk"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/selectedChord" />
@@ -204,6 +206,7 @@
                 android:text="OK"
                 android:textColor="@color/highlightedTextColor"
                 android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/chord_picker" />

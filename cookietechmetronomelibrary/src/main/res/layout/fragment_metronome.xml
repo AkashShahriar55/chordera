@@ -61,14 +61,24 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lightContainer"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/metronomeColorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/lightGuideLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toolbarGuideline">
 
-        <com.blz.cookietech.cookietechmetronomelibrary.View.LightsView
+        <FrameLayout
+            android:id="@+id/ad_holder"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+
+   <!--     <com.blz.cookietech.cookietechmetronomelibrary.View.LightsView
             android:id="@+id/lightsView"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -78,7 +88,9 @@
             app:layout_constraintTop_toTopOf="parent"
             >
 
-        </com.blz.cookietech.cookietechmetronomelibrary.View.LightsView>
+        </com.blz.cookietech.cookietechmetronomelibrary.View.LightsView>-->
+
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
