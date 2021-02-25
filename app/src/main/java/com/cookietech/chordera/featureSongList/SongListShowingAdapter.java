@@ -38,24 +38,14 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     private ArrayList<SongsPOJO> songList;
     private final MainViewModel mainViewModel;
     private final LifecycleOwner lifecycleOwner;
-    private String fromWhere = "";
     private LastSongVisibilityListener lastSongVisibilityListener;
+    private Boolean lastSongFetched = false;
 
     public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner) {
         this.recyclerView = recyclerView;
         this.songList = songList;
         this.mainViewModel = mainViewModel;
         this.lifecycleOwner = lifecycleOwner;
-        initializeObserver();
-    }
-
-    private void initializeObserver() {
-        mainViewModel.getObservableSongListShowingCalledFrom().observe(lifecycleOwner, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                fromWhere = s;
-            }
-        });
     }
 
     public void setLastSongVisibilityListener(LastSongVisibilityListener lastSongVisibilityListener) {
@@ -66,7 +56,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         //Log.d("pg_debug", "onViewAttachedToWindow: " + holder.getCurrentPosition() + " " + songList.size());
-        if (holder.getCurrentPosition() == songList.size()-1){
+        if (holder.getCurrentPosition() == songList.size()-1 && !lastSongFetched){
             lastSongVisibilityListener.onLastSongVisible();
         }
 
@@ -158,10 +148,13 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
         return (ArrayList<SongsPOJO>) songList;
     }
 
+    public void setLastSongFetched(Boolean bool) {
+        lastSongFetched = bool;
+    }
+
     public class ViewHolder extends BaseViewHolder {
         public TextView tittle, band, view;
         public ConstraintLayout rowLayout;
-        public ImageView view_icon;
         private int position;
         public ViewHolder(View v) {
             super(v);
@@ -169,13 +162,6 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
             view = v.findViewById(R.id.views_count);
-            view_icon = v.findViewById(R.id.view_icon);
-           /* ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
-            //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
-            params.height = (int) (recyclerView.getWidth()/7.2);
-            rowLayout.setLayoutParams(params);*/
-            //width/height = 7.2    ratio was calculated from xd design
-
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -202,23 +188,9 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             tittle.setText(item.getSong_name());
             band.setText(item.getArtist_name());
             view.setText(String.valueOf(item.getViews()));
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
-                view.setVisibility(View.GONE);
-                view_icon.setVisibility(View.GONE);
-            }else{
-                view.setVisibility(View.VISIBLE);
-                view_icon.setVisibility(View.VISIBLE);
-            }
         }
         public void onBind(int position, List<Object> payloads)
         {
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
-                view.setVisibility(View.GONE);
-                view_icon.setVisibility(View.GONE);
-            }else{
-                view.setVisibility(View.VISIBLE);
-                view_icon.setVisibility(View.VISIBLE);
-            }
             this.position = position;
             if (payloads.isEmpty()){
                 //

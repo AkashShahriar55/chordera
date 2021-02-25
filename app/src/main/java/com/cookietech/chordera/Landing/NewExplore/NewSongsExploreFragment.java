@@ -139,6 +139,9 @@ public class NewSongsExploreFragment extends ChorderaFragment implements SwipeRe
                     case Invalid_data:
                         Log.d("new_explore_debug", "Invalid Data: ");
                         break;
+                    case LastSongFetched:
+                        adapter.setLastSongFetched(true);
+                        break;
                     default:
                         break;
                 }
@@ -156,6 +159,7 @@ public class NewSongsExploreFragment extends ChorderaFragment implements SwipeRe
     public void onRefresh() {
         mainViewModel.resetLastNewSongDocument();
         adapter.clear();
+        adapter.setLastSongFetched(false);
         getData();
     }
 

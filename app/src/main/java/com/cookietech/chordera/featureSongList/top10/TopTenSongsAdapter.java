@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class TopTenSongsAdapter extends RecyclerView.Adapter<TopTenSongsAdapter.TopTenSongsViewHolder> {
     private RecyclerView recyclerView;
     private ArrayList<SongsPOJO> topTenSongsList;
-    private OnItemClickListener onItemClickListener;
+    private final OnItemClickListener onItemClickListener;
 
     public TopTenSongsAdapter(ArrayList<SongsPOJO> topTenSongsList, RecyclerView recyclerView, OnItemClickListener onItemClickListener) {
         this.recyclerView = recyclerView;

@@ -120,6 +120,11 @@ dependencies {
 
     //rxbinding
     implementation 'com.jakewharton.rxbinding4:rxbinding:4.0.0'
+
+    //For Paging Library
+    def paging_version = "2.1.2"
+    implementation "androidx.paging:paging-runtime:$paging_version" // For Kotlin use paging-runtime-ktx
+
 }
 repositories {
     mavenCentral()
