@@ -1,9 +1,12 @@
 package com.cookietech.chordera.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class SelectionType {
+public class SelectionType implements Parcelable {
 
     public final static Map<String, String> displaySelectionNameMap;
     static {
@@ -20,6 +23,24 @@ public class SelectionType {
         this.displaySelectionName = displayName;
         this.selectionId = id;
     }
+
+    protected SelectionType(Parcel in) {
+        selectionName = in.readString();
+        displaySelectionName = in.readString();
+        selectionId = in.readString();
+    }
+
+    public static final Creator<SelectionType> CREATOR = new Creator<SelectionType>() {
+        @Override
+        public SelectionType createFromParcel(Parcel in) {
+            return new SelectionType(in);
+        }
+
+        @Override
+        public SelectionType[] newArray(int size) {
+            return new SelectionType[size];
+        }
+    };
 
     public String getSelectionId() {
         return selectionId;
@@ -43,5 +64,17 @@ public class SelectionType {
 
     public void setDisplaySelectionName(String displaySelectionName) {
         this.displaySelectionName = displaySelectionName;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(selectionName);
+        dest.writeString(displaySelectionName);
+        dest.writeString(selectionId);
     }
 }

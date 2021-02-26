@@ -1,5 +1,6 @@
 package com.cookietech.chordera.Landing;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.ImageDecoder;
 import android.graphics.drawable.Drawable;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +62,7 @@ public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemV
         holder.tvViews.setText(""+songsPOJO.getViews());
         holder.tvArtistName.setText(songsPOJO.getArtist_name());
         holder.tvSongName.setText(songsPOJO.getSong_name());
+
         holder.newItemHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

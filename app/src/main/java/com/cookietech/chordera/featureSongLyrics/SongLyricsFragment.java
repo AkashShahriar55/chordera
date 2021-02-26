@@ -26,6 +26,7 @@ import com.cookietech.chordera.R;
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.Util.NativeAdsFragment;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
@@ -46,6 +47,7 @@ public class SongLyricsFragment extends ChorderaFragment {
     private boolean isDarkModeActivated = false;
     private SelectionType selectedTab;
     private TabPOJO lyricsData;
+    private boolean adsFragmentSetup = false;
 
     public SongLyricsFragment(){};
 
@@ -53,7 +55,7 @@ public class SongLyricsFragment extends ChorderaFragment {
     public static SongLyricsFragment newInstance(){return new SongLyricsFragment();}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
     }
 
@@ -67,11 +69,27 @@ public class SongLyricsFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding.displayScrollView.setVisibility(View.GONE);
+        adsFragmentSetup = false;
+        if(savedInstanceState!=null){
+            Log.d("akash_lyrics_debug", "onViewCreated: saved instance is not null");
+            selectedSong = savedInstanceState.getParcelable("selectedSong");
+            selectedTab = savedInstanceState.getParcelable("selectedTab");
+            if(selectedSong!=null)
+                mainViewModel.getObservableSelectedSong().setValue(selectedSong);
+            if(selectedTab != null)
+                mainViewModel.getObservableSelectedTab().setValue(selectedTab);
+            adsFragmentSetup = savedInstanceState.getBoolean("adsFragmentSetup",false);
+        }else{
+            Log.d("akash_lyrics_debug", "onViewCreated: saved instance is null");
+        }
+
+        Log.d("akash_lyric_debug", "onViewCreated: ");
         setUpViews();
         initializeClicks();
         initializeObserver();
         setupMenuSelector();
-        if(RemoteConfigManager.shouldShowChordDisplayNativeAds())
+        if(RemoteConfigManager.shouldShowChordDisplayNativeAds() && !adsFragmentSetup)
             setUpNativeAdFragment();
     }
 
@@ -87,6 +105,7 @@ public class SongLyricsFragment extends ChorderaFragment {
         Fragment adFragment = NativeAdsFragment.newInstance();
         transaction.add(binding.nativeAdContainer.getId(),adFragment);
         transaction.commitAllowingStateLoss();
+        adsFragmentSetup = true;
     }
 
     private void initializeObserver() {
@@ -114,6 +133,9 @@ public class SongLyricsFragment extends ChorderaFragment {
             public void onChanged(TabPOJO lyricsPOJO) {
                 lyricsData = lyricsPOJO;
                 updateView();
+                binding.lyricLoader.setVisibility(View.GONE);
+                binding.displayScrollView.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -251,6 +273,15 @@ public class SongLyricsFragment extends ChorderaFragment {
         });
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("akash_lyrics_debug", "onSaveInstanceState: ");
+        outState.putParcelable("selectedTab",selectedTab);
+        outState.putParcelable("selectedSong",selectedSong);
+        outState.putBoolean("adsFragmentSetup",adsFragmentSetup);
+    }
+
     private void initializeClicks() {
         binding.modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -334,6 +365,11 @@ public class SongLyricsFragment extends ChorderaFragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         //TODO if you have new selection type you should add here logic for that
                         Log.d("sohan_debug", (String) item.getTitle());
+                        if(!ConnectionManager.isOnline(requireContext())){
+                            Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
+
                         SelectionType selectionType = selectionTypeArrayList.get(item.getItemId());
                         if(((String) item.getTitle()).equals(SelectionType.displaySelectionNameMap.get("guitar_chord")))
                         {
@@ -361,6 +397,8 @@ public class SongLyricsFragment extends ChorderaFragment {
             data = data.replace("\\n","\n");
             binding.tvSongLyrics.setText(data);
         }
+
+
     }
 
 

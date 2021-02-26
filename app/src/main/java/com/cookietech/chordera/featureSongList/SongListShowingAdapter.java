@@ -1,10 +1,12 @@
 package com.cookietech.chordera.featureSongList;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -90,6 +92,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position, @NonNull List<Object> payloads) {
         if(!payloads.isEmpty()){
             holder.onBind(position);
+
         }else{
             super.onBindViewHolder(holder,position,payloads);
         }

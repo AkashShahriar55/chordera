@@ -1,8 +1,10 @@
 package com.cookietech.chordera.featureSongList.saved;
 
+import android.animation.ObjectAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 

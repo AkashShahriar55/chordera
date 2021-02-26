@@ -1,15 +1,18 @@
 package com.cookietech.chordera.featureSelectionType;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSelectionTypeBinding;
@@ -23,11 +26,13 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
     FragmentSelectionTypeBinding binding;
     private List<SelectionType> selectionTypeList;
     MainViewModel mainViewModel;
+    private Context context;
 
-    public SelectionTypeShowingAdapter(ArrayList<SelectionType> selectionTypeList, FragmentSelectionTypeBinding fragmentSelectionTypeBinding,MainViewModel mainViewModel) {
+    public SelectionTypeShowingAdapter(Context context,ArrayList<SelectionType> selectionTypeList, FragmentSelectionTypeBinding fragmentSelectionTypeBinding, MainViewModel mainViewModel) {
         this.binding = fragmentSelectionTypeBinding;
         this.selectionTypeList = selectionTypeList;
         this.mainViewModel = mainViewModel;
+        this.context = context;
     }
 
 
@@ -87,6 +92,10 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!ConnectionManager.isOnline(context)){
+                        Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     if(selectionTypeList.get(position).getSelectionName().equals("lyrics"))
                     {
                         mainViewModel.setSelectedTab(selectionTypeList.get(position));
