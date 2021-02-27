@@ -84,7 +84,7 @@ public class SearchSuggestionFragment extends ChorderaFragment {
         Spannable wordtoSpan = new SpannableString("No data found");
         wordtoSpan.setSpan(new ForegroundColorSpan(Color.parseColor("#EA4F4F")), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         binding.errorMessage.errorMessageTv.setText(wordtoSpan);
-        searchResultAdapter = new SearchResultAdapter(mainViewModel);
+        searchResultAdapter = new SearchResultAdapter(requireContext(),mainViewModel);
         binding.searchResultRv.setHasFixedSize(true);
         binding.searchResultRv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         binding.searchResultRv.setAdapter(searchResultAdapter);

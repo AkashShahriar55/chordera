@@ -374,7 +374,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                 }
 
                 if(mainViewModel.getObservableTransposeValue().getValue() != null){
-                    binding.fullscreenTvSongChords.setTranspose(mainViewModel.getObservableTransposeValue().getValue());
+                    binding.fullscreenTvSongChords.setTranspose(mainViewModel.getObservableSelectedTabLiveData().getValue().getData(),mainViewModel.getObservableTransposeValue().getValue());
                 }
 
                 else if (!mainViewModel.getObservableIsDarkModeActivated().getValue()){
@@ -394,6 +394,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                 binding.fullscreenScrollView.smoothScrollTo(0,binding.fullscreenScrollView.getBottom());*/
 
                 binding.fullscreenTvSongChords.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
             }
 
         });

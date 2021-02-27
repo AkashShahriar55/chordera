@@ -1,5 +1,6 @@
 package com.cookietech.chordera.SearchSuggestion;
 
+import android.content.Context;
 import android.graphics.ImageDecoder;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.Landing.NewItemAdapter;
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.models.SearchData;
 
@@ -23,7 +26,10 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
 
     private ArrayList<SearchData> searchData = new ArrayList<>();
     private MainViewModel mainViewModel;
-    public SearchResultAdapter(MainViewModel mainViewModel) {
+    private Context context;
+
+    public SearchResultAdapter(Context context,MainViewModel mainViewModel) {
+        this.context = context;
         this.mainViewModel = mainViewModel;
     }
 
@@ -81,6 +87,10 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!ConnectionManager.isOnline(context)){
+                        Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     mainViewModel.downloadSearchedDataAndNavigate(data);
                 }
             });

@@ -21,6 +21,8 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -79,6 +81,9 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     private TabulatorGenerator tabulatorGenerator = new TabulatorGenerator();
     private double autoScrollSpeed = 1;
     private ArrayList<ChordClass> initialChordList;
+    private BottomSheetBehavior<View> behavior ;
+
+
 
     public ChordDisplayFragment() {
         // Required empty public constructor
@@ -108,14 +113,15 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         return binding.getRoot();
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lastSelectedTranspose = 0;
+        binding.displayScrollView.setVisibility(View.GONE);
         setUpViews();
         initializeObserver();
-        initializeChordsRecyclerView();
         initializeAutoScrollSpeedUi();
         setupMenuSelector();
 
@@ -148,7 +154,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                             public void onTranspose(int transpose) {
                                 Log.d("transpose_debug", "onTranspose: " + transpose);
                                 lastSelectedTranspose = transpose;
-                                binding.tvSongChords.setTranspose(transpose);
+                                binding.tvSongChords.setTranspose(tabData.getData(),transpose);
                                 mainViewModel.transposeChords(initialChordList,transpose);
                                 mainViewModel.setTransposeValue(transpose);
                             }
@@ -181,7 +187,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
             }
         });
 
-        final BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) binding.bottomSheet.chordDisplayBottomSheet);
+        behavior = BottomSheetBehavior.from((View) binding.bottomSheet.chordDisplayBottomSheet);
 
 
 
@@ -246,7 +252,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
     private void setUpNativeAdFragment() {
         FragmentTransaction transaction =   getChildFragmentManager().beginTransaction();
         Fragment adFragment = NativeAdsFragment.newInstance();
-        transaction.add(binding.nativeAdHolder.getId(), adFragment);
+        transaction.add(binding.chordNativeAdHolder.getId(), adFragment);
         transaction.commitAllowingStateLoss();
     }
     private void setUpViews() {
@@ -556,6 +562,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                Log.d("bishal_debug", "onChanged: called");
                Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
                isDarkModeActivated = aBoolean;
+               binding.modeSwitch.setChecked(isDarkModeActivated);
                Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
                toggleMode();
            }
@@ -588,8 +595,16 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         ChordFormater chordFormater = new ChordFormater(tabData.getData(),rootWidth);
         //chordFormater.processChord(0)
         spannableStringBuilder = chordFormater.getProcessedChord(0);*/
-
-
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        },2000);
+        binding.chordsLoader.setVisibility(View.GONE);
+        binding.displayScrollView.setVisibility(View.VISIBLE);
+        initializeChordsRecyclerView();
         if (tabData != null) {
 /*            binding.tvSongChords.setFormattedText("{Intro}\n" +
                     "([Em],[C],[Am],[D]) " +
@@ -600,8 +615,11 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
                 @Override
                 public void onGlobalLayout() {
                     if(binding.tvSongChords.getWidth()>0){
+                        Log.d("akash_chords_debug", "onGlobalLayout: ");
                         binding.tvSongChords.setFormattedText(tabData.getData());
                         binding.tvSongChords.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+
                     }
 
                 }

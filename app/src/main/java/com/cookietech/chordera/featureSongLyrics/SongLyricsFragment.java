@@ -268,6 +268,7 @@ public class SongLyricsFragment extends ChorderaFragment {
                 Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
                 isDarkModeActivated = aBoolean;
                 Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
+                binding.modeSwitch.setChecked(isDarkModeActivated);
                 toggleMode();
             }
         });

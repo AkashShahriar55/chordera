@@ -374,7 +374,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     }
 
 
-    public void setTranspose(int transpose){
+    public void setTranspose(String text,int transpose){
         for (Pair<Integer, TabulatorChordStructure> pair : chordMap) {
             String chord = pair.second.getChord().toLowerCase();
             Pattern pattern = Pattern.compile("[A-Za-z]#?m?");
@@ -385,7 +385,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
             }
             String remains = chord.substring(matcher.end());
            // Log.d("transpose_debug", "setTranspose: " + key+ " " + chord.substring(matcher.end()));
-
+            //text.replace(chord,)
             pair.second.setTransposed_chord(StringManipulationHelper.getTransposedChord(key.toLowerCase(),transpose)+remains);
         }
         invalidate();

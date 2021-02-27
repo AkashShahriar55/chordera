@@ -182,7 +182,7 @@ public class SelectionTypeFragment extends ChorderaFragment{
         FragmentTransaction transaction =   getChildFragmentManager().beginTransaction();
         Fragment adFragment = NativeAdsFragment.newInstance();
         transaction.add(binding.selectionNativeAdHolder.getId(), adFragment);
-        transaction.commitAllowingStateLoss();
+        transaction.commit();
         adFragmentSetup = true;
     }
 
