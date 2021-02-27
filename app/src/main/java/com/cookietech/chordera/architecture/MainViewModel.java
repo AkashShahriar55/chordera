@@ -350,6 +350,10 @@ public class MainViewModel extends AndroidViewModel {
         databaseRepository.stopListeningNewSongs();
     }
 
+    public void stopListeningAllCollectionData(){
+        databaseRepository.stopListeningAllCollectionData();
+    }
+
     private void stopListeningAllNewSongs() {
         databaseRepository.stopListeningAllNewSongs();
     }
@@ -358,9 +362,16 @@ public class MainViewModel extends AndroidViewModel {
         return databaseRepository.getObservableAllNewSongsLiveData();
     }
 
+    public SingleLiveEvent<ArrayList<CollectionsPOJO>> getObservableAllCollectionDataLiveData(){
+        return databaseRepository.getObservableAllCollectionDataLiveData();
+    }
+
     public SingleLiveEvent<DatabaseResponse> fetchAllNewSongsData() {
-        Log.d("new_explore_debug", "fetchAllNewSongsData: view Model");
         return databaseRepository.fetchAllNewSongsData();
+    }
+
+    public SingleLiveEvent<DatabaseResponse> fetchAllCollectionData(){
+        return databaseRepository.fetchAllCollectionData();
     }
 
 
@@ -383,5 +394,13 @@ public class MainViewModel extends AndroidViewModel {
     public void refreshSavedSong() {
         //savedSongDataSource.getValue().invalidate();
         databaseRepository.refreshSavedSong();
+    }
+
+    public void resetLastCollectionSongDocument() {
+        databaseRepository.resetLastCollectionSongDocument();
+    }
+
+    public void resetLastSongCollectionDocument() {
+        databaseRepository.resetLastSongCollectionDocument();
     }
 }

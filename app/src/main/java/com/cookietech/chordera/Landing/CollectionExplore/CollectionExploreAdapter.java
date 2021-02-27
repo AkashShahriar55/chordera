@@ -10,21 +10,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
-import com.cookietech.chordera.appcomponents.Constants;
-import com.cookietech.chordera.appcomponents.NavigatorTags;
-import com.cookietech.chordera.architecture.MainViewModel;
+import com.cookietech.chordera.Util.CollectionDiffUtilCallback;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
-import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
-import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
-import com.cookietech.chordera.models.Collection;
 import com.cookietech.chordera.models.CollectionsPOJO;
-import com.cookietech.chordera.models.SongsPOJO;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,39 +27,43 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     private static final int VIEW_TYPE_LOADING = 0;
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
-    RecyclerView recyclerView;
     private final ArrayList<CollectionsPOJO> collectionsList;
-    private final MainViewModel mainViewModel;
-    private final LifecycleOwner lifecycleOwner;
-    private String fromWhere = "";
+    private LastCollectionVisibilityListener lastCollectionVisibilityListener;
+    private Boolean lastCollectionFetched = false;
+    private OnCollectionItemListener onCollectionItemListener;
 
-    public CollectionExploreAdapter(ArrayList<CollectionsPOJO> collectionsList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner) {
-        this.recyclerView = recyclerView;
+
+    public CollectionExploreAdapter(ArrayList<CollectionsPOJO> collectionsList, OnCollectionItemListener onCollectionItemListener) {
         this.collectionsList = collectionsList;
-        this.mainViewModel = mainViewModel;
-        this.lifecycleOwner = lifecycleOwner;
-        initializeObserver();
+        this.onCollectionItemListener = onCollectionItemListener;
     }
 
-    private void initializeObserver() {
-        mainViewModel.getObservableSongListShowingCalledFrom().observe(lifecycleOwner, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                fromWhere = s;
-            }
-        });
+    public void setLastCollectionVisibilityListener(CollectionExploreAdapter.LastCollectionVisibilityListener lastCollectionVisibilityListener) {
+        this.lastCollectionVisibilityListener = lastCollectionVisibilityListener;
     }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        //Log.d("pg_debug", "onViewAttachedToWindow: " + holder.getCurrentPosition() + " " + songList.size());
+        if (holder.getCurrentPosition() == collectionsList.size()-1 && !lastCollectionFetched){
+            lastCollectionVisibilityListener.onLastCollectionVisible();
+        }
+
+    }
+
 
 
     // Create new views (invoked by the layout manager)
+    @NotNull
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new CollectionExploreAdapter.ViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.collection_row_view, parent, false));
             case VIEW_TYPE_LOADING:
-                return new CollectionExploreAdapter.ProgressHolder(
+                return new ProgressHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.item_loading, parent, false));
             default:
                 return null;
@@ -112,21 +110,18 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
         notifyDataSetChanged();
     }
 
+    CollectionsPOJO collectionsPOJO = new CollectionsPOJO();
     public void addLoading() {
         isLoaderVisible = true;
-        collectionsList.add(new CollectionsPOJO());
+        collectionsList.add(collectionsPOJO);
         if(collectionsList.size()<=0) notifyItemChanged(0);
         else notifyItemInserted(collectionsList.size() - 1);
     }
 
     public void removeLoading() {
         isLoaderVisible = false;
-        int position = collectionsList.size() - 1;
-        CollectionsPOJO item = getItem(position);
-        if (item != null) {
-            collectionsList.remove(position);
-            notifyItemRemoved(position);
-        }
+        collectionsList.remove(collectionsPOJO);
+        notifyItemRemoved(collectionsList.indexOf(collectionsPOJO));
     }
 
     public void clear() {
@@ -139,34 +134,29 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     }
 
     public ArrayList<CollectionsPOJO> getData() {
-        return (ArrayList<CollectionsPOJO>) this.collectionsList;
+        return (ArrayList<CollectionsPOJO>) collectionsList;
     }
 
+    public void setLastCollectionFetched(Boolean bool) {
+        lastCollectionFetched = bool;
+    }
+
+
+
     public class ViewHolder extends BaseViewHolder {
-        public TextView tittle, band, view;
+        public TextView collectionName, view;
         public ConstraintLayout rowLayout;
         public ImageView view_icon;
         private int position;
         public ViewHolder(View v) {
             super(v);
-            tittle = v.findViewById(R.id.txt_song_tittle);
-            band = v.findViewById(R.id.txt_artist);
+            collectionName = v.findViewById(R.id.txt_collection_name);
             rowLayout = v.findViewById(R.id.rowLayout);
             view = v.findViewById(R.id.views_count);
-            view_icon = v.findViewById(R.id.view_icon);
-           /* ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
-            //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
-            params.height = (int) (recyclerView.getWidth()/7.2);
-            rowLayout.setLayoutParams(params);*/
-            //width/height = 7.2    ratio was calculated from xd design
+            rowLayout.setOnClickListener(v1 -> {
+                Log.e("sohan_debug","one song clicked");
 
-            rowLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("sohan_debug","one song clicked");
-//                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(collectionsList.get(position)));
-//                    mainViewModel.setSelectedSong(collectionsList.get(position));
-                }
+                onCollectionItemListener.onItemClicked(collectionsList.get(position));
             });
         }
 
@@ -183,48 +173,27 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
             Log.e("sohan debug", String.valueOf(collectionsList.size()));
             CollectionsPOJO item = collectionsList.get(position);
 
-          /*  tittle.setText(item.getSong_name());
-            band.setText(item.getArtist_name());*/
+            collectionName.setText(item.getCollection_name());
             view.setText(String.valueOf(item.getViews()));
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
-                view.setVisibility(View.GONE);
-                view_icon.setVisibility(View.GONE);
-            }else{
-                view.setVisibility(View.VISIBLE);
-                view_icon.setVisibility(View.VISIBLE);
-            }
         }
         public void onBind(int position, List<Object> payloads)
         {
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
-                view.setVisibility(View.GONE);
-                view_icon.setVisibility(View.GONE);
-            }else{
-                view.setVisibility(View.VISIBLE);
-                view_icon.setVisibility(View.VISIBLE);
-            }
             this.position = position;
             if (payloads.isEmpty()){
                 //
                 super.onBind(position, payloads);
                 CollectionsPOJO item = collectionsList.get(position);
-/*
-                tittle.setText(item.getSong_name());
-                band.setText(item.getArtist_name());*/
+                collectionName.setText(item.getCollection_name());
                 view.setText(item.getViews());
             }
             else {
 
                 Bundle o = (Bundle) payloads.get(0);
                 for (String key : o.keySet()) {
-                    /*if(key.equals("tittle")){
-                        //Toast.makeText(tittle.getContext(), "Song "+position+" : Tittle Changed", Toast.LENGTH_SHORT).show();;
-                        tittle.setText(collectionsList.get(position).getSong_name());
-                    }
-                    if(key.equals("band")){
+                    if(key.equals("collectionName")){
                         //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
-                        band.setText(collectionsList.get(position).getArtist_name());
-                    }*/
+                        collectionName.setText(collectionsList.get(position).getCollection_name());
+                    }
                     if(key.equals("view")){
                         //Toast.makeText(itemView.getContext(), "Song "+position+" : Band Name Changed", Toast.LENGTH_SHORT).show();;
                         view.setText(String.valueOf(collectionsList.get(position).getViews()));
@@ -235,7 +204,7 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     }
 
 
-    public class ProgressHolder extends BaseViewHolder {
+    public static class ProgressHolder extends BaseViewHolder {
 
 
         public ProgressHolder(View v) {
@@ -244,19 +213,26 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     }
 
     public void onNewData(ArrayList<CollectionsPOJO> newData) {
-        if(this.collectionsList.size() <= 0)
+        if(collectionsList.size() <= 0)
         {
-            this.collectionsList.addAll(newData);
-            notifyDataSetChanged();
+            collectionsList.addAll(newData);
         }
         else {
-//            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<CollectionsPOJO>) collectionsList));
-            this.collectionsList.clear();
-            this.collectionsList.addAll(newData);
-            notifyDataSetChanged();
-//            diffResult.dispatchUpdatesTo(this);
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CollectionDiffUtilCallback(newData, collectionsList));
+            collectionsList.clear();
+            collectionsList.addAll(newData);
+            diffResult.dispatchUpdatesTo(this);
 
         }
+        notifyDataSetChanged();
 
+    }
+
+    public interface LastCollectionVisibilityListener {
+        void onLastCollectionVisible();
+    }
+
+    public interface OnCollectionItemListener{
+        void onItemClicked(CollectionsPOJO collectionsPOJO);
     }
 }

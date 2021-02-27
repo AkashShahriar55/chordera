@@ -8,7 +8,7 @@ import com.google.firebase.firestore.Exclude;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CollectionsPOJO implements Parcelable {
+public class CollectionsPOJO implements Parcelable, Comparable<CollectionsPOJO> {
     private String collection_name;
     @Exclude
     private String id;
@@ -106,4 +106,12 @@ public class CollectionsPOJO implements Parcelable {
         return CREATOR;
     }
 
+    @Override
+    public int compareTo(CollectionsPOJO collection) {
+        if(collection.getCollection_name().equals(this.collection_name))
+        {
+            return 0;
+        }
+        return 1;
+    }
 }

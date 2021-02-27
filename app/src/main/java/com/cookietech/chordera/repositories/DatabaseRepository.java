@@ -66,6 +66,8 @@ public class DatabaseRepository {
     private SingleLiveEvent<DatabaseResponse> newSongsResponse =new SingleLiveEvent<>();
     private SingleLiveEvent<ArrayList<SongsPOJO>> newSongsLiveData = new SingleLiveEvent<>();
     private QueryDocumentSnapshot lastFetchedNewSongDoc = null;
+    private QueryDocumentSnapshot lastFetchedCollectionSongDoc = null;
+    private QueryDocumentSnapshot lastFetchedSongCollectionDoc = null;
 
     public DatabaseRepository(){
         SongsDatabase database = SongsDatabase.getInstance(ChorderaApplication.getContext());
@@ -230,6 +232,7 @@ public class DatabaseRepository {
         return newSongsResponse;
     }
 
+    /**Fetch All New Song with Pagination**/
     SingleLiveEvent<DatabaseResponse> allNewSongsResponse = new SingleLiveEvent<>();
     private ListenerRegistration allNewSongListenerRegistration;
     SingleLiveEvent<ArrayList<SongsPOJO>> allNewSongsLiveData = new SingleLiveEvent<>();
@@ -276,12 +279,73 @@ public class DatabaseRepository {
         return allNewSongsResponse;
     }
 
+
+    /** Fetch All collection For CollectionExploreFragment**/
+
+    SingleLiveEvent<DatabaseResponse> allCollectionDataResponse = new SingleLiveEvent<>();
+    private ListenerRegistration allCollectionDataListenerRegistration;
+    SingleLiveEvent<ArrayList<CollectionsPOJO>> allCollectionDataLiveData = new SingleLiveEvent<>();
+
+    public SingleLiveEvent<DatabaseResponse> fetchAllCollectionData() {
+        allCollectionDataResponse.setValue(new DatabaseResponse("all_collection_data_response",null, DatabaseResponse.Response.Fetching));
+        if(allCollectionDataListenerRegistration != null)
+            stopListeningAllCollectionData();
+
+        allCollectionDataListenerRegistration = firebaseUtilClass.queryAllCollectionsData((snapshots, error) -> {
+
+            Log.d("new_explore_debug", "fetchAllNewSongsData: DatabaseRepository");
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                allCollectionDataResponse.setValue(new DatabaseResponse("all_collection_data_response", error, DatabaseResponse.Response.Error));
+                return;
+            }
+
+            ArrayList<CollectionsPOJO> collections = new ArrayList<>();
+            if (snapshots != null) {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot not null");
+                if(snapshots.size()<=0){
+                    allCollectionDataResponse.setValue(new DatabaseResponse("all_collection_data_response", null, DatabaseResponse.Response.LastSongFetched));
+                    return;
+                }
+                for (QueryDocumentSnapshot doc : snapshots) {
+                    try {
+                        CollectionsPOJO collection = doc.toObject(CollectionsPOJO.class);
+                        collection.setId(doc.getId());
+                        collections.add(collection);
+                        lastFetchedSongCollectionDoc = doc;
+                    } catch (Exception e) {
+
+                    }
+
+                }
+                allCollectionDataLiveData.setValue(collections);
+                allCollectionDataResponse.setValue(new DatabaseResponse("all_collection_data_response", null, DatabaseResponse.Response.Fetched));
+            } else {
+                //Log.d("new_explore_debug", "DatabaseRepo:  snapshot null");
+                allCollectionDataResponse.setValue(new DatabaseResponse("all_collection_data_response", null, DatabaseResponse.Response.Invalid_data));
+            }
+
+
+
+        },lastFetchedSongCollectionDoc);
+
+        return allCollectionDataResponse;
+    }
+
+    public void stopListeningAllCollectionData() {
+        allCollectionDataListenerRegistration.remove();
+    }
+
     public void stopListeningAllNewSongs() {
         allNewSongListenerRegistration.remove();
     }
 
     public SingleLiveEvent<ArrayList<SongsPOJO>> getObservableAllNewSongsLiveData() {
         return allNewSongsLiveData;
+    }
+
+    public SingleLiveEvent<ArrayList<CollectionsPOJO>> getObservableAllCollectionDataLiveData(){
+        return allCollectionDataLiveData;
     }
 
     public SingleLiveEvent<DatabaseResponse> getNewSongsResponse() {
@@ -328,6 +392,7 @@ public class DatabaseRepository {
         });
     }
 
+    /**Fetch Collection Data For Landing Fragment**/
     private final SingleLiveEvent<DatabaseResponse> collectionResponse = new SingleLiveEvent<>();
     private final SingleLiveEvent<ArrayList<CollectionsPOJO>> collectionsData = new SingleLiveEvent<>();
     private ListenerRegistration collectionDataListenerRegistration;
@@ -378,7 +443,7 @@ public class DatabaseRepository {
         collectionDataListenerRegistration.remove();
     }
 
-
+    /** Fetch Collection Song For Collection Fragment**/
     private SingleLiveEvent<DatabaseResponse> collectionSongsDatabaseResponse = new SingleLiveEvent<>();
     private SingleLiveEvent<ArrayList<SongsPOJO>> collectionSongsData = new SingleLiveEvent<>();
     private ListenerRegistration collectionSongsListenerRegistration;
@@ -396,11 +461,16 @@ public class DatabaseRepository {
             ArrayList<SongsPOJO> collectionSongs = new ArrayList<>();
             if (snapshots != null) {
                 Log.d("collection_debug", "fetchCollectionsData: "+ snapshots.size());
+                if(snapshots.size()<=0){
+                    collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response", null, DatabaseResponse.Response.LastSongFetched));
+                    return;
+                }
                 for (QueryDocumentSnapshot doc : snapshots) {
                     try{
                         SongsPOJO collectionSong = doc.toObject(SongsPOJO.class);
                         collectionSong.setId(doc.getId());
                         collectionSongs.add(collectionSong);
+                        lastFetchedCollectionSongDoc = doc;
 
                     }catch (Exception e){
                         Log.d("collection_debug", "fetchCollectionsData: "+ e);
@@ -412,7 +482,7 @@ public class DatabaseRepository {
             }else{
                 collectionSongsDatabaseResponse.setValue(new DatabaseResponse("collection_song_response",null, DatabaseResponse.Response.Invalid_data));
             }
-        });
+        },lastFetchedCollectionSongDoc);
 
         return collectionResponse;
     }
@@ -427,6 +497,14 @@ public class DatabaseRepository {
 
     public void resetLastNewSongDocument() {
         lastFetchedNewSongDoc = null;
+    }
+
+    public void resetLastCollectionSongDocument() {
+        lastFetchedCollectionSongDoc = null;
+    }
+
+    public void resetLastSongCollectionDocument() {
+        lastFetchedSongCollectionDoc = null;
     }
 
 

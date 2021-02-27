@@ -196,7 +196,7 @@ public class LandingFragment extends ChorderaFragment {
                     Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
+                mainViewModel.setNavigation(NavigatorTags.COLLECTION_EXPLORE_LIST_FRAGMENT);
             }
         });
 
