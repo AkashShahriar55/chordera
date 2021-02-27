@@ -241,7 +241,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             Log.d("data_debug", "onNewData: " + getItemCount());
         }
         else {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<SongsPOJO>) this.songList));
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, this.songList));
             diffResult.dispatchUpdatesTo(this);
             songList.clear();
             songList.addAll(newData);

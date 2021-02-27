@@ -1,17 +1,18 @@
-package com.cookietech.chordera.featureSearchResult.utilities.song;
+package com.cookietech.chordera.Util;
 
 import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
-import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.models.CollectionsPOJO;
 import java.util.ArrayList;
 
-public class SongDiffUtilCallback extends DiffUtil.Callback {
-    ArrayList<SongsPOJO> newList;
-    ArrayList<SongsPOJO> oldList;
+public class CollectionDiffUtilCallback extends DiffUtil.Callback {
 
-    public SongDiffUtilCallback(ArrayList<SongsPOJO> newList, ArrayList<SongsPOJO> oldList) {
+    ArrayList<CollectionsPOJO> newList;
+    ArrayList<CollectionsPOJO> oldList;
+
+    public CollectionDiffUtilCallback(ArrayList<CollectionsPOJO> newList, ArrayList<CollectionsPOJO> oldList) {
         this.newList = newList;
         this.oldList = oldList;
     }
@@ -44,18 +45,16 @@ public class SongDiffUtilCallback extends DiffUtil.Callback {
     @Nullable
     @Override
     public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-        SongsPOJO newSong = newList.get(newItemPosition);
-        SongsPOJO oldSong = oldList.get(oldItemPosition);
+        CollectionsPOJO newCollection = newList.get(newItemPosition);
+        CollectionsPOJO oldCollection = oldList.get(oldItemPosition);
 
         Bundle diff = new Bundle();
-        if(!newSong.getSong_name().equals(oldSong.getSong_name())){
-            diff.putString("tittle", newSong.getSong_name());
+
+        if(!newCollection.getCollection_name().equals (oldCollection.getCollection_name())){
+            diff.putString("collectionName", newCollection.getCollection_name());
         }
-        if(!newSong.getArtist_name().equals (oldSong.getArtist_name())){
-            diff.putString("band", newSong.getArtist_name());
-        }
-        if(newSong.getViews() != oldSong.getViews()){
-            diff.putInt("view", newSong.getViews());
+        if(newCollection.getViews() != oldCollection.getViews()){
+            diff.putInt("view", newCollection.getViews());
         }
         if (diff.size()==0){
             return null;

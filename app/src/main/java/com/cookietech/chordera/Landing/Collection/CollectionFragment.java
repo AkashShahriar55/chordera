@@ -16,7 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
-import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
 import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.CollectionsPOJO;
@@ -26,17 +25,11 @@ import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
 
-import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
-
 public class CollectionFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
     FragmentTopSongListBinding binding;
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     SongListShowingAdapter adapter;
-    int currentPage = PAGE_START;
-    boolean isLastPage = false;
-    int totalPage = 10;
     boolean isLoading = true;
-    int itemCount = 0;
     LinearLayoutManager layoutManager;
     SwipeRefreshLayout swipeRefreshLayout;
     public static final String TAG = "top_ten_debug";
@@ -76,6 +69,7 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mainViewModel.resetLastCollectionSongDocument();
         initializeVariable();
         initialize();
         initializeObservers();
@@ -86,20 +80,17 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
         mainViewModel.getObservableCollectionSongsData().observe(fragmentLifecycleOwner, new Observer<ArrayList<SongsPOJO>>() {
             @Override
             public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
-                //adapter.onNewData(songsPOJOS);
+                Log.d("collection_song_debug", "onChanged: " + songsPOJOS.size());
                 swipeRefreshLayout.setRefreshing(false);
-                if(isLoading)
-                {
-                    adapter.removeLoading();
-                    isLoading = false;
-                }
+                adapter.removeLoading();
 
                 if(adapter.getData().size()<=0)
                 {
                     adapter.onNewData(songsPOJOS);
                 }
                 else {
-                    ArrayList<SongsPOJO> allData = new ArrayList<SongsPOJO>(adapter.getData());
+                    Log.d("data_debug", "onChanged: " + adapter.getData().size());
+                    ArrayList<SongsPOJO> allData = new ArrayList<>(adapter.getData());
                     allData.addAll(songsPOJOS);
                     adapter.onNewData(allData);
                 }
@@ -114,9 +105,9 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     Log.d(TAG, "onChanged: net available");
-                    if(!databaseFetched){
+                    /*if(!databaseFetched){
                         //getData();
-                    }
+                    }*/
                 }else{
                     Log.d(TAG, "onChanged: net not available");
                     Toast.makeText(getContext(),"No internet connectoin",Toast.LENGTH_SHORT).show();
@@ -126,11 +117,8 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
     }
 
     private void initializeVariable() {
-        currentPage = PAGE_START;
-        isLastPage = false;
-        totalPage = 5;
+
         isLoading = true;
-        itemCount = 0;
     }
 
     private void initialize() {
@@ -138,71 +126,45 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
         binding.swipeRefresh.setOnRefreshListener(this);
         binding.tabSelectorRv.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
-
         binding.tabSelectorRv.setLayoutManager(layoutManager);
         swipeRefreshLayout = binding.swipeRefresh;
         adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel,fragmentLifecycleOwner);
         binding.tabSelectorRv.setAdapter(adapter);
-        getData();
+        adapter.setLastSongVisibilityListener(this::getData);
+        adapter.addLoading();
         mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
-
-        binding.tabSelectorRv.addOnScrollListener(new PaginationListener(layoutManager) {
-            @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage++;
-                getData();
-                if (currentPage <= totalPage) {
-                    adapter.addLoading();
-                } else {
-                    isLastPage = true;
-                }
-                isLoading = false;
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
-            }
-        });
-
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requireActivity().onBackPressed();
-            }
-        });
+        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
     }
     private void getData() {
-        adapter.addLoading();
+        //adapter.addLoading();
         isLoading = true;
         Log.d("collection_songs_data", "getData: ");
-        mainViewModel.fetchCollectionSongs(collectionsPOJO.getId()).observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
-            @Override
-            public void onChanged(DatabaseResponse databaseResponse) {
-                Log.d("collection_songs_data", "onChanged: ");
-                DatabaseResponse.Response response = databaseResponse.getResponse();
-                switch (response){
-                    case Error:
-                        break;
-                    case Fetched:
-                        databaseFetched = true;
-                        break;
-                    case Fetching:
-                        break;
-                    case No_internet:
-                        break;
-                    case Invalid_data:
-                        break;
-                    default:
-                        break;
-                }
+        mainViewModel.fetchCollectionSongs(collectionsPOJO.getId()).observe(fragmentLifecycleOwner, databaseResponse -> {
+            Log.d("collection_songs_data", "onChanged: ");
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            switch (response){
+                case Error:
+                    Log.d("collection_song_debug", "Error Fetching All New Song: ");
+                    break;
+                case Fetched:
+                    Log.d("collection_song_debug", "All New Song Fetched: ");
+                    databaseFetched = true;
+                    break;
+                case Fetching:
+                    Log.d("collection_song_debug", "All New Song Fetching: ");
+                    break;
+                case No_internet:
+                    Log.d("collection_song_debug", "No Internet fetching all new songs: ");
+                    break;
+                case Invalid_data:
+                    Log.d("collection_song_debug", "Invalid Data: ");
+                    break;
+                case LastSongFetched:
+                    adapter.setLastSongFetched(true);
+                    break;
+                default:
+                    break;
             }
         });
     }
@@ -215,10 +177,9 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
 
     @Override
     public void onRefresh() {
-        itemCount = 0;
-        currentPage = PAGE_START;
-        isLastPage = false;
+        mainViewModel.resetLastCollectionSongDocument();
         adapter.clear();
+        adapter.setLastSongFetched(false);
         getData();
     }
 }

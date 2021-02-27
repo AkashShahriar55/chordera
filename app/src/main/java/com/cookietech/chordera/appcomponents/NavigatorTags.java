@@ -17,4 +17,5 @@ public class NavigatorTags {
     public static final String CHORD_DISPLAY_FULLSCREEN_FRAGMENT = "chord_display_fullscreen_fragment";
     public static final int CONTAINER_ID_DEFAULT = 1;
     public static final String COLLECTION_FRAGMENT = "collection_fragment";
+    public static final String COLLECTION_EXPLORE_LIST_FRAGMENT = "collection_explore_list_fragment";
 }

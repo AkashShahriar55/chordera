@@ -62,7 +62,6 @@ public class NewSongsExploreFragment extends ChorderaFragment implements SwipeRe
     private void initializeObservers() {
 
         mainViewModel.getObservableAllNewSongsLiveData().observe(fragmentLifecycleOwner, songsPOJOS -> {
-            //adapter.onNewData(songsPOJOS);
             Log.d("new_explore_debug", "onChanged: " + songsPOJOS.size());
             swipeRefreshLayout.setRefreshing(false);
             adapter.removeLoading();
@@ -117,34 +116,31 @@ public class NewSongsExploreFragment extends ChorderaFragment implements SwipeRe
     private void getData() {
         isLoading = true;
         //Log.d("new_explore_debug", "getData: ");
-        mainViewModel.fetchAllNewSongsData().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
-            @Override
-            public void onChanged(DatabaseResponse databaseResponse) {
-                DatabaseResponse.Response response = databaseResponse.getResponse();
-                //Log.d("new_explore_debug", "getData: "+ response);
-                switch (response) {
-                    case Error:
-                        Log.d("new_explore_debug", "Error Fetching All New Song: ");
-                        break;
-                    case Fetched:
-                        Log.d("new_explore_debug", "All New Song Fetched: ");
-                        databaseFetched = true;
-                        break;
-                    case Fetching:
-                        Log.d("new_explore_debug", "All New Song Fetching: ");
-                        break;
-                    case No_internet:
-                        Log.d("new_explore_debug", "No Internet fetching all new songs: ");
-                        break;
-                    case Invalid_data:
-                        Log.d("new_explore_debug", "Invalid Data: ");
-                        break;
-                    case LastSongFetched:
-                        adapter.setLastSongFetched(true);
-                        break;
-                    default:
-                        break;
-                }
+        mainViewModel.fetchAllNewSongsData().observe(fragmentLifecycleOwner, databaseResponse -> {
+            DatabaseResponse.Response response = databaseResponse.getResponse();
+            //Log.d("new_explore_debug", "getData: "+ response);
+            switch (response) {
+                case Error:
+                    Log.d("new_explore_debug", "Error Fetching All New Song: ");
+                    break;
+                case Fetched:
+                    Log.d("new_explore_debug", "All New Song Fetched: ");
+                    databaseFetched = true;
+                    break;
+                case Fetching:
+                    Log.d("new_explore_debug", "All New Song Fetching: ");
+                    break;
+                case No_internet:
+                    Log.d("new_explore_debug", "No Internet fetching all new songs: ");
+                    break;
+                case Invalid_data:
+                    Log.d("new_explore_debug", "Invalid Data: ");
+                    break;
+                case LastSongFetched:
+                    adapter.setLastSongFetched(true);
+                    break;
+                default:
+                    break;
             }
         });
     }

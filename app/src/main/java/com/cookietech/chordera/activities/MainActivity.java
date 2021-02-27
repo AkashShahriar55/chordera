@@ -17,6 +17,7 @@ import android.view.Window;
 
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
 import com.cookietech.chordera.Landing.Collection.CollectionFragment;
+import com.cookietech.chordera.Landing.CollectionExplore.CollectionExploreFragment;
 import com.cookietech.chordera.Landing.LandingFragment;
 import com.cookietech.chordera.Landing.NewExplore.NewSongsExploreFragment;
 import com.cookietech.chordera.R;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     CollectionSongListShowFragment collectionSongListShowFragment;
     TopSongListFragment topSongListFragment;
     NewSongsExploreFragment newSongsExploreFragment;
+    CollectionExploreFragment collectionExploreFragment;
     SavedSongListFragment savedSongListFragment;
     SongLyricsFragment songLyricsFragment;
     SelectionTypeFragment selectionTypeFragment;
@@ -319,7 +321,11 @@ public class MainActivity extends AppCompatActivity {
                 if(newSongsExploreFragment == null)
                     newSongsExploreFragment = NewSongsExploreFragment.newInstance();
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(newSongsExploreFragment,NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
-            } else if(tag.equals(NavigatorTags.COLLECTION_FRAGMENT)){
+            }else if(tag.equals(NavigatorTags.COLLECTION_EXPLORE_LIST_FRAGMENT)){
+                if(collectionExploreFragment == null)
+                    collectionExploreFragment = CollectionExploreFragment.newInstance();
+                cookieTechFragmentManager.addFragmentToBackStackWithAnimation(collectionExploreFragment,NavigatorTags.COLLECTION_EXPLORE_LIST_FRAGMENT,containerId,R.anim.enter_from_right,R.anim.exit_zoom_out_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
+            }  else if(tag.equals(NavigatorTags.COLLECTION_FRAGMENT)){
                 if(collectionFragment == null)
                     collectionFragment = CollectionFragment.newInstance(arg);
                 else

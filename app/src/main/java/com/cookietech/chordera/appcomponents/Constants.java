@@ -6,5 +6,6 @@ public class Constants {
     public static final String FROM_TOP_SONG = "fromTopSong";
     public static final String DARK_MODE = "Dark";
     public static final String LIGHT_MODE = "Light";
+    public static final int PAGE_SIZE = 5;
 
 }

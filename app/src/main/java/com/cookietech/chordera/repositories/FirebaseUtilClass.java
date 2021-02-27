@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,10 +62,10 @@ public class FirebaseUtilClass {
 
         if (lastFetchedNewSongDoc == null){
 
-            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).addSnapshotListener(listener);
+            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(Constants.PAGE_SIZE).addSnapshotListener(listener);
         }
         else {
-            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(5).startAfter(lastFetchedNewSongDoc).addSnapshotListener(listener);
+            return songsCollection.orderBy(UPDATE_DATE, Query.Direction.DESCENDING).limit(Constants.PAGE_SIZE).startAfter(lastFetchedNewSongDoc).addSnapshotListener(listener);
         }
     }
 
@@ -72,13 +73,27 @@ public class FirebaseUtilClass {
         return collectionsCollection.limit(5).addSnapshotListener(listener);
     }
 
-    public ListenerRegistration queryAllCollectionsData(EventListener<QuerySnapshot> listener){
-        return collectionsCollection.addSnapshotListener(listener);
+    public ListenerRegistration queryAllCollectionsData(EventListener<QuerySnapshot> listener, QueryDocumentSnapshot lastFetchedSongCollectionDocument){
+
+        if (lastFetchedSongCollectionDocument == null){
+            return collectionsCollection.limit(Constants.PAGE_SIZE).addSnapshotListener(listener);
+        }
+        else {
+            return collectionsCollection.limit(Constants.PAGE_SIZE).startAfter(lastFetchedSongCollectionDocument).addSnapshotListener(listener);
+        }
+
     }
 
 
-    public ListenerRegistration queryCollectionSongsData(String reference,EventListener<QuerySnapshot> listener){
-        return songsCollection.whereArrayContains("collections",reference).addSnapshotListener(listener);
+    public ListenerRegistration queryCollectionSongsData(String reference, EventListener<QuerySnapshot> listener, QueryDocumentSnapshot lastFetchedCollectionSongDoc){
+
+        if (lastFetchedCollectionSongDoc == null){
+            return songsCollection.whereArrayContains("collections",reference).limit(Constants.PAGE_SIZE).addSnapshotListener(listener);
+
+        }
+        else {
+            return songsCollection.whereArrayContains("collections",reference).limit(Constants.PAGE_SIZE).startAfter(lastFetchedCollectionSongDoc).addSnapshotListener(listener);
+        }
     }
 
     public ListenerRegistration queryTab(String tabId,EventListener<DocumentSnapshot> listener) {
