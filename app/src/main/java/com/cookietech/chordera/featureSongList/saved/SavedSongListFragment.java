@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,9 +44,9 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
     LinearLayoutManager layoutManager;
     //ArrayList<SongsPOJO> songsList = new ArrayList<>();
 
-    public SavedSongListFragment(){};
+    public SavedSongListFragment(){}
 
-    public static SavedSongListFragment newInstance(){return new SavedSongListFragment();};
+    public static SavedSongListFragment newInstance(){return new SavedSongListFragment();}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,16 +70,13 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
 
     private void initializeObservers() {
 
-        mainViewModel.getObservableAllSavedSongs().observe(fragmentLifecycleOwner, new Observer<PagedList<SongsEntity>>() {
-            @Override
-            public void onChanged(PagedList<SongsEntity> songsEntities) {
-                Log.d("download_debug", "onChanged: " + songsEntities.size());
+        mainViewModel.getObservableAllSavedSongs().observe(fragmentLifecycleOwner, songsEntities -> {
+            Log.d("download_debug", "onChanged: " + songsEntities.size());
 
-                //swipeRefreshLayout.setRefreshing(false);
-                //adapter.clear();
-                adapter.submitList(songsEntities);
-                swipeRefreshLayout.setRefreshing(false);
-            }
+            //swipeRefreshLayout.setRefreshing(false);
+            //adapter.clear();
+            adapter.submitList(songsEntities);
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -102,7 +100,7 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new AllSavedSongPagedAdapter(new AllSavedSongPagedAdapter.OnItemClickListener() {
+        adapter = new AllSavedSongPagedAdapter(requireContext(),new AllSavedSongPagedAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(SongsPOJO song) {
                 mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(song));
@@ -112,13 +110,14 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
         recyclerView.setAdapter(adapter);
         //getData();
         mainViewModel.setSongListShowingCalledFrom(Constants.FROM_SAVED);
-
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+        adapter.setOnItemLongClickListener(new AllSavedSongPagedAdapter.OnItemLongClickListener() {
             @Override
-            public void onClick(View v) {
-                requireActivity().onBackPressed();
+            public void onItemLogClick(SongsEntity songsEntity) {
+                //Toast.makeText(requireContext(), "Clicked", Toast.LENGTH_SHORT).show();
             }
         });
+
+        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
     }
 
