@@ -304,9 +304,7 @@ public class LandingFragment extends ChorderaFragment {
         binding.ivChorderaIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getActivity(), "Get Search Result", Toast.LENGTH_SHORT).show();
-                Log.d("bishal_db_debug", "onClick: " + System.currentTimeMillis());
-                mainViewModel.getSearchResults("Artcell");
+                //Toast.makeText(getActivity(), "Get Search Result", Toast.LENGTH_SHORT).show(
             }
         });
 
