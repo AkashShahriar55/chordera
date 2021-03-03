@@ -222,7 +222,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#D29A00"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.Guideline
@@ -280,7 +282,8 @@
                 android:id="@+id/newExploreBtn"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="wrap_content"
-                android:padding="@dimen/_10sdp"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:clickable="true"
                 android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -291,7 +294,6 @@
                     android:id="@+id/imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:src="@drawable/right_arrow_explore"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -356,7 +358,8 @@
                 android:id="@+id/collectionExploreBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:padding="@dimen/_10sdp"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"

@@ -1,7 +1,10 @@
 package com.cookietech.chordera.featureSongList.saved;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
@@ -15,17 +18,20 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.Room.SongsEntity;
-import com.cookietech.chordera.featureSongList.top10.TopTenSongsAdapter;
 import com.cookietech.chordera.models.SongsPOJO;
 
 
 public class AllSavedSongPagedAdapter extends PagedListAdapter<SongsEntity,AllSavedSongPagedAdapter.AllSavedSongViewHolder> {
 
     private final AllSavedSongPagedAdapter.OnItemClickListener onItemClickListener;
+    private static OnItemLongClickListener onItemLongClickListener;
+    private GestureDetector gestureDetector;
+    private Context context;
 
-    protected AllSavedSongPagedAdapter(OnItemClickListener onItemClickListener) {
+    protected AllSavedSongPagedAdapter(Context context,OnItemClickListener onItemClickListener) {
         super(DIFF_CALLBACK);
         this.onItemClickListener = onItemClickListener;
+        this.context = context;
 
     }
 
@@ -33,12 +39,14 @@ public class AllSavedSongPagedAdapter extends PagedListAdapter<SongsEntity,AllSa
     @NonNull
     @Override
     public AllSavedSongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         return new AllSavedSongViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.song_row_view, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull AllSavedSongViewHolder holder, int position) {
         SongsEntity songsEntity = getItem(position);
+        gestureDetector = new GestureDetector(context, new SavedSongGestureListener(songsEntity));
         if (songsEntity != null) {
             holder.bindTo(songsEntity, onItemClickListener);
         } else {
@@ -47,8 +55,12 @@ public class AllSavedSongPagedAdapter extends PagedListAdapter<SongsEntity,AllSa
 
     }
 
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener){
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
 
-    public static class AllSavedSongViewHolder extends RecyclerView.ViewHolder {
+
+    public class AllSavedSongViewHolder extends RecyclerView.ViewHolder {
         public TextView song_name, artist_name, view;
         public ConstraintLayout rowLayout;
         public ImageView view_icon;
@@ -73,9 +85,21 @@ public class AllSavedSongPagedAdapter extends PagedListAdapter<SongsEntity,AllSa
         public void bindTo(SongsEntity songsEntity, final OnItemClickListener listener) {
             song_name.setText(songsEntity.getSong_name());
             artist_name.setText(songsEntity.getArtist_name());
-            itemView.setOnClickListener(new View.OnClickListener() {
+           /* itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(songsEntity.convertToSongsPOJO());
+                }
+            });
+
+            itemView.setOnLongClickListener(v -> {
+                onItemLongClickListener.onItemLogClick(songsEntity);
+                return false;
+            });*/
+
+            itemView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return gestureDetector.onTouchEvent(event);
                 }
             });
         }
@@ -97,5 +121,29 @@ public class AllSavedSongPagedAdapter extends PagedListAdapter<SongsEntity,AllSa
 
     interface OnItemClickListener {
         void onItemClick(SongsPOJO song);
+    }
+    interface OnItemLongClickListener{
+        void onItemLogClick(SongsEntity songsEntity);
+    }
+
+     class SavedSongGestureListener extends GestureDetector.SimpleOnGestureListener{
+         SongsEntity songsEntity;
+
+         public SavedSongGestureListener(SongsEntity songsEntity) {
+             this.songsEntity = songsEntity;
+         }
+
+         @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+
+            onItemClickListener.onItemClick(songsEntity.convertToSongsPOJO());
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            onItemLongClickListener.onItemLogClick(songsEntity);
+
+        }
     }
 }
