@@ -275,18 +275,16 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Switch
-                    android:id="@+id/mode_switch"
+                <ImageView
+                    android:id="@+id/mode_switch_iv"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:switchMinWidth="@dimen/_30sdp"
-                    android:thumb="@drawable/switch_thumb"
-                    android:track="@drawable/switch_track"
+                    android:src="@drawable/switch_light"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btn_setting"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+                    android:contentDescription="@string/todo" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
