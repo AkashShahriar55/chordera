@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.Util.CollectionDiffUtilCallback;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
+import com.cookietech.chordera.models.Collection;
 import com.cookietech.chordera.models.CollectionsPOJO;
+import com.cookietech.chordera.models.SongsPOJO;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,11 +33,14 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     private LastCollectionVisibilityListener lastCollectionVisibilityListener;
     private Boolean lastCollectionFetched = false;
     private OnCollectionItemListener onCollectionItemListener;
+    private RecyclerView recyclerView;
 
 
-    public CollectionExploreAdapter(ArrayList<CollectionsPOJO> collectionsList, OnCollectionItemListener onCollectionItemListener) {
+    public CollectionExploreAdapter(ArrayList<CollectionsPOJO> collectionsList, OnCollectionItemListener onCollectionItemListener,RecyclerView recyclerView) {
+        collectionsList.add(new CollectionsPOJO("loading"));
         this.collectionsList = collectionsList;
         this.onCollectionItemListener = onCollectionItemListener;
+        this.recyclerView = recyclerView;
     }
 
     public void setLastCollectionVisibilityListener(CollectionExploreAdapter.LastCollectionVisibilityListener lastCollectionVisibilityListener) {
@@ -46,8 +51,14 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         //Log.d("pg_debug", "onViewAttachedToWindow: " + holder.getCurrentPosition() + " " + songList.size());
-        if (holder.getCurrentPosition() == collectionsList.size()-1 && !lastCollectionFetched){
+        if (holder.getCurrentPosition() == collectionsList.size()-1 && !lastCollectionFetched && !collectionsList.get(collectionsList.size() - 1).getId().equals("loading")){
             lastCollectionVisibilityListener.onLastCollectionVisible();
+            recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    addLoading();
+                }
+            });
         }
 
     }
@@ -93,9 +104,10 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
 
     @Override
     public int getItemViewType(int position) {
-        if (isLoaderVisible) {
-            return position == collectionsList.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
-        } else {
+        if(collectionsList.get(position).getId().equals("loading")){
+            return VIEW_TYPE_LOADING;
+        }
+        else {
             return VIEW_TYPE_NORMAL;
         }
     }
@@ -111,17 +123,25 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     }
 
     CollectionsPOJO collectionsPOJO = new CollectionsPOJO();
+
     public void addLoading() {
-        isLoaderVisible = true;
+        Log.d("data_debug", "addLoading: called");
+        CollectionsPOJO collectionsPOJO = new CollectionsPOJO("loading");
         collectionsList.add(collectionsPOJO);
-        if(collectionsList.size()<=0) notifyItemChanged(0);
+        if(collectionsList.size()<=0) notifyItemInserted(0);
         else notifyItemInserted(collectionsList.size() - 1);
     }
 
     public void removeLoading() {
-        isLoaderVisible = false;
-        collectionsList.remove(collectionsPOJO);
-        notifyItemRemoved(collectionsList.indexOf(collectionsPOJO));
+        Log.d("data_debug", "removeLoading: called");
+        if(collectionsList.size() > 0){
+            CollectionsPOJO value = collectionsList.get(collectionsList.size()-1);
+            if(value.getId().equals("loading")){
+                collectionsList.remove(collectionsList.size()-1);
+            }
+            notifyItemRemoved(collectionsList.size()-1);
+        }
+
     }
 
     public void clear() {
@@ -213,19 +233,9 @@ public class CollectionExploreAdapter extends  RecyclerView.Adapter<BaseViewHold
     }
 
     public void onNewData(ArrayList<CollectionsPOJO> newData) {
-        if(collectionsList.size() <= 0)
-        {
-            collectionsList.addAll(newData);
-        }
-        else {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CollectionDiffUtilCallback(newData, collectionsList));
-            collectionsList.clear();
-            collectionsList.addAll(newData);
-            diffResult.dispatchUpdatesTo(this);
-
-        }
+        removeLoading();
+        collectionsList.addAll(newData);
         notifyDataSetChanged();
-
     }
 
     public interface LastCollectionVisibilityListener {

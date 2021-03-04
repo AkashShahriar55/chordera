@@ -487,7 +487,7 @@ public class DatabaseRepository {
             }
         },lastFetchedCollectionSongDoc);
 
-        return collectionResponse;
+        return collectionSongsDatabaseResponse;
     }
 
     public void stopListeningCollectionSongsData() {

@@ -82,8 +82,9 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
             public void onChanged(ArrayList<SongsPOJO> songsPOJOS) {
                 Log.d("collection_song_debug", "onChanged: " + songsPOJOS.size());
                 swipeRefreshLayout.setRefreshing(false);
-                adapter.removeLoading();
-
+//                adapter.removeLoading();
+                adapter.onNewData(songsPOJOS);
+/*
                 if(adapter.getData().size()<=0)
                 {
                     adapter.onNewData(songsPOJOS);
@@ -93,7 +94,7 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
                     ArrayList<SongsPOJO> allData = new ArrayList<>(adapter.getData());
                     allData.addAll(songsPOJOS);
                     adapter.onNewData(allData);
-                }
+                }*/
 
             }
         });
@@ -131,7 +132,8 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
         adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel,fragmentLifecycleOwner);
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastSongVisibilityListener(this::getData);
-        adapter.addLoading();
+        getData();
+//        adapter.addLoading();
         mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
@@ -145,6 +147,7 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
             DatabaseResponse.Response response = databaseResponse.getResponse();
             switch (response){
                 case Error:
+                    adapter.removeLoading();
                     Log.d("collection_song_debug", "Error Fetching All New Song: ");
                     break;
                 case Fetched:
@@ -155,12 +158,16 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
                     Log.d("collection_song_debug", "All New Song Fetching: ");
                     break;
                 case No_internet:
+                    adapter.removeLoading();
                     Log.d("collection_song_debug", "No Internet fetching all new songs: ");
                     break;
                 case Invalid_data:
+                    adapter.removeLoading();
                     Log.d("collection_song_debug", "Invalid Data: ");
                     break;
                 case LastSongFetched:
+                    Log.d("collection_song_debug", "LastSongFetched: ");
+                    adapter.removeLoading();
                     adapter.setLastSongFetched(true);
                     break;
                 default:

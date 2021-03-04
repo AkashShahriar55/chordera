@@ -20,6 +20,10 @@ public class CollectionsPOJO implements Parcelable, Comparable<CollectionsPOJO> 
     public CollectionsPOJO() {
     }
 
+    public CollectionsPOJO(String id) {
+        this.id = id;
+    }
+
     public CollectionsPOJO(String collection_name, String image_url, ArrayList<String> song_id, int views) {
         this.collection_name = collection_name;
         this.image_url = image_url;
