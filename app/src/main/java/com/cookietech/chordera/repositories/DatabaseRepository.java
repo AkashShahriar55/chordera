@@ -16,17 +16,21 @@ import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsDao;
 import com.cookietech.chordera.Room.SongsDatabase;
 import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.Util.CacheFactory;
 import com.cookietech.chordera.Util.StringManipulationHelper;
 import com.cookietech.chordera.appcomponents.Constants;
+import com.cookietech.chordera.appcomponents.SharedPreferenceManager;
 import com.cookietech.chordera.appcomponents.SingleLiveEvent;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.application.AppSharedComponents;
 import com.cookietech.chordera.application.ChorderaApplication;
 import com.cookietech.chordera.models.CollectionsPOJO;
+import com.cookietech.chordera.models.DatabaseMetadata;
 import com.cookietech.chordera.models.SearchData;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordlibrary.ChordFactory;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,12 +43,16 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.functions.HttpsCallableResult;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -197,6 +205,85 @@ public class DatabaseRepository {
 
     /** Room Delete Song**/
     private SingleLiveEvent<DatabaseResponse> deleteSongResponse = new SingleLiveEvent<>();
+
+
+    public void fetchAndUpdateDatabaseMetadata() {
+        ListenerRegistration databaseMetadataListener = firebaseUtilClass.fetchDatabaseMetadata(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.d("akash_caching_debug", "onEvent: " + error);
+                    return;
+                }
+                if (value != null) {
+                    for (QueryDocumentSnapshot doc : value) {
+                        try{
+                            DatabaseMetadata databaseMetadata = doc.toObject(DatabaseMetadata.class);
+                            databaseMetadata.setId(doc.getId());
+
+                            if(databaseMetadata.getDatabase_name().equals("chord_library")){
+                                String timestamp = ""+ databaseMetadata.getUpdate_date().getSeconds()+databaseMetadata.getUpdate_date().getNanoseconds();
+                                if(SharedPreferenceManager.getSharedPrefChordLibraryUpdateDate().equals(timestamp)){
+                                    CacheFactory cacheFactory = new CacheFactory(new WeakReference<>(ChorderaApplication.getContext()));
+                                    String json = cacheFactory.retrieveJsonFromCache("chord_library.json","database");
+                                    Log.d("akash_cache_debug", "from cache: " + json);
+                                    ChordFactory chordFactory = new ChordFactory(ChorderaApplication.getContext());
+                                    chordFactory.decodeChordDatabase(json);
+                                    AppSharedComponents.setRoots(chordFactory.getRoots());
+                                    AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
+
+                                }else{
+                                    Log.d("akash_caching_debug", "onEvent: " + timestamp);
+                                    downloadChordLibraryDatabase(databaseMetadata.getDatabase_url(),timestamp);
+                                }
+
+
+                            }
+                        }catch (Exception e){
+                            Log.d("akash_caching_debug", "onEvent: " + e);
+                        }
+
+                    }
+                }
+            }
+        });
+    }
+
+    private void downloadChordLibraryDatabase(String url,String updateDate) {
+        FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+        StorageReference storageReference = null;
+        try{
+             storageReference= firebaseStorage.getReferenceFromUrl(url);
+        }catch (Exception e){
+            Log.d("akash_cache_debug", "error: " + e);
+            return;
+        }
+
+        long ONE_MEGABYTE = 1024 * 1024;
+        storageReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+
+                try {
+                    String json = new String(bytes, StandardCharsets.UTF_8);;
+                    Log.d("akash_cache_debug", "onSuccess: " + json);
+                    CacheFactory cacheFactory = new CacheFactory(new WeakReference<>(ChorderaApplication.getContext()));
+                    cacheFactory.cacheJson(json,"chord_library.json","database");
+                    ChordFactory chordFactory = new ChordFactory(ChorderaApplication.getContext());
+                    chordFactory.decodeChordDatabase(json);
+                    AppSharedComponents.setRoots(chordFactory.getRoots());
+                    AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
+                    SharedPreferenceManager.setSharedPrefChordLibraryUpdateDate(updateDate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+
+
+    }
 
     private class RoomDeleteSong extends AsyncTask<String,Void,Boolean>{
 

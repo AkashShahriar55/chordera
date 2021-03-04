@@ -175,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
         loadInterstitialAds();
 
 
+        mainViewModel.fetchAndUpdateDatabaseMetadata();
+
+
     }
+
 
     private void loadInterstitialAds() {
         AdRequest adRequest = new AdRequest.Builder().build();
