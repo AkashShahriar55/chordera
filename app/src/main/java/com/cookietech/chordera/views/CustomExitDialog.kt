@@ -44,7 +44,7 @@ class CustomExitDialog(context: Context, val exitDialogCommunicator: ExitDialogC
         if (BuildConfig.DEBUG) {
             nativadID = "ca-app-pub-3940256099942544/1044960115"
         } else {
-            nativadID = "ca-app-pub-5987710773679628/1729950342"
+            nativadID = "ca-app-pub-4221538464712089/4832518490"
         }
 
         if(RemoteConfigManager.shouldShowNativeAdAtExit())

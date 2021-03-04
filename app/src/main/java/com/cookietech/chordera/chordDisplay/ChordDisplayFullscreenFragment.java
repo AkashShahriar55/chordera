@@ -166,6 +166,12 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        theViewIsDestroyed = true;
+    }
+
     public static ChordDisplayFullscreenFragment newInstance(Bundle args) {
         ChordDisplayFullscreenFragment fragment = new ChordDisplayFullscreenFragment();
         fragment.setArguments(args);
@@ -233,6 +239,8 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
         if (getActivity() != null && getActivity().getWindow() != null) {
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+
+//        binding.fullscreenScrollView.post(new ScrollRunnable());
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
@@ -437,7 +445,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
                 if(scrollViewHeight >= binding.fullscreenScrollView.getChildAt(0).getHeight()){
                     //Log.d("auto_speed_debug", "onGlobalLayout: delay : " + ScrollSpeedController.getDelayForScroll(1,song_duration,scrollViewHeight));
                     scrollDelayPerPixel = ScrollSpeedController.getDelayForScroll(scrollSpeed,song_duration,scrollViewHeight);
-                    binding.fullscreenScrollView.post(new ScrollRunnable());
+
                     binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
                 else {

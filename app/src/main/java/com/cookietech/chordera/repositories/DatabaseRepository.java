@@ -1006,36 +1006,37 @@ public class DatabaseRepository {
     public void getSearchResults(String searchString){
         Log.d("search_debug", "downloadSearchedDataAndNavigate: start");
         searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetching));
-        firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(new OnCompleteListener<HttpsCallableResult>() {
-            @Override
-            public void onComplete(@NonNull Task<HttpsCallableResult> task) {
-                Log.d("search_debug", "downloadSearchedDataAndNavigate: start" + task.getResult().getData());
-                if(task.isSuccessful()){
-                    ArrayList<SearchData> allData = new ArrayList<>();
-                    String jsonString = task.getResult().getData().toString();
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonString);
-                        JSONArray jsonArray = jsonObject.getJSONArray("data");
-                        if(jsonArray.length()<=0){
-                            searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Invalid_data));
-                        }
-                        else{
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject object = jsonArray.getJSONObject(i);
-                                SearchData singleData = SearchData.fromJson(object);
-                                if(singleData!= null)
-                                    allData.add(singleData);
-                                Log.d("search_result", "onComplete: " + singleData);
-                            }
-                            searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetched));
-                            searchResults.setValue(allData);
-                        }
-
-                    } catch (JSONException e) {
-                        searchResponse.setValue(new DatabaseResponse("search_response",e, DatabaseResponse.Response.Error));
-                        e.printStackTrace();
+        firebaseUtilClass.getSearchResults(searchString).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                ArrayList<SearchData> allData = new ArrayList<>();
+                String jsonString = task.getResult().getData().toString();
+                try {
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                    if(jsonArray.length()<=0){
+                        searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Invalid_data));
                     }
+                    else{
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            SearchData singleData = SearchData.fromJson(object);
+                            if(singleData!= null)
+                                allData.add(singleData);
+                            Log.d("search_result", "onComplete: " + singleData);
+                        }
+                        searchResponse.setValue(new DatabaseResponse("search_response",null, DatabaseResponse.Response.Fetched));
+                        searchResults.setValue(allData);
+                    }
+
+                } catch (JSONException e) {
+                    searchResponse.setValue(new DatabaseResponse("search_response",e, DatabaseResponse.Response.Error));
+                    e.printStackTrace();
                 }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("search_result", "onFailure: " + e);
             }
         });
 
