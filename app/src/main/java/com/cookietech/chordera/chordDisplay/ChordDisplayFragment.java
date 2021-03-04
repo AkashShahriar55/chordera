@@ -40,6 +40,7 @@ import com.cookietech.chordera.Util.NativeAdsFragment;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
+import com.cookietech.chordera.appcomponents.ViewsManager;
 import com.cookietech.chordera.chordDisplay.chordDetails.ChordDetailsDialogFragment;
 import com.cookietech.chordera.databinding.FragmentChordDisplayBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
@@ -230,6 +231,19 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
 
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (ViewsManager.ViewedSongIds.get(selectedSong.getId()) == null){
+            Log.d("views_debug", "onStart: not contain");
+            mainViewModel.updateSongViews(selectedSong.getId(),selectedSong.getViews() + 1);
+
+        }
+        else{
+            Log.d("views_debug", "onStart: contain");
+        }
     }
 
     private void setUpNativeAdFragment() {
@@ -512,6 +526,24 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
            Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
            toggleMode();
        });
+
+       /** Observer For Update Views**/
+        mainViewModel.getObservableUpdateViewsResponse().observe(fragmentLifecycleOwner, databaseResponse -> {
+
+            switch (databaseResponse.getResponse()){
+                case Updated:
+                    Log.d("views_debug", "onChanged: Views updated");
+                    ViewsManager.ViewedSongIds.put(selectedSong.getId(),true);
+                    break;
+                case Error:
+                    Log.d("views_debug", "onChanged: Views Update Error");
+                    break;
+                default:
+                    break;
+
+            }
+
+        });
 
     }
 

@@ -1,20 +1,13 @@
 package com.cookietech.chordera.repositories;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.models.SongsPOJO;
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -153,6 +146,10 @@ public class FirebaseUtilClass {
         void onTopTenDataUpdated(List<SongsPOJO> songsPOJOList);
     }
 
+    public Task<Void> updateSongViews(String songId, int views){
+        DocumentReference song = songsCollection.document(songId);
+        return song.update("views", views);
+    }
 
 
 }

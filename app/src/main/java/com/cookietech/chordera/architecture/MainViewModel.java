@@ -421,6 +421,12 @@ public class MainViewModel extends AndroidViewModel {
         return databaseRepository.getObservableDeleteSongResponse();
     }
 
+    public void updateSongViews(String SongId, int views){
+        databaseRepository.updateSongViews(SongId, views);
+    }
+    public  SingleLiveEvent<DatabaseResponse> getObservableUpdateViewsResponse() {
+        return databaseRepository.getObservableUpdateViewsResponse();
+    }
     public void fetchAndUpdateDatabaseMetadata() {
         databaseRepository.fetchAndUpdateDatabaseMetadata();
     }

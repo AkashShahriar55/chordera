@@ -32,6 +32,7 @@ import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
 import com.cookietech.chordlibrary.ChordFactory;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.cookietech.chordlibrary.ChordClass;
@@ -1059,6 +1060,18 @@ public class DatabaseRepository {
             }
         });*/
 
+    }
+
+    /** update Song Views**/
+    private SingleLiveEvent<DatabaseResponse> updateViewsResponse = new SingleLiveEvent<>();
+    public void updateSongViews(String SongId, int views){
+        firebaseUtilClass.updateSongViews(SongId,views)
+                .addOnSuccessListener(aVoid -> updateViewsResponse.setValue(new DatabaseResponse("update_views_response",null, DatabaseResponse.Response.Updated)))
+                .addOnFailureListener(e -> updateViewsResponse.setValue(new DatabaseResponse("update_views_response",null, DatabaseResponse.Response.Error)));
+    }
+
+    public  SingleLiveEvent<DatabaseResponse> getObservableUpdateViewsResponse(){
+        return updateViewsResponse;
     }
 
 

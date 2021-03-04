@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.databinding.FragmentSelectionTypeBinding;
@@ -92,7 +93,7 @@ public class SelectionTypeShowingAdapter extends RecyclerView.Adapter<SelectionT
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(!ConnectionManager.isOnline(context)){
+                    if(!ConnectionManager.isOnline(context) && !mainViewModel.getObservableSongListShowingCalledFrom().getValue().equalsIgnoreCase(Constants.FROM_OFFLINE)){
                         Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
                         return;
                     }

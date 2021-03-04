@@ -77,7 +77,7 @@ public class CollectionSongListShowFragment extends ChorderaFragment implements 
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel,fragmentLifecycleOwner);
+        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel,fragmentLifecycleOwner, requireContext());
         getData();
         recyclerView.setAdapter(adapter);
 
