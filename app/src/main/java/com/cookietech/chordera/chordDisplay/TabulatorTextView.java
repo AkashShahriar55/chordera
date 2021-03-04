@@ -108,6 +108,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
     @Override
     protected void onDraw(Canvas canvas) {
         setTextColor(Color.TRANSPARENT);
+        chordTouchableMap.clear();
         Log.d("measure_debug", "onDraw: " + getHeight());
         super.onDraw(canvas);
         if(mode == Mode.Dark){
@@ -183,7 +184,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
             lastPositionRight = chordBackgroundRect.right;
             tempRectF.set(chordBackgroundRect);
             chordTouchableRect.get(count).set(chordBackgroundRect);
-            chordTouchableMap.put(chordTouchableRect.get(count),pair.second.getChord());
+            chordTouchableMap.put(chordTouchableRect.get(count),chord);
             canvas.drawRoundRect(tempRectF,5,5,chordBackgroundPaint);
             canvas.drawText(chord,
                     xCoordinate,
@@ -194,9 +195,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
 
             count++;
         }
-
-
-        ObjectAnimator animator = ObjectAnimator.ofFloat(this, View.ALPHA,0f,1f);
+                 ObjectAnimator animator = ObjectAnimator.ofFloat(this, View.ALPHA,0f,1f);
         animator.setDuration(200);
         animator.start();
     }
@@ -264,6 +263,7 @@ public class TabulatorTextView extends androidx.appcompat.widget.AppCompatTextVi
                     }
                     continue;
                 }
+
 
                 if(currentChar == '[' && ++lookAhead < line.length()){
                     chordStringBuilder = new StringBuilder();

@@ -134,7 +134,7 @@ public class DatabaseRepository {
             fetchSongData(selectionType.getSelectionId());
 
         }else{
-            firebaseUtilClass.queryTab(selectionType.getSelectionId(), new EventListener<DocumentSnapshot>() {
+            tabDataListenerRegistration = firebaseUtilClass.queryTab(selectionType.getSelectionId(), new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                     if (error != null) {
@@ -157,9 +157,11 @@ public class DatabaseRepository {
                         tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.Invalid_data));
                         Log.d(TAG, source + " data: null");
                     }
-
+                    if(tabDataListenerRegistration != null)
+                        stopListeningTabData();
                 }
             });
+
         }
     }
 
@@ -381,6 +383,7 @@ public class DatabaseRepository {
                     SongsPOJO song = value.toObject(SongsPOJO.class);
                     song.setId(value.getId());
                     searchSelectedSong.setValue(song);
+                    searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",null, DatabaseResponse.Response.Fetched));
                     Log.d("search_debug", "downloadSearchedDataAndNavigate: " + song);
                 }catch (Exception e){
                     searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",e, DatabaseResponse.Response.Error));

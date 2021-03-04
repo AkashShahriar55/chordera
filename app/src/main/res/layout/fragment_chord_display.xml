@@ -206,6 +206,7 @@
                         android:textSize="@dimen/_12ssp"
                         android:padding="@dimen/_15sdp"
                         android:clickable="true"
+                        android:letterSpacing="0.05"
                         android:textColor="@color/colorPrimary"
                         android:fontFamily="@font/roboto_regular"
                         app:layout_constraintEnd_toEndOf="parent"

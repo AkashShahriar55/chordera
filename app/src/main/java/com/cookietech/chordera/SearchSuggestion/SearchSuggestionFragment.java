@@ -133,6 +133,19 @@ public class SearchSuggestionFragment extends ChorderaFragment {
                 communicator.onSearchedSongSelected();
             }
         });
+
+
+        mainViewModel.getObservableSearchSelectionResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+                switch (databaseResponse.getResponse()){
+                    case Fetched:
+                    case Invalid_data:
+                    case Error:
+                        searchResultAdapter.activateClick();
+                }
+            }
+        });
     }
 
     private void resetAdapter() {

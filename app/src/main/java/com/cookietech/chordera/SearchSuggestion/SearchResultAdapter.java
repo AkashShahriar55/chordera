@@ -27,6 +27,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
     private ArrayList<SearchData> searchData = new ArrayList<>();
     private MainViewModel mainViewModel;
     private Context context;
+    private boolean isClickActivated = true;
 
     public SearchResultAdapter(Context context,MainViewModel mainViewModel) {
         this.context = context;
@@ -66,6 +67,10 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
         notifyDataSetChanged();
     }
 
+    public void activateClick() {
+        isClickActivated = true;
+    }
+
     public class SearchResultViewHolder extends RecyclerView.ViewHolder{
 
         public TextView tvViews;
@@ -91,7 +96,11 @@ public class SearchResultAdapter extends RecyclerView.Adapter<SearchResultAdapte
                         Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    mainViewModel.downloadSearchedDataAndNavigate(data);
+                    if(isClickActivated){
+                        mainViewModel.downloadSearchedDataAndNavigate(data);
+                        isClickActivated = false;
+                    }
+
                 }
             });
         }

@@ -47,6 +47,7 @@ public class ChordTouchListener implements View.OnTouchListener {
                 case MotionEvent.ACTION_UP:
                     if(isClicked && touchedRect!= null){
                         String chord = chordTouchableMap.get(touchedRect);
+                        Log.d("akash_transpose_debug", "onTouch: "+chord);
                         ChordClass selectedChord = AppSharedComponents.getAllChords().get(chord.toLowerCase());
                         if(chordSelectionListener != null)
                             chordSelectionListener.onChordSelected(selectedChord);
