@@ -16,5 +16,6 @@
     <string name="delete_dialog_msg">Are You Sure To Delete This Song?</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="you_don_t_have_saved_song">You Don\'t Have Saved Song</string>
 
 </resources>

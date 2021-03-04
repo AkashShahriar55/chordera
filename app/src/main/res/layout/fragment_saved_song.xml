@@ -115,4 +115,17 @@
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/default_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/you_don_t_have_saved_song"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/right_padding"
+        app:layout_constraintStart_toStartOf="@+id/left_padding"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+    </TextView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -71,9 +71,9 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
 
         mainViewModel.getObservableAllSavedSongs().observe(fragmentLifecycleOwner, songsEntities -> {
             Log.d("download_debug", "onChanged: " + songsEntities.size());
-
-            //swipeRefreshLayout.setRefreshing(false);
-            //adapter.clear();
+            if (songsEntities.size() > 0){
+                binding.defaultText.setVisibility(View.GONE);
+            }
             adapter.submitList(songsEntities);
             swipeRefreshLayout.setRefreshing(false);
         });
