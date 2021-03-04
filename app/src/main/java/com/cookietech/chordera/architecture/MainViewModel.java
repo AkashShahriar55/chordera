@@ -420,4 +420,11 @@ public class MainViewModel extends AndroidViewModel {
     public SingleLiveEvent<DatabaseResponse> getObservableDeleteSongResponse(){
         return databaseRepository.getObservableDeleteSongResponse();
     }
+
+    public void updateSongViews(String SongId, int views){
+        databaseRepository.updateSongViews(SongId, views);
+    }
+    public  SingleLiveEvent<DatabaseResponse> getObservableUpdateViewsResponse(){
+        return databaseRepository.getObservableUpdateViewsResponse();
+    }
 }

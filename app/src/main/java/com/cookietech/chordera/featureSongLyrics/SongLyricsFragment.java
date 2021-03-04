@@ -19,6 +19,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.Room.SongDataEntity;
@@ -27,11 +28,13 @@ import com.cookietech.chordera.Util.NativeAdsFragment;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
+import com.cookietech.chordera.appcomponents.ViewsManager;
 import com.cookietech.chordera.databinding.FragmentSongLyricsBinding;
 import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +92,19 @@ public class SongLyricsFragment extends ChorderaFragment {
         setupMenuSelector();
         if(RemoteConfigManager.shouldShowChordDisplayNativeAds() && !adsFragmentSetup)
             setUpNativeAdFragment();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (ViewsManager.ViewedSongIds.get(selectedSong.getId()) == null){
+            Log.d("views_debug", "onStart: not contain");
+            mainViewModel.updateSongViews(selectedSong.getId(),selectedSong.getViews() + 1);
+
+        }
+        else{
+            Log.d("views_debug", "onStart: contain");
+        }
     }
 
     private void setUpViews() {
@@ -240,6 +256,25 @@ public class SongLyricsFragment extends ChorderaFragment {
             isDarkModeActivated = aBoolean;
             Log.d("bishal_debug", "onChanged: " + isDarkModeActivated);
             toggleMode();
+        });
+
+
+        /** Observer For Update Views**/
+        mainViewModel.getObservableUpdateViewsResponse().observe(fragmentLifecycleOwner, databaseResponse -> {
+
+            switch (databaseResponse.getResponse()){
+                case Updated:
+                    Log.d("views_debug", "onChanged: Views updated");
+                    ViewsManager.ViewedSongIds.put(selectedSong.getId(),true);
+                    break;
+                case Error:
+                    Log.d("views_debug", "onChanged: Views Update Error");
+                    break;
+                default:
+                    break;
+
+            }
+
         });
     }
 
