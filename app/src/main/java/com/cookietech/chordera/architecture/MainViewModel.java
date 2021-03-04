@@ -403,4 +403,21 @@ public class MainViewModel extends AndroidViewModel {
     public void resetLastSongCollectionDocument() {
         databaseRepository.resetLastSongCollectionDocument();
     }
+
+    public void roomDeleteSongData(ArrayList<String> song_data_ids) {
+        databaseRepository.roomDeleteSongData(song_data_ids);
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDeleteSongDataResponse(){
+        return databaseRepository.getObservableDeleteSongDataResponse();
+    }
+
+    public void roomDeleteSong(String songId){
+        databaseRepository.roomDeleteSong(songId);
+
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDeleteSongResponse(){
+        return databaseRepository.getObservableDeleteSongResponse();
+    }
 }

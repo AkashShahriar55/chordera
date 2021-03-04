@@ -132,7 +132,7 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastSongVisibilityListener(this::getData);
         adapter.addLoading();
-        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
     }

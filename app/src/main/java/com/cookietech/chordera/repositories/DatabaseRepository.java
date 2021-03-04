@@ -129,11 +129,13 @@ public class DatabaseRepository {
         Log.d("tab_debug", "loadTab: " + selectionType.getSelectionId());
         if(tabDataListenerRegistration != null)
             stopListeningTabData();
-        if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+        if(fromWhere.equalsIgnoreCase(Constants.FROM_OFFLINE)){
             //binding.downloadBtn.setVisibility(View.GONE);
+            Log.d("error_debug", "loadTab: offline");
             fetchSongData(selectionType.getSelectionId());
 
         }else{
+            Log.d("error_debug", "loadTab: online");
             tabDataListenerRegistration = firebaseUtilClass.queryTab(selectionType.getSelectionId(), new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -184,10 +186,47 @@ public class DatabaseRepository {
 
     }
 
-    public void roomDeleteSong(SongsEntity entity){
+    public void roomDeleteSong(String SongId){
+
+        new RoomDeleteSong().execute(SongId);
 
     }
 
+
+    /** Room Delete Song**/
+    private SingleLiveEvent<DatabaseResponse> deleteSongResponse = new SingleLiveEvent<>();
+
+    private class RoomDeleteSong extends AsyncTask<String,Void,Boolean>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            deleteSongResponse.setValue(new DatabaseResponse("delete_song_response",null, DatabaseResponse.Response.Deleting));
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try{
+                songsDao.deleteSong(strings[0]);
+                return true;
+            }catch (SQLiteConstraintException exception){
+                Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
+                deleteSongResponse.postValue(new DatabaseResponse("delete_song_response",null, DatabaseResponse.Response.Error));
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                deleteSongResponse.setValue(new DatabaseResponse("delete_songData_response",null, DatabaseResponse.Response.Deleted));
+            super.onPostExecute(isSuccess);
+        }
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDeleteSongResponse(){
+        return deleteSongResponse;
+    }
 
     public void roomFetchASong(String id) {
         new RoomFetchASongAsyncTask().execute(id);
@@ -510,7 +549,47 @@ public class DatabaseRepository {
         lastFetchedSongCollectionDoc = null;
     }
 
+    public void roomDeleteSongData(ArrayList<String> song_data_ids) {
+        new RoomDeleteSongData().execute(song_data_ids);
+    }
 
+    /** Room Delete SongData**/
+
+    private SingleLiveEvent<DatabaseResponse> deleteSongDataResponse = new SingleLiveEvent<>();
+
+    private class RoomDeleteSongData extends AsyncTask<ArrayList<String>,Void,Boolean>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            deleteSongDataResponse.setValue(new DatabaseResponse("delete_songData_response",null, DatabaseResponse.Response.Deleting));
+        }
+
+        @Override
+        protected Boolean doInBackground(ArrayList<String>... arrayLists) {
+            try{
+                songDataDao.deleteSongData(arrayLists[0]);
+                return true;
+            }catch (SQLiteConstraintException exception){
+                Log.d(TAG, "doInBackground: " + exception.hashCode() + " " + exception.getCause());
+                deleteSongDataResponse.postValue(new DatabaseResponse("delete_songData_response",null, DatabaseResponse.Response.Error));
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isSuccess) {
+            if(isSuccess)
+                deleteSongDataResponse.setValue(new DatabaseResponse("delete_songData_response",null, DatabaseResponse.Response.Deleted));
+            super.onPostExecute(isSuccess);
+        }
+    }
+
+    public SingleLiveEvent<DatabaseResponse> getObservableDeleteSongDataResponse(){
+        return deleteSongDataResponse;
+    }
+
+    /** Room  Insert Song**/
     private class RoomInsertSongAsyncTask extends AsyncTask<SongsEntity,Void,Boolean> {
 
 

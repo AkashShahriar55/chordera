@@ -18,7 +18,6 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,11 +26,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -49,7 +46,6 @@ import com.cookietech.chordera.fragments.ChorderaFragment;
 import com.cookietech.chordera.models.SelectionType;
 import com.cookietech.chordera.models.SongsPOJO;
 import com.cookietech.chordera.models.TabPOJO;
-import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import com.cookietech.chordlibrary.ChordClass;
 import com.cookietech.chordlibrary.Variation;
@@ -378,7 +374,7 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
 
         Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
         mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, fromWhere -> {
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+            if(fromWhere.equalsIgnoreCase(Constants.FROM_OFFLINE)){
                 binding.downloadBtn.setVisibility(View.GONE);
             }else{
                 binding.downloadBtn.setVisibility(View.VISIBLE);

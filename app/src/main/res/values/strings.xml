@@ -13,5 +13,8 @@
     <string name="facebook_app_id">781485665786268</string>
     <string name="fb_login_protocol_scheme">fb781485665786268</string>
     <string name="collections">Collections</string>
+    <string name="delete_dialog_msg">Are You Sure To Delete This Song?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
 
 </resources>

@@ -19,13 +19,11 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.Room.SongDataEntity;
 import com.cookietech.chordera.Room.SongsEntity;
 import com.cookietech.chordera.Util.NativeAdsFragment;
-import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.appcomponents.RemoteConfigManager;
@@ -227,7 +225,7 @@ public class SongLyricsFragment extends ChorderaFragment {
 
         Log.d("from_debug", "initializeObserver: " + mainViewModel.getObservableSongListShowingCalledFrom().getValue());
         mainViewModel.getObservableSongListShowingCalledFrom().observe(fragmentLifecycleOwner, fromWhere -> {
-            if(fromWhere.equalsIgnoreCase(Constants.FROM_SAVED)){
+            if(fromWhere.equalsIgnoreCase(Constants.FROM_OFFLINE)){
                 binding.downloadBtn.setVisibility(View.GONE);
             }else{
                 binding.downloadBtn.setVisibility(View.VISIBLE);

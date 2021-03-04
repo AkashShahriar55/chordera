@@ -73,7 +73,7 @@ public class SearchSuggestionFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         searchKeyWordObservable =  new Observer<String>() {
             @Override
             public void onChanged(String s) {

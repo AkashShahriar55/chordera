@@ -18,8 +18,8 @@ public interface SongsDao {
     @Insert
     void roomInsertSong(SongsEntity entity);
 
-    @Delete
-    void roomDeleteSong(SongsEntity entity);
+    @Query("DELETE FROM songs WHERE song_id = :id")
+    void deleteSong(String id);
 
     @Query("SELECT * FROM songs")
     DataSource.Factory<Integer, SongsEntity> roomFetchAllSongs();

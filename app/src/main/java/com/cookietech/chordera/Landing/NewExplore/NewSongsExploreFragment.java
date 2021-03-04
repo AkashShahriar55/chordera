@@ -109,7 +109,7 @@ public class NewSongsExploreFragment extends ChorderaFragment implements SwipeRe
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastSongVisibilityListener(this::getData);
         adapter.addLoading();
-        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
     }

@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
@@ -70,6 +71,7 @@ public class NewItemAdapter extends RecyclerView.Adapter<NewItemAdapter.NewItemV
                     Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
                 mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songsPOJO));
                 mainViewModel.setSelectedSong(songsPOJO);
             }

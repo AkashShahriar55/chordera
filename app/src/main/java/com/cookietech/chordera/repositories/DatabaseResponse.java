@@ -12,7 +12,9 @@ public class DatabaseResponse {
         Already_exist,
         Updating,
         Updated,
-        LastSongFetched
+        LastSongFetched,
+        Deleting,
+        Deleted
     }
     String identifier;
     Exception errorException;

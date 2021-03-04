@@ -75,7 +75,7 @@ public class LandingFragment extends ChorderaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         initializeViews();
         adJustViews();
         initializeClickEvents();
@@ -185,6 +185,7 @@ public class LandingFragment extends ChorderaFragment {
                     Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
                 mainViewModel.setNavigation(NavigatorTags.NEW_EXPLORE_LIST_FRAGMENT);
             }
         });
@@ -196,6 +197,7 @@ public class LandingFragment extends ChorderaFragment {
                     Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
                 mainViewModel.setNavigation(NavigatorTags.COLLECTION_EXPLORE_LIST_FRAGMENT);
             }
         });

@@ -115,7 +115,7 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastCollectionVisibilityListener(this::getData);
         adapter.addLoading();
-        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_TOP_SONG);
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
     }

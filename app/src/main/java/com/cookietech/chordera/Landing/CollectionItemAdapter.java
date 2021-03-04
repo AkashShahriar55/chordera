@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.cookietech.chordera.Landing.Collection.CollectionFragment;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
 import com.cookietech.chordera.models.CollectionsPOJO;
@@ -89,6 +90,7 @@ public class CollectionItemAdapter extends RecyclerView.Adapter<CollectionItemAd
                         return;
                     }
                     Log.d("collection_debug", "onClick: "+ collectionsPOJO.getSong_id().size());
+                    mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
                     mainViewModel.setNavigation(NavigatorTags.COLLECTION_FRAGMENT, CollectionFragment.createArgs(collectionsPOJO));
                 }
             });
