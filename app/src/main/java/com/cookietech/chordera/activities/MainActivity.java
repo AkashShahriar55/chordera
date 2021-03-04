@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
+import com.cookietech.chordera.BuildConfig;
 import com.cookietech.chordera.Landing.Collection.CollectionFragment;
 import com.cookietech.chordera.Landing.CollectionExplore.CollectionExploreFragment;
 import com.cookietech.chordera.Landing.LandingFragment;
@@ -183,8 +184,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadInterstitialAds() {
         AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/8691691433", adRequest, new InterstitialAdLoadCallback() {
+        String ad_unit_id = "ca-app-pub-3940256099942544/8691691433";
+        if(!BuildConfig.DEBUG){
+            ad_unit_id = "ca-app-pub-4221538464712089/2732325531";
+        }
+        InterstitialAd.load(this,ad_unit_id, adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 // The mInterstitialAd reference will be null until

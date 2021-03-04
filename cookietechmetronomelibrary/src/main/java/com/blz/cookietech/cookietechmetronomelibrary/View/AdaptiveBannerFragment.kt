@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.blz.cookietech.cookietechmetronomelibrary.BuildConfig
 import com.blz.cookietech.cookietechmetronomelibrary.R
 import com.google.android.gms.ads.*
 
@@ -19,7 +20,7 @@ class AdaptiveBannerFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var adView: AdView
-
+    private var AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
     private var initialLayoutComplete = false
     // Determine the screen width (less decorations) to use for the ad width.
     // If the ad hasn't been laid out, default to the full screen width.
@@ -58,6 +59,9 @@ class AdaptiveBannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(!BuildConfig.DEBUG){
+            AD_UNIT_ID = "ca-app-pub-4221538464712089/6253494491";
+        }
 
 
 
@@ -149,7 +153,7 @@ class AdaptiveBannerFragment : Fragment() {
          * @return A new instance of fragment AdaptiveBannerFragment.
          */
         // TODO: Rename and change types and number of parameters
-        private val AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+
         @JvmStatic
         fun newInstance(/*param1: String, param2: String*/) =
                 AdaptiveBannerFragment()/*.apply {
