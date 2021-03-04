@@ -27,10 +27,14 @@ public class ChordFactory {
         this.context = context;
     }
 
-    public void decodeChordDatabase(){
+    public void decodeChordDatabase(String json){
         allChordsList = new HashMap<>();
         String jsonString = "";
-        jsonString = readJsonStringFromAsset();
+        if(json == null)
+            jsonString = readJsonStringFromAsset();
+        else
+            jsonString = json;
+
         try {
             JSONObject rootJsonObject = new JSONObject(jsonString);
             Iterator<String> keys = rootJsonObject.keys();

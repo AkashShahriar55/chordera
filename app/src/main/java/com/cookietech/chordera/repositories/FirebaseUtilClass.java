@@ -34,6 +34,7 @@ public class FirebaseUtilClass {
     public CollectionReference songsCollection = db.collection("songs");
     public CollectionReference tabsCollection = db.collection("song_data");
     public CollectionReference collectionsCollection = db.collection("collections");
+    public CollectionReference databaseMetadata = db.collection("DatabaseMetaData");
     //For Cloud Funtions
     private FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
 
@@ -141,6 +142,10 @@ public class FirebaseUtilClass {
 
     public void querySearchedSong(String id,EventListener<DocumentSnapshot> eventListener) {
         songsCollection.document(id).addSnapshotListener(eventListener);
+    }
+
+    public ListenerRegistration fetchDatabaseMetadata(EventListener<QuerySnapshot> listener) {
+        return  databaseMetadata.addSnapshotListener(listener);
     }
 
 
