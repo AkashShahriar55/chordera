@@ -132,6 +132,10 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
             @Override
             public void onItemClick(SongsPOJO song) {
                 //Log.d("click_debug", "onItemClick: " + song.getSong_name());
+                if(!ConnectionManager.isOnline(requireContext())){
+                    Toast.makeText(requireContext(),"No internet connection",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(song));
                 mainViewModel.setSelectedSong(song);
 

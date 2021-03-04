@@ -1,6 +1,7 @@
 package com.cookietech.chordera.featureSongList;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
@@ -42,13 +45,15 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     private final LifecycleOwner lifecycleOwner;
     private LastSongVisibilityListener lastSongVisibilityListener;
     private Boolean lastSongFetched = false;
+    private Context context;
 
-    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner) {
+    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner, Context context) {
         this.recyclerView = recyclerView;
         songList.add(new SongsPOJO("loading"));
         this.songList = songList;
         this.mainViewModel = mainViewModel;
         this.lifecycleOwner = lifecycleOwner;
+        this.context = context;
     }
 
     public void setLastSongVisibilityListener(LastSongVisibilityListener lastSongVisibilityListener) {
@@ -183,6 +188,10 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
                 @Override
                 public void onClick(View v) {
                     Log.e("sohan_debug","one song clicked");
+                    if(!ConnectionManager.isOnline(context)){
+                        Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songList.get(position)));
                     mainViewModel.setSelectedSong(songList.get(position));
                 }

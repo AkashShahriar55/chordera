@@ -129,7 +129,7 @@ public class CollectionFragment extends ChorderaFragment implements SwipeRefresh
         layoutManager = new LinearLayoutManager(getContext());
         binding.tabSelectorRv.setLayoutManager(layoutManager);
         swipeRefreshLayout = binding.swipeRefresh;
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel,fragmentLifecycleOwner);
+        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.tabSelectorRv, mainViewModel,fragmentLifecycleOwner, requireContext());
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastSongVisibilityListener(this::getData);
 
