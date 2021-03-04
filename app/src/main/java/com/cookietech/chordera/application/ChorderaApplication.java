@@ -47,7 +47,7 @@ public class ChorderaApplication extends MultiDexApplication {
         createNotificationChannels();
         readTickTock();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(false)
+                .setPersistenceEnabled(true)
                 .build();
         FirebaseFirestore.getInstance().setFirestoreSettings(settings);
         networkReceiver = new ConnectionManager.NetworkReceiver();

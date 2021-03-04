@@ -39,7 +39,12 @@ public class SongsPOJO implements Parcelable,Comparable<SongsPOJO> {
     }
 
 
+    public SongsPOJO(String id) {
+        this.id = id;
+    }
+
     public SongsPOJO() {
+
     }
 
 

@@ -65,9 +65,9 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
         mainViewModel.getObservableAllCollectionDataLiveData().observe(fragmentLifecycleOwner, collectionsPOJOS -> {
             Log.d("new_explore_debug", "onChanged: " + collectionsPOJOS.size());
             swipeRefreshLayout.setRefreshing(false);
-            adapter.removeLoading();
+            adapter.onNewData(collectionsPOJOS);
 
-            if(adapter.getData().size()<=0)
+           /* if(adapter.getData().size()<=0)
             {
                 adapter.onNewData(collectionsPOJOS);
             }
@@ -76,7 +76,7 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
                 ArrayList<CollectionsPOJO> allData = new ArrayList<>(adapter.getData());
                 allData.addAll(collectionsPOJOS);
                 adapter.onNewData(allData);
-            }
+            }*/
         });
 
 
@@ -111,10 +111,10 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
             }
             Log.d("collection_debug", "onClick: "+ collectionsPOJO.getSong_id().size());
             mainViewModel.setNavigation(NavigatorTags.COLLECTION_FRAGMENT, CollectionFragment.createArgs(collectionsPOJO));
-        });
+        },binding.tabSelectorRv);
         binding.tabSelectorRv.setAdapter(adapter);
         adapter.setLastCollectionVisibilityListener(this::getData);
-        adapter.addLoading();
+        getData();
         mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
@@ -127,6 +127,7 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
             //Log.d("new_explore_debug", "getData: "+ response);
             switch (response) {
                 case Error:
+                    adapter.removeLoading();
                     Log.d("new_explore_debug", "Error Fetching All New Song: ");
                     break;
                 case Fetched:
@@ -137,12 +138,15 @@ public class CollectionExploreFragment extends ChorderaFragment implements Swipe
                     Log.d("new_explore_debug", "All New Song Fetching: ");
                     break;
                 case No_internet:
+                    adapter.removeLoading();
                     Log.d("new_explore_debug", "No Internet fetching all new songs: ");
                     break;
                 case Invalid_data:
+                    adapter.removeLoading();
                     Log.d("new_explore_debug", "Invalid Data: ");
                     break;
                 case LastSongFetched:
+                    adapter.removeLoading();
                     adapter.setLastCollectionFetched(true);
                     break;
                 default:
