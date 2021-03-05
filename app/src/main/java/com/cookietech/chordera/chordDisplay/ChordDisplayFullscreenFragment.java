@@ -240,7 +240,8 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
 
-//        binding.fullscreenScrollView.post(new ScrollRunnable());
+        theViewIsDestroyed = false;
+        binding.fullscreenScrollView.post(new ScrollRunnable());
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
@@ -477,9 +478,14 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
 
         @Override
         public void run() {
-            binding.fullscreenScrollView.smoothScrollBy(0,1);
-            if(!theViewIsDestroyed)
-                binding.fullscreenScrollView.postDelayed(this,scrollDelayPerPixel);
+            try{
+                binding.fullscreenScrollView.smoothScrollBy(0,1);
+                if(!theViewIsDestroyed)
+                    binding.fullscreenScrollView.postDelayed(this,scrollDelayPerPixel);
+            }catch (Exception e){
+                Log.d("akash_scroll_debug", "run: " + e);
+            }
+
         }
     }
 
