@@ -97,7 +97,7 @@ public class SongLyricsFragment extends ChorderaFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (ViewsManager.ViewedSongIds.get(selectedSong.getId()) == null){
+        if (ViewsManager.ViewedSongIds.get(selectedSong.getId()) == null && !mainViewModel.getObservableSongListShowingCalledFrom().getValue().equalsIgnoreCase(Constants.FROM_OFFLINE)){
             Log.d("views_debug", "onStart: not contain");
             mainViewModel.updateSongViews(selectedSong.getId(),selectedSong.getViews() + 1);
 
