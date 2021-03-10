@@ -131,7 +131,7 @@ public class DatabaseRepository {
     }
 
     public void loadTab(final SelectionType selectionType,String fromWhere) {
-        if(!ConnectionManager.isOnline(ChorderaApplication.getContext())){
+        if(!ConnectionManager.isOnline(ChorderaApplication.getContext()) && !fromWhere.equalsIgnoreCase(Constants.FROM_OFFLINE)){
             tabDataResponse.setValue(new DatabaseResponse("tab_data_response",null, DatabaseResponse.Response.No_internet));
             return;
         }
