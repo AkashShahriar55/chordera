@@ -445,7 +445,7 @@ public class ChordDisplayFullscreenFragment extends ChorderaFragment implements 
 
                 if(scrollViewHeight >= binding.fullscreenScrollView.getChildAt(0).getHeight()){
                     //Log.d("auto_speed_debug", "onGlobalLayout: delay : " + ScrollSpeedController.getDelayForScroll(1,song_duration,scrollViewHeight));
-                    scrollDelayPerPixel = ScrollSpeedController.getDelayForScroll(scrollSpeed,song_duration,scrollViewHeight);
+                    scrollDelayPerPixel = (long) (50 + (80*(1-scrollSpeed)));
 
                     binding.fullscreenScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }

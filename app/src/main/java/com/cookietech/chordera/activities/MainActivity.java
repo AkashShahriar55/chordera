@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadInterstitialAds() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        String ad_unit_id = "ca-app-pub-3940256099942544/8691691433";
+        String ad_unit_id = "]ca-app-pub-3940256099942544/1033173712";
         if(!BuildConfig.DEBUG){
             ad_unit_id = "ca-app-pub-4221538464712089/2732325531";
         }
