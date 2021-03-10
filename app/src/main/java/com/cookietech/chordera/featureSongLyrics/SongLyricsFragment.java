@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -92,6 +93,20 @@ public class SongLyricsFragment extends ChorderaFragment {
         setupMenuSelector();
         if(RemoteConfigManager.shouldShowChordDisplayNativeAds() && !adsFragmentSetup)
             setUpNativeAdFragment();
+
+
+        binding.displayScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                binding.displayScrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.displayScrollView.scrollTo(0,0);
+                    }
+                });
+//                binding.displayScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
     }
 
     @Override

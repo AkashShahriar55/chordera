@@ -46,6 +46,7 @@ public class SearchSuggestionFragment extends ChorderaFragment {
         if(getArguments()!=null){
             Log.d("flow_debug", "onCreate: mal aasche");
             communicator = (SearchSongCommunicator) getArguments().getSerializable("callback");
+            getArguments().clear();
         }
     }
 
@@ -57,8 +58,13 @@ public class SearchSuggestionFragment extends ChorderaFragment {
 
     public static SearchSuggestionFragment newInstance(Bundle bundle) {
         SearchSuggestionFragment fragment = new SearchSuggestionFragment();
-        fragment.setArguments(bundle);
+        SearchSongCommunicator communicator = (SearchSongCommunicator) bundle.getSerializable("callback");
+        fragment.setListener(communicator);
         return fragment;
+    }
+
+    private void setListener(SearchSongCommunicator communicator) {
+        this.communicator = communicator;
     }
 
 

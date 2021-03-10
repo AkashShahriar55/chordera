@@ -231,7 +231,7 @@ public class LandingFragment extends ChorderaFragment {
                    }
                    Log.d("flow_debug", "onSearchedSongSelected: ");
                    binding.ivCancelSearchButton.setVisibility(View.VISIBLE);
-                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId(),SearchSuggestionFragment.createBundle(new SearchSongCommunicator() {
+                   SearchSongCommunicator songCommunicator = new SearchSongCommunicator() {
                        @Override
                        public void onSearchedSongSelected() {
                            Log.d("flow_debug", "onSearchedSongSelected: ");
@@ -246,7 +246,8 @@ public class LandingFragment extends ChorderaFragment {
                            binding.ivCancelSearchButton.setVisibility(View.GONE);
                            ViewUtils.hideKeyboardFrom(requireContext(),binding.edtSearchBox);
                        }
-                   }));
+                   };
+                   mainViewModel.setNavigation(NavigatorTags.SEARCH_VIEW_FRAGMENT,binding.searchFragmentContainer.getId(),SearchSuggestionFragment.createBundle(songCommunicator));
                }else{
                    binding.ivCancelSearchButton.setVisibility(View.GONE);
                }
