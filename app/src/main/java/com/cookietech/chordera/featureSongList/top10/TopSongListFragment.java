@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.databinding.FragmentTopSongListBinding;
 import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
@@ -117,6 +118,7 @@ public class TopSongListFragment extends ChorderaFragment implements SwipeRefres
     }
 
     private void initializeVariable() {
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_ONLINE);
         isLoading = true;
     }
 
