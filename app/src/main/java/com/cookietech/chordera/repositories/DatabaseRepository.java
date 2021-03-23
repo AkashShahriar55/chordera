@@ -1037,6 +1037,7 @@ public class DatabaseRepository {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.d("search_result", "onFailure: " + e);
+                searchResponse.setValue(new DatabaseResponse("search_response",e, DatabaseResponse.Response.Error));
             }
         });
 

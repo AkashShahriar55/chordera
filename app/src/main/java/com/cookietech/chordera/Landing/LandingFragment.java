@@ -319,7 +319,7 @@ public class LandingFragment extends ChorderaFragment {
         initializeNewRecyclerView();
         initializeCollectionRecyclerView();
 
-        //mainViewModel.bindSearchBox(binding.edtSearchBox);
+//        mainViewModel.bindSearchBox(binding.edtSearchBox);
     }
 
     private void initializeCollectionRecyclerView() {
