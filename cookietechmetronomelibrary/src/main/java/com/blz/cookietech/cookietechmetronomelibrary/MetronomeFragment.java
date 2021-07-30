@@ -605,7 +605,12 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private void stopMetronome() {
         Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
         playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,false);
-        requireActivity().sendBroadcast(playPauseIntent);
+        try {
+            requireContext().sendBroadcast(playPauseIntent);
+        }catch (IllegalStateException ignored){
+
+        }
+
         resetPlayPauseBtn();
         timerWheel.stopTimer();
 //        lightsView.stopToggling();

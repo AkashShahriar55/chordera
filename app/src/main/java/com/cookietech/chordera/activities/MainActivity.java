@@ -309,8 +309,13 @@ public class MainActivity extends AppCompatActivity {
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(songLyricsFragment,NavigatorTags.SONG_DETAIL_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }
             else if(tag.equals(NavigatorTags.SELECTION_TYPE_FRAGMENT)){
-                if(selectionTypeFragment == null)
+                if(selectionTypeFragment == null){
                     selectionTypeFragment = SelectionTypeFragment.newInstance(arg);
+                    if(cookieTechFragmentManager.getIsFragmentAvailable(NavigatorTags.SELECTION_TYPE_FRAGMENT)){
+                        cookieTechFragmentManager.popFragment(NavigatorTags.SELECTION_TYPE_FRAGMENT);
+                    }
+                }
+
                 cookieTechFragmentManager.addFragmentToBackStackWithAnimation(selectionTypeFragment,NavigatorTags.SELECTION_TYPE_FRAGMENT,binding.mainFragmentHolder.getId(),R.anim.enter_from_right, R.anim.exit_fade_out,R.anim.enter_zoom_in_fade_in,R.anim.exit_to_right);
             }else if(tag.equalsIgnoreCase(NavigatorTags.CHORD_DISPLAY_FRAGMENT)){
                 if(chordDisplayFragment == null)
