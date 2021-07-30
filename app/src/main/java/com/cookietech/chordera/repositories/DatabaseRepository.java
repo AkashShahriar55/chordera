@@ -486,9 +486,11 @@ public class DatabaseRepository {
         return newSongsLiveData;
     }
 
-
+    /** get selected song from serach result **/
     private SingleLiveEvent<SongsPOJO> searchSelectedSong = new SingleLiveEvent<>();
     private SingleLiveEvent<DatabaseResponse> searchSelectionResponse = new SingleLiveEvent<>();
+    private ListenerRegistration searchSelectedSongListenerRegistration;
+
     public SingleLiveEvent<SongsPOJO> getObservableSearchSelectedSong(){
         return  searchSelectedSong;
     }
@@ -496,9 +498,17 @@ public class DatabaseRepository {
     public SingleLiveEvent<DatabaseResponse> getObservableSearchSelectionResponse(){
         return searchSelectionResponse;
     }
+
+    private void stopListeningSearchSelectedSong(){
+        searchSelectedSongListenerRegistration.remove();
+    }
+
     public void downloadSearchedDataAndNavigate(SearchData data) {
         Log.d("search_debug", "downloadSearchedDataAndNavigate: start");
-        firebaseUtilClass.querySearchedSong(data.getId(), (value, error) -> {
+        if(searchSelectedSongListenerRegistration != null)
+            stopListeningSearchSelectedSong();
+
+        searchSelectedSongListenerRegistration = firebaseUtilClass.querySearchedSong(data.getId(), (value, error) -> {
             Log.d("search_debug", "downloadSearchedDataAndNavigate: " + error);
             if (error != null) {
                 Log.w(TAG, "Listen failed.", error);
@@ -511,6 +521,7 @@ public class DatabaseRepository {
                     SongsPOJO song = value.toObject(SongsPOJO.class);
                     song.setId(value.getId());
                     searchSelectedSong.setValue(song);
+                    stopListeningSearchSelectedSong();
                     searchSelectionResponse.setValue(new DatabaseResponse("search_selected_response",null, DatabaseResponse.Response.Fetched));
                     Log.d("search_debug", "downloadSearchedDataAndNavigate: " + song);
                 }catch (Exception e){

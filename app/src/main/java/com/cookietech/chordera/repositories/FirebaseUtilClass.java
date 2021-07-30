@@ -133,8 +133,8 @@ public class FirebaseUtilClass {
                 });*/
     }
 
-    public void querySearchedSong(String id,EventListener<DocumentSnapshot> eventListener) {
-        songsCollection.document(id).addSnapshotListener(eventListener);
+    public ListenerRegistration querySearchedSong(String id, EventListener<DocumentSnapshot> eventListener) {
+        return songsCollection.document(id).addSnapshotListener(eventListener);
     }
 
     public ListenerRegistration fetchDatabaseMetadata(EventListener<QuerySnapshot> listener) {
