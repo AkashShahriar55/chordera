@@ -572,13 +572,13 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         ChordFormater chordFormater = new ChordFormater(tabData.getData(),rootWidth);
         //chordFormater.processChord(0)
         spannableStringBuilder = chordFormater.getProcessedChord(0);*/
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        //behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
-        },2000);
+        },500);
         binding.chordsLoader.setVisibility(View.GONE);
         binding.displayScrollView.setVisibility(View.VISIBLE);
         initializeChordsRecyclerView();
@@ -674,5 +674,12 @@ public class ChordDisplayFragment extends ChorderaFragment implements ChordsDisp
         } catch (ActivityNotFoundException ex) {
             context.startActivity(webIntent);
         }
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 }

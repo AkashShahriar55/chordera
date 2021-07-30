@@ -5,7 +5,7 @@
     android:id="@+id/chord_display_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:behavior_hideable="false"
+    app:behavior_hideable="true"
     app:behavior_peekHeight="@dimen/_40sdp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
