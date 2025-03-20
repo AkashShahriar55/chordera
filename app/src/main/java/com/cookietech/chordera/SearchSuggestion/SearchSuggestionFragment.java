@@ -28,7 +28,7 @@ import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
 
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+//import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 
 public class SearchSuggestionFragment extends ChorderaFragment {

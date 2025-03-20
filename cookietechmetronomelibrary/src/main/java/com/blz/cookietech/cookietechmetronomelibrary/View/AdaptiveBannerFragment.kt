@@ -129,6 +129,7 @@ class AdaptiveBannerFragment : Fragment() {
                 Log.d("akash_banner_debug", "onAdClicked: $adSize")
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onAdLeftApplication() {
                 // Code to be executed when the user has left the app.
                 Log.d("akash_banner_debug", "onAdLeftApplication: $adSize")

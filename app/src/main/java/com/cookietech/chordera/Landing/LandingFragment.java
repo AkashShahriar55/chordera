@@ -35,8 +35,6 @@ import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
 
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link LandingFragment#newInstance} factory method to
@@ -333,7 +331,7 @@ public class LandingFragment extends ChorderaFragment {
                 binding.rvCollectionItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        OverScrollDecoratorHelper.setUpOverScroll(binding.rvCollectionItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+//        OverScrollDecoratorHelper.setUpOverScroll(binding.rvCollectionItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
     }
 
     private void initializeNewRecyclerView() {
@@ -347,7 +345,7 @@ public class LandingFragment extends ChorderaFragment {
                 binding.rvNewItems.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-        OverScrollDecoratorHelper.setUpOverScroll(binding.rvNewItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+//        OverScrollDecoratorHelper.setUpOverScroll(binding.rvNewItems, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
 
 

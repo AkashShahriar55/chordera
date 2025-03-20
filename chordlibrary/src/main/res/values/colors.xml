@@ -15,4 +15,6 @@
     <color name="chords_btn">#3495FF</color>
     <color name="scale_btn">#00D49A</color>
     <color name="white">#FFFFFF</color>
+    <color name="colorText">#AAAAAA</color>
+    <color name="colorSelectText">#333333</color>
 </resources>

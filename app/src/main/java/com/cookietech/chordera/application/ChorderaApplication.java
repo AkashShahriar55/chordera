@@ -40,19 +40,19 @@ public class ChorderaApplication extends MultiDexApplication {
     public void onCreate() {
         APP_CONTEXT = this;
         super.onCreate();
-        chordFactory = new ChordFactory(this);
-        chordFactory.decodeChordDatabase(null);
-        AppSharedComponents.setRoots(chordFactory.getRoots());
-        AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
-        createNotificationChannels();
-        readTickTock();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
-        networkReceiver = new ConnectionManager.NetworkReceiver();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.registerReceiver(networkReceiver, filter);
+//        chordFactory = new ChordFactory(this);
+//        chordFactory.decodeChordDatabase(null);
+//        AppSharedComponents.setRoots(chordFactory.getRoots());
+//        AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
+//        createNotificationChannels();
+//        readTickTock();
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        networkReceiver = new ConnectionManager.NetworkReceiver();
+//        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+//        this.registerReceiver(networkReceiver, filter);
     }
 
     private void createNotificationChannels() {

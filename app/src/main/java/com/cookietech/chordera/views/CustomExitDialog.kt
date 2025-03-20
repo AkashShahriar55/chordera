@@ -63,6 +63,7 @@ class CustomExitDialog(context: Context, val exitDialogCommunicator: ExitDialogC
                     }*/
                 }
                 .withAdListener(object : AdListener() {
+                    @Deprecated("Deprecated in Java")
                     override fun onAdFailedToLoad(errorCode: Int) {
                         Log.i("AdFragment", "Add Load failed " + errorCode)
 

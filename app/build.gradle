@@ -51,7 +51,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.alphamovie.library:alpha-movie:1.2.1'
+//    implementation 'com.alphamovie.library:alpha-movie:1.2.1'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation "androidx.cardview:cardview:1.0.0"
@@ -68,7 +68,7 @@ dependencies {
 
 
     //overscroll
-    implementation 'me.everything:overscroll-decor-android:1.0.4'
+//    implementation 'me.everything:overscroll-decor-android:1.0.4'
 
     //multidex
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
 
     //For Room Component
-    def room_version = "2.2.6"
+    def room_version = "2.4.0-alpha03"
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"

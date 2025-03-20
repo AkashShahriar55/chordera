@@ -34,25 +34,25 @@ class NativeAdsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        native_ad_container.visibility = View.GONE
-        isFragmentDestroyed = false
-        val nativeAdListener = object : NativeAdListener{
-            override fun onAdLoaded(nativeAd: NativeAd) {
-                if(!isFragmentDestroyed){
-                    setUpNativeAd(nativeAd)
-                    native_ad_container.visibility = View.VISIBLE
-                }
-
-            }
-
-            override fun onAdLoadFailed(adError: LoadAdError) {
-
-            }
-
-        }
-
-
-        nativeAdsManager.fetchNativeAd(nativeAdListener)
+//        native_ad_container.visibility = View.GONE
+//        isFragmentDestroyed = false
+//        val nativeAdListener = object : NativeAdListener{
+//            override fun onAdLoaded(nativeAd: NativeAd) {
+//                if(!isFragmentDestroyed){
+//                    setUpNativeAd(nativeAd)
+//                    native_ad_container.visibility = View.VISIBLE
+//                }
+//
+//            }
+//
+//            override fun onAdLoadFailed(adError: LoadAdError) {
+//
+//            }
+//
+//        }
+//
+//
+//        nativeAdsManager.fetchNativeAd(nativeAdListener)
     }
 
     private fun setUpNativeAd(nativeAd: NativeAd) {
