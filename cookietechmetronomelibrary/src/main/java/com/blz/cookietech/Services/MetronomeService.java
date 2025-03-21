@@ -135,7 +135,7 @@ public class MetronomeService extends Service {
         Intent toggleIntent = new Intent(PlayPauseBroadcastReceiver.ACTION_TOGGLE);
         toggleIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
         PendingIntent playPausePendingIntent =
-                PendingIntent.getBroadcast(this, 0, toggleIntent, 0);
+                PendingIntent.getBroadcast(this, 0, toggleIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
