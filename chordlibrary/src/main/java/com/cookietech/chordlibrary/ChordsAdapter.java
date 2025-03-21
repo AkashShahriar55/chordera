@@ -1,7 +1,10 @@
 package com.cookietech.chordlibrary;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,20 +16,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordlibrary.AppComponent.ThumbGeneratorListener;
-import com.google.common.util.concurrent.Runnables;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ThumbGeneratorListener {
     private Context context;
-    private ArrayList<Chord> chords;
+    private ArrayList<Variation> chords;
     private Communicator communicator;
     private RecyclerView recyclerView;
+    private int lastSelectedPosition = 0;
 
 
-    public ChordsAdapter(Context context,ArrayList<Chord> chords,Communicator communicator,RecyclerView recyclerView) {
+    public ChordsAdapter(Context context, ArrayList<Variation> chords, Communicator communicator, RecyclerView recyclerView) {
         this.context = context;
         this.chords = chords;
         this.communicator = communicator;
@@ -46,8 +48,13 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (payloads.size() > 0) {
             for(Object data : payloads){
                 if(data != null){
-                    Bitmap thumb = (Bitmap) data;
-                    ((ChordViewHolder)holder).iv_thumb.setImageBitmap(thumb);
+                    if(data instanceof Bitmap){
+                        Bitmap thumb = (Bitmap) data;
+                        ((ChordViewHolder)holder).iv_thumb.setImageBitmap(thumb);
+                    }else if(data instanceof Boolean){
+                        ((ChordViewHolder) holder).setSelected((Boolean) data);
+                    }
+
                 }
             }
         }else{
@@ -58,17 +65,28 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        ChordViewHolder chordViewHolder = (ChordViewHolder) holder;
-        Chord chord = chords.get(position);
+        final ChordViewHolder chordViewHolder = (ChordViewHolder) holder;
+        Variation chord = chords.get(position);
         //chordViewHolder.tv_fret_no.setText("fret "+chord.getStartFret());
+        chordViewHolder.setSelected(lastSelectedPosition == position);
         new Thread(new ThumbGeneratorRunnable(position,chord,this)).start();
-
+        chordViewHolder.tv_fret_no.setText("fret "+chord.getFirstFret());
         chordViewHolder.cl_chord_holder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 communicator.onChordSelected(position);
+                setSelectedItemToMiddle(v);
+                updateSelection(position);
             }
         });
+    }
+
+    private void updateSelection(int position) {
+        if (lastSelectedPosition==position)
+            return;
+        notifyItemChanged(position,true);
+        notifyItemChanged(lastSelectedPosition,false);
+        lastSelectedPosition = position;
     }
 
     @Override
@@ -76,13 +94,16 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return chords.size();
     }
 
-    public void setChords(ArrayList<Chord> chords) {
+    public void setChords(ArrayList<Variation> chords) {
         this.chords = chords;
+        lastSelectedPosition = 0;
+        if(recyclerView!=null)
+            recyclerView.smoothScrollToPosition(0);
         notifyDataSetChanged();
     }
 
     @Override
-    public void onThumbGenerated(final int index, final Bitmap thumb, Chord chord) {
+    public void onThumbGenerated(final int index, final Bitmap thumb, Variation chord) {
         if(chords.contains(chord)){
             recyclerView.post(new Runnable() {
                 @Override
@@ -105,10 +126,17 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             cl_chord_holder = itemView.findViewById(R.id.chord_holder);
             iv_thumb = itemView.findViewById(R.id.chord_thumb);
             tv_fret_no = itemView.findViewById(R.id.fret_number);
+            iv_thumb.getLayoutParams().width = dpToPx(50);
+            iv_thumb.getLayoutParams().height = dpToPx(50);
         }
 
 
-
+        public void setSelected(boolean value) {
+            if(value)
+                cl_chord_holder.setBackgroundColor(Color.parseColor("#B3325981"));
+            else
+                cl_chord_holder.setBackgroundColor(0);
+        }
     }
 
     public interface Communicator{
@@ -117,11 +145,11 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     class ThumbGeneratorRunnable implements Runnable {
         int index;
-        Chord chord;
+        Variation chord;
         ThumbGeneratorListener listener;
-        private ThumbGenerator thumbGenerator = new ThumbGenerator();
+        private ThumbGenerator thumbGenerator = new ThumbGenerator(dpToPx(50));
 
-        public ThumbGeneratorRunnable(int index, Chord chord, ThumbGeneratorListener listener) {
+        public ThumbGeneratorRunnable(int index, Variation chord, ThumbGeneratorListener listener) {
             this.index = index;
             this.chord = chord;
             this.listener = listener;
@@ -129,10 +157,30 @@ public class ChordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         @Override
         public void run() {
-            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord);
+            Bitmap bitmap = thumbGenerator.getThumbBitmap(chord,false);
             if(bitmap!=null)
                 listener.onThumbGenerated(index,bitmap,chord);
         }
+    }
+
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    private void setSelectedItemToMiddle(View view) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int deviceHeight = context.getResources().getDisplayMetrics().heightPixels;
+        int center = deviceHeight/2;
+        center = center - (view.getHeight()/2);
+        final int scroll = center - location[1]+ (deviceHeight-recyclerView.getHeight());
+        Log.d("scroll_debug", "setSelectedItemToMiddle: " + scroll);
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.smoothScrollBy(0,-scroll);
+            }
+        });
     }
 
 }

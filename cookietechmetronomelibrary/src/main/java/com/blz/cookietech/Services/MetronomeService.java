@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.AudioTrack;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -32,6 +33,7 @@ import com.blz.cookietech.cookietechmetronomelibrary.R;
 import java.util.List;
 
 import static android.app.Notification.EXTRA_NOTIFICATION_ID;
+import static com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment.MetronomeFragmentBroadcastReceiver.ACTION_LIGHT;
 
 public class MetronomeService extends Service {
     public static final String PENDING_INTENT = "pending_intent";
@@ -106,7 +108,19 @@ public class MetronomeService extends Service {
         int subdivision = intent.getIntExtra(INITIAL_SUBDIVISION,1);
         int timeSignature = intent.getIntExtra(INITIAL_TIME_SIGNATURE,4);
 
-        metronomeThread = new Metronome(tick,tock,bpm,subdivision,timeSignature);
+        metronomeThread = new Metronome(tick, tock, bpm, subdivision, timeSignature, new AudioTrack.OnPlaybackPositionUpdateListener() {
+            @Override
+            public void onMarkerReached(AudioTrack track) {
+                Log.d("notification_debug", "onMarkerReached: ");
+                Intent bpmChangeIntent = new Intent(ACTION_LIGHT);
+                sendBroadcast(bpmChangeIntent);
+            }
+
+            @Override
+            public void onPeriodicNotification(AudioTrack track) {
+                Log.d("notification_debug", "onPeriodicNotification: ");
+            }
+        });
 
 
         Log.d("akash_debug", "onStartCommand: " + tick[500] + " " + tock[500]);
@@ -121,7 +135,7 @@ public class MetronomeService extends Service {
         Intent toggleIntent = new Intent(PlayPauseBroadcastReceiver.ACTION_TOGGLE);
         toggleIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
         PendingIntent playPausePendingIntent =
-                PendingIntent.getBroadcast(this, 0, toggleIntent, 0);
+                PendingIntent.getBroadcast(this, 0, toggleIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)

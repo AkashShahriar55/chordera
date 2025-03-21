@@ -1,5 +1,6 @@
 package com.cookietech.chordlibrary.Fragment;
 
+import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordlibrary.AppComponent.ChordInfoSpannableAdapter;
 import com.cookietech.chordlibrary.AppComponent.Constants;
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.ChordClass;
 import com.cookietech.chordlibrary.ChordFactory;
 import com.cookietech.chordlibrary.ChordsAdapter;
@@ -31,6 +35,10 @@ import com.cookietech.chordlibrary.Root;
 import com.cookietech.chordlibrary.View.TouchInterceptorConstraintLayout;
 import com.cookietech.chordlibrary.databinding.FragmentChordLibraryBinding;
 import com.cookietech.chordlibrary.databinding.LayoutChordLibraryBottomSheetBinding;
+import com.cookietech.chordlibrary.libraries.itimetraveler.widget.adapter.PickerAdapter;
+import com.cookietech.chordlibrary.libraries.itimetraveler.widget.model.StringItemView;
+import com.cookietech.chordlibrary.libraries.itimetraveler.widget.picker.PicketOptions;
+import com.cookietech.chordlibrary.libraries.itimetraveler.widget.picker.WheelPicker;
 
 import org.billthefarmer.mididriver.MidiDriver;
 
@@ -38,10 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.itimetraveler.widget.adapter.PickerAdapter;
-import io.itimetraveler.widget.model.StringItemView;
-import io.itimetraveler.widget.picker.PicketOptions;
-import io.itimetraveler.widget.picker.WheelPicker;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,7 +61,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     private ChordFactory chordFactory;
     private ArrayList<Root> rootArrayList = new ArrayList<>();
-    ArrayList<Chord> chords =new ArrayList<>();
+    ArrayList<Variation> chords =new ArrayList<>();
 
     int previouslyScrolled = 0;
 
@@ -81,6 +86,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
     private int currentTranspose = 0;
     private boolean isChordSectionSelected = true;
     private boolean isScaleSectionSelected = false;
+    private int[] previousSelectedChords = {0,0};
 
     public static ChordLibraryFragment newInstance(ArrayList<Root> rootList) {
         ChordLibraryFragment fragment = new ChordLibraryFragment();
@@ -103,7 +109,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         // Inflate the layout for this fragment
         processingTime = System.currentTimeMillis();
         binding = FragmentChordLibraryBinding.inflate(getLayoutInflater(),container,false);
-        bottomSheetBinding = binding.bottomSheet;
+//        bottomSheetBinding = binding.bottomSheet;
         return binding.getRoot();
     }
 
@@ -128,24 +134,16 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         midiDriver.setOnMidiStartListener(this);
 
 
-
-        //chordFactory = new ChordFactory(requireContext());
-        //rootArrayList = chordFactory.getRoots();
         if(!rootArrayList.isEmpty()){
             homeList = new ArrayList<>();
             for (Root root:rootArrayList){
                 homeList.add(root.getName());
             }
         }
-
-
-
         updateChordTypeList(selectedHomeIndex);
 
 
-
-
-        chords = rootArrayList.get(0).getChordClasses().get(0).getChords();
+        chords = rootArrayList.get(0).getChordClasses().get(0).getVariations();
 
         binding.chordsRecyclerview.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -156,12 +154,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-        Chord chord = chords.get(0);
+        Variation chord = chords.get(0);
         binding.fretbardContainer.setChord(chord);
-
-
-
-
 
 
 
@@ -214,7 +208,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             }
         });
 
-        binding.negativeBtn.setOnClickListener(new View.OnClickListener() {
+       /* binding.negativeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentTranspose > Constants.MIN_TRANSPOSE){
@@ -235,7 +229,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
                 }
 
             }
-        });
+        });*/
 
         binding.popupContainer.bindTouch(binding.settingPopupWindow, new TouchInterceptorConstraintLayout.TouchBoundListener() {
             @Override
@@ -249,7 +243,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         });
 
         /**Bottom Sheet Section **/
-        bottomSheetBinding.chordBtn.setOnClickListener(new View.OnClickListener() {
+      /*  bottomSheetBinding.chordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setUpChordsSection();
@@ -261,6 +255,14 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             public void onClick(View v) {
 
                 setUpScalesSection();
+            }
+        });*/
+
+
+        binding.noteCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                binding.fretbardContainer.setNotesVisible(isChecked);
             }
         });
         
@@ -296,8 +298,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.show_popup);
         binding.settingPopupWindow.startAnimation(animation);
         binding.settingPopupWindow.setClickable(true);
-        binding.positiveBtn.setClickable(true);
-        binding.negativeBtn.setClickable(true);
+//        binding.positiveBtn.setClickable(true);
+//        binding.negativeBtn.setClickable(true);
         binding.noteCheckbox.setClickable(true);
     }
 
@@ -306,8 +308,8 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         binding.settingPopupWindow.startAnimation(animation);
         binding.settingPopupWindow.setClickable(false);
-        binding.positiveBtn.setClickable(false);
-        binding.negativeBtn.setClickable(false);
+//        binding.positiveBtn.setClickable(false);
+//        binding.negativeBtn.setClickable(false);
         binding.noteCheckbox.setClickable(false);
 
     }
@@ -317,7 +319,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
         if(!rootArrayList.get(selectedHomeIndex).getChordClasses().isEmpty()){
             typeList = new ArrayList<>();
             for(ChordClass chordClass:rootArrayList.get(0).getChordClasses()){
-                typeList.add(chordClass.getName());
+                typeList.add(chordClass.getClass_name());
             }
         }
     }
@@ -346,7 +348,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
     @Override
     public void onChordSelected(int position) {
-        Chord chord = chords.get(position);
+        Variation chord = chords.get(position);
         setChord(chord);
     }
 
@@ -365,30 +367,21 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
 
 
-    private void setChord(final Chord chord) {
-      /*  fretBoardGenerator.generateChord(chord);
-        int scrollingDistance = FretBoardGenerator.getScrollIngDistance();
-        dy = scrollingDistance - previouslyScrolled;
-      *//*  binding.ivFretboard.invalidate();
-        binding.fretBoardScroller.smoothScrollBy(0,dy);*/
+    private void setChord(final Variation chord) {
 
         binding.fretbardContainer.setChord(chord);
         playChord(chord);
 
         setChordInfo(chord);
 
-        //previouslyScrolled += dy;
-
-
-
     }
 
-    private void setChordInfo(Chord chord) {
+    private void setChordInfo(Variation chord) {
         SpannableStringBuilder spannableStringBuilder = new ChordInfoSpannableAdapter(chord);
         //bottomSheetBinding.bottomInfo.setText(spannableStringBuilder);
     }
 
-    private void playChord(Chord chord) {
+    private void playChord(Variation chord) {
         int interval = 0;
         for (int i = 0; i < 6; i++) {
             int note = chord.getNotes().get(i);
@@ -401,7 +394,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
                         sendPlayNote(midiNote);
                     }
                 },interval);
-                interval += 50;
+                interval += 100;
             }
 
         }
@@ -411,7 +404,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a program change to select the instrument on channel 1:
         event = new byte[2];
-        event[0] = (byte)(0xC0 | 0x00); // 0xC0 = program change, 0x00 = channel 1
+        event[0] = (byte)(0xC0); // 0xC0 = program change, 0x00 = channel 1
         event[1] = (byte)25;
 
         // Send the MIDI event to the synthesizer.
@@ -419,7 +412,7 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a note ON message for the middle C at maximum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x90 | 0x00);  // 0x90 = note On, 0x00 = channel 1
+        event[0] = (byte) (0x90);  // 0x90 = note On, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
         event[2] = (byte) 50;  // 0x7F = the maximum velocity (127)
 
@@ -492,12 +485,27 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
             @Override
             public void onItemSelected(WheelPicker parentView, int[] position) {
                 // 选中后的回调
-                chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getChords();
-                updateChordTypeList(position[0]);
-                Chord chord = chords.get(0);
-                binding.fretbardContainer.setChord(chord);
-                chordsAdapter.setChords(chords);
-                changeTheTopChordText(position[0],position[1]);
+                try{
+                    if(position[0] == previousSelectedChords[0] && position[1]==previousSelectedChords[1])
+                        return;
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(binding.chordsRecyclerview, View.ALPHA, 0.0f, 0.5f, 1f);
+                    animator.setInterpolator(new LinearInterpolator());
+                    animator.setDuration(1000);
+                    animator.setStartDelay(200);
+                    animator.start();
+                    chords = rootArrayList.get(position[0]).getChordClasses().get(position[1]).getVariations();
+                    updateChordTypeList(position[0]);
+                    Variation chord = chords.get(0);
+                    binding.fretbardContainer.setChord(chord);
+                    chordsAdapter.setChords(chords);
+                    playChord(chord);
+                    changeTheTopChordText(position[0],position[1]);
+                    previousSelectedChords[0] = position[0];
+                    previousSelectedChords[1] = position[1];
+                }catch (Exception e){
+                    Toast.makeText(requireContext(),"Something was wrong!",Toast.LENGTH_SHORT).show();
+                }
+
 
             }
         });
@@ -517,9 +525,9 @@ public class ChordLibraryFragment extends Fragment implements ChordsAdapter.Comm
 
         // Construct a note OFF message for the middle C at minimum velocity on channel 1:
         event = new byte[3];
-        event[0] = (byte) (0x80 | 0x00);  // 0x80 = note Off, 0x00 = channel 1
+        event[0] = (byte) (0x80);  // 0x80 = note Off, 0x00 = channel 1
         event[1] = note;  // 0x3C = middle C
-        event[2] = (byte) 0x00;  // 0x00 = the minimum velocity (0)
+        // 0x00 = the minimum velocity (0)
 
         // Send the MIDI event to the synthesizer.
         midiDriver.write(event);

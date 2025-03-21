@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +35,7 @@ import com.blz.cookietech.Helpers.Constants;
 import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.Listener.StopTimerListener;
 import com.blz.cookietech.Services.MetronomeService;
+import com.blz.cookietech.cookietechmetronomelibrary.View.AdaptiveBannerFragment;
 import com.blz.cookietech.cookietechmetronomelibrary.View.ChordEraRoundWheeler;
 import com.blz.cookietech.cookietechmetronomelibrary.View.LightsView;
 import com.blz.cookietech.cookietechmetronomelibrary.View.TimerWheeler;
@@ -58,6 +62,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
 
     private static final String TAG = "MetronomeFragment";
+    private static final String ARG_BANNER_AD = "banner_ad";
     private double [] tick;
     private double [] tock;
 
@@ -88,8 +93,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private int minutes =10;
 
 
-    /** Lights View **/
-    LightsView lightsView;
+   /* *//** Lights View **//*
+    LightsView lightsView;*/
+
 
     /** Subdivision RecyclerView **/
     private RecyclerView subdivisionRecyclerView;
@@ -112,15 +118,17 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private SubdivisionAdapter adapter;
     private MetronomeFragmentBroadcastReceiver broadcastReceiver = new MetronomeFragmentBroadcastReceiver();
     private ImageView backButton;
+    private boolean isBannerAdActivated = true;
 
 
-    public static MetronomeFragment newInstance(PendingIntent pendingIntent,double[] tick,double[] tock) {
+    public static MetronomeFragment newInstance(boolean isBannerAdActivated,PendingIntent pendingIntent,double[] tick,double[] tock) {
 
         Bundle args = new Bundle();
 
         MetronomeFragment fragment = new MetronomeFragment();
         args.putDoubleArray(ARG_TICK,tick);
         args.putDoubleArray(ARG_TOCK,tock);
+        args.putBoolean(ARG_BANNER_AD,isBannerAdActivated);
         args.putParcelable(ARG_PENDING_INTENT,pendingIntent);
         fragment.setArguments(args);
         return fragment;
@@ -139,6 +147,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         IntentFilter filter = new IntentFilter();
         filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_QUIT);
         filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_TOGGLE);
+        filter.addAction(MetronomeFragmentBroadcastReceiver.ACTION_LIGHT);
         requireContext().registerReceiver(broadcastReceiver, filter);
 
     }
@@ -161,6 +170,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             tick = args.getDoubleArray(ARG_TICK);
             tock = args.getDoubleArray(ARG_TOCK);
             pendingIntent = args.getParcelable(ARG_PENDING_INTENT);
+            isBannerAdActivated = args.getBoolean(ARG_BANNER_AD);
         }
 
 
@@ -176,8 +186,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         bpmWheel.setBPM(BPM);
         bpmWheel.setBPMListener(this);
 
-        /** Initialize Lights View **/
+      /*  *//** Initialize Lights View **//*
         lightsView = view.findViewById(R.id.lightsView);
+*/
 
         /**Initialize  Subdivision RecyclerView **/
         subdivisionRecyclerView = view.findViewById(R.id.subdivisionRecyclerView);
@@ -194,7 +205,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         /** initialize back button **/
         backButton = view.findViewById(R.id.back_btn);
 
-        lightsView.setBpm(BPM);
+
+
+//        lightsView.setBpm(BPM);
 
 
         initializeClickEvents();
@@ -208,6 +221,11 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         timerWheel.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
+                if (isPlaying){
+                    stopMetronome();
+                }
+
                 TimerDialog timerDialog = new TimerDialog(isTimerEnabled, minutes);
                 timerDialog.show(getChildFragmentManager(),"Timer Dialog");
                 return true;
@@ -217,7 +235,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         timerWheel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lightsView.toggleLight();
+                //lightsView.toggleLight();
+                shakeItBaby();
             }
         });
 
@@ -240,8 +259,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
 
 
-        /** Lights View Section**/
-        lightsView.setLightNumber(leftTimeSignature);
+//        /** Lights View Section**/
+//        lightsView.setLightNumber(leftTimeSignature);
 
         /** Set BPM Wheel listener**/
         bpmWheel.setBPMListener(this);
@@ -381,11 +400,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             public void onClick(View v) {
 
 
-
                 if (!isPlaying){
-
-
-
 
                    playMetronome();
 
@@ -398,8 +413,10 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             }
         });
 
-
-
+        if(isBannerAdActivated){
+            Fragment fragment = new AdaptiveBannerFragment();
+            getChildFragmentManager().beginTransaction().add(R.id.ad_holder,fragment).commit();
+        }
     }
 
     private void initializeClickEvents() {
@@ -431,7 +448,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         bpmChangeIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.BPM_VALUE,bpm);
         requireActivity().sendBroadcast(bpmChangeIntent);
         Log.d("akash_debug", String.valueOf(bpm));
-        lightsView.setBpm(BPM);
+//        lightsView.setBpm(BPM);
     }
 
     @Override
@@ -469,7 +486,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             Intent bpmChangeIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.TIME_SIGNATURE_CHANGE);
             bpmChangeIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.TIME_SIGNATURE_VALUE,leftTimeSignature);
             requireActivity().sendBroadcast(bpmChangeIntent);
-            lightsView.setLightNumber(leftTimeSignature);
+//            lightsView.setLightNumber(leftTimeSignature);
 
         }
         else if (picker.getId() == R.id.rightTimeSignaturePicker){
@@ -521,6 +538,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     public class MetronomeFragmentBroadcastReceiver extends BroadcastReceiver {
         public static final String ACTION_TOGGLE = "com.blz.cookietech.TOGGLE";
         public static final String ACTION_QUIT = "com.blz.cookietech.QUIT";
+        public static final String ACTION_LIGHT = "com.blz.cookietech.LIGHT";
 
 
         @Override
@@ -553,6 +571,10 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                         Intent service = new Intent(requireContext(),MetronomeService.class);
                         requireActivity().stopService(service);
                         break;
+                    case ACTION_LIGHT:
+                        Log.d("notification_debug", "fragment onReceive: ");
+                        //lightsView.reset();
+                        break;
                 }
             }
 
@@ -577,16 +599,32 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         play_pause_btn.setImageResource(R.drawable.pause);
         timerWheel.startTimer();
 
-        lightsView.startToggling();
+//        lightsView.startToggling();
     }
 
     private void stopMetronome() {
         Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
         playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,false);
-        requireActivity().sendBroadcast(playPauseIntent);
+        try {
+            requireContext().sendBroadcast(playPauseIntent);
+        }catch (IllegalStateException ignored){
+
+        }
+
         resetPlayPauseBtn();
         timerWheel.stopTimer();
-        lightsView.stopToggling();
+//        lightsView.stopToggling();
+    }
+
+    private void shakeItBaby(){
+        Vibrator v = (Vibrator) requireActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(100);
+        }
     }
 
 

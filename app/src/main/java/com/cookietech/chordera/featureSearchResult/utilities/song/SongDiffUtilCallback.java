@@ -1,13 +1,10 @@
 package com.cookietech.chordera.featureSearchResult.utilities.song;
 
 import android.os.Bundle;
-
+import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
-
-import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
-
 import java.util.ArrayList;
 
 public class SongDiffUtilCallback extends DiffUtil.Callback {
@@ -31,16 +28,17 @@ public class SongDiffUtilCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return true;
+        return oldList.get(oldItemPosition).getId().equals(newList.get(newItemPosition).getId());
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+        Log.d("pagination_debug", "oldListSize: " + getOldListSize());
+        Log.d("pagination_debug", "newListSize: " + getNewListSize());
+        Log.d("pagination_debug", "oldItemPosition: " + oldItemPosition);
+        Log.d("pagination_debug", "newItemPosition: " + newItemPosition);
         int result = newList.get(newItemPosition).compareTo (oldList.get(oldItemPosition));
-        if (result==0){
-            return true;
-        }
-        return false;
+        return result == 0;
     }
 
     @Nullable

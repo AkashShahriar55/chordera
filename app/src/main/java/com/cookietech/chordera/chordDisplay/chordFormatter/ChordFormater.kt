@@ -1,9 +1,12 @@
 package com.cookietech.chordera.chordDisplay.chordFormatter
 
 
+import android.graphics.Color
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
+import java.lang.Exception
 import java.lang.StringBuilder
 
 
@@ -16,7 +19,7 @@ class ChordFormater(var lyricsWithChord: String, var rootWidth: Int) {
 
 
     fun getLyrics(lyricsWithChord: String): String {
-        var ly = lyricsWithChord.replace("\\[(.*?)\\]".toRegex(),"")
+        var ly = lyricsWithChord.replace("\\[(.*?)\\]".toRegex(),"").replace("\\n","\n")
         ly =  "$ly     \n"
         // wraping the lyrics as per the textView size so that they won't break in middle of any word
         var wrapLyrics = wrapText(rootWidth,ly)
@@ -41,25 +44,42 @@ class ChordFormater(var lyricsWithChord: String, var rootWidth: Int) {
     }
 
     fun getProcessedChord(start: Int) : SpannableStringBuilder {
-        val length = lyricsWithChord.length
-        var i = 0
-        var j = 0
-        while (i < length) {
-            var c = lyricsWithChord[i]
-            val st = StringBuilder()
-            if (c == '[') {
-                c = lyricsWithChord[++i]
-                while (c != ']') {
-                    st.append(c)
+        try{
+            val length = lyricsWithChord.length
+            var i = 0
+            var j = 0
+            while (i < length) {
+                var c = lyricsWithChord[i]
+                val st = StringBuilder()
+                if(c == '{'){
+                    val startPoint = ++i
+                    c = lyricsWithChord[startPoint]
+                    while (c != '}') {
+                        st.append(c)
+                        i++
+                        c = lyricsWithChord[i]
+                    }
+                    val end = i;
                     i++
-                    c = lyricsWithChord[i]
+                    sb.setSpan(ForegroundColorSpan(Color.parseColor("#00D49A")), startPoint, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
+                /*if (c == '[') {
+                    c = lyricsWithChord[++i]
+                    while (c != ']') {
+                        st.append(c)
+                        i++
+                        c = lyricsWithChord[i]
+                    }
+                    i++
+                    sb.setSpan(ChordSpan(st.toString()), start + j + 1, start + j + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }*/
                 i++
-                sb.setSpan(ChordSpan(st.toString()), start + j + 1, start + j + 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                j++
             }
-            i++
-            j++
+        }catch (error:Exception){
+            Log.d("tab_view_debug", "getProcessedChord: "+error.localizedMessage)
         }
+
         return sb
     }
 

@@ -1,49 +1,86 @@
 package com.cookietech.chordera.featureSongList;
 
+import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookietech.chordera.R;
+import com.cookietech.chordera.appcomponents.ConnectionManager;
+import com.cookietech.chordera.appcomponents.Constants;
 import com.cookietech.chordera.appcomponents.NavigatorTags;
 import com.cookietech.chordera.architecture.MainViewModel;
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
 import com.cookietech.chordera.featureSearchResult.utilities.BaseViewHolder;
 import com.cookietech.chordera.featureSearchResult.utilities.song.SongDiffUtilCallback;
+import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
 import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.RecursiveAction;
 
 public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private static final int VIEW_TYPE_LOADING = 0;
     private static final int VIEW_TYPE_NORMAL = 1;
     private boolean isLoaderVisible = false;
     RecyclerView recyclerView;
-    private ArrayList<SongsPOJO> songList = new ArrayList<>();
-    MainViewModel mainViewModel;
+    private ArrayList<SongsPOJO> songList;
+    private final MainViewModel mainViewModel;
+    private final LifecycleOwner lifecycleOwner;
+    private LastSongVisibilityListener lastSongVisibilityListener;
+    private Boolean lastSongFetched = false;
+    private Context context;
 
-    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel) {
+    public SongListShowingAdapter(ArrayList<SongsPOJO> songList, RecyclerView recyclerView, MainViewModel mainViewModel, LifecycleOwner lifecycleOwner, Context context) {
         this.recyclerView = recyclerView;
+        songList.add(new SongsPOJO("loading"));
         this.songList = songList;
         this.mainViewModel = mainViewModel;
+        this.lifecycleOwner = lifecycleOwner;
+        this.context = context;
     }
 
+    public void setLastSongVisibilityListener(LastSongVisibilityListener lastSongVisibilityListener) {
+        this.lastSongVisibilityListener = lastSongVisibilityListener;
+    }
 
+    @Override
+    public void onViewAttachedToWindow(@NonNull BaseViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        //Log.d("pg_debug", "onViewAttachedToWindow: " + holder.getCurrentPosition() + " " + songList.size());
+        if (holder.getCurrentPosition() == songList.size()-1 && !lastSongFetched && !songList.get(songList.size() - 1).getId().equals("loading")){
+            lastSongVisibilityListener.onLastSongVisible();
+            recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    addLoading();
+                }
+            });
+
+        }
+
+    }
 
     // Create new views (invoked by the layout manager)
+    @NotNull
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(@NotNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_NORMAL:
                 return new ViewHolder(
@@ -59,6 +96,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+
         holder.onBind(position);
     }
 
@@ -67,6 +105,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position, @NonNull List<Object> payloads) {
         if(!payloads.isEmpty()){
             holder.onBind(position);
+
         }else{
             super.onBindViewHolder(holder,position,payloads);
         }
@@ -78,9 +117,10 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        if (isLoaderVisible) {
-            return position == songList.size() - 1 ? VIEW_TYPE_LOADING : VIEW_TYPE_NORMAL;
-        } else {
+        if(songList.get(position).getId().equals("loading")){
+            return VIEW_TYPE_LOADING;
+        }
+        else {
             return VIEW_TYPE_NORMAL;
         }
     }
@@ -95,21 +135,25 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
         notifyDataSetChanged();
     }
 
+
     public void addLoading() {
-        isLoaderVisible = true;
-        songList.add(new SongsPOJO());
-        if(songList.size()<=0) notifyItemChanged(0);
+        Log.d("data_debug", "addLoading: called");
+        SongsPOJO songsPOJO = new SongsPOJO("loading");
+        songList.add(songsPOJO);
+        if(songList.size()<=0) notifyItemInserted(0);
         else notifyItemInserted(songList.size() - 1);
     }
 
     public void removeLoading() {
-        isLoaderVisible = false;
-        int position = songList.size() - 1;
-        SongsPOJO item = getItem(position);
-        if (item != null) {
-            songList.remove(position);
-            notifyItemRemoved(position);
+        Log.d("data_debug", "removeLoading: called");
+        if(songList.size() > 0){
+            SongsPOJO value = songList.get(songList.size()-1);
+            if(value.getId().equals("loading")){
+                songList.remove(songList.size()-1);
+            }
+            notifyItemRemoved(songList.size()-1);
         }
+
     }
 
     public void clear() {
@@ -122,7 +166,12 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     }
 
     public ArrayList<SongsPOJO> getData() {
-        return (ArrayList<SongsPOJO>) this.songList;
+        Log.d("data_debug", "getData: " + songList.size());
+        return (ArrayList<SongsPOJO>) songList;
+    }
+
+    public void setLastSongFetched(Boolean bool) {
+        lastSongFetched = bool;
     }
 
     public class ViewHolder extends BaseViewHolder {
@@ -135,17 +184,15 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
             band = v.findViewById(R.id.txt_artist);
             rowLayout = v.findViewById(R.id.rowLayout);
             view = v.findViewById(R.id.views_count);
-           /* ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) rowLayout.getLayoutParams();
-            //Log.e("ratio h/w", String.valueOf(binding.recyclerView.getWidth()/params.height));
-            params.height = (int) (recyclerView.getWidth()/7.2);
-            rowLayout.setLayoutParams(params);*/
-            //width/height = 7.2    ratio was calculated from xd design
-
             rowLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.e("sohan_debug","one song clicked");
-                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT,1);
+                    if(!ConnectionManager.isOnline(context)){
+                        Toast.makeText(context,"No internet connection",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(songList.get(position)));
                     mainViewModel.setSelectedSong(songList.get(position));
                 }
             });
@@ -159,6 +206,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         public void onBind(int position) {
             super.onBind(position);
+
             this.position = position;
             Log.e("sohan debug", String.valueOf(songList.size()));
             SongsPOJO item = songList.get(position);
@@ -201,7 +249,7 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     }
 
 
-    public class ProgressHolder extends BaseViewHolder {
+    public static class ProgressHolder extends BaseViewHolder {
 
 
         public ProgressHolder(View v) {
@@ -210,19 +258,13 @@ public class SongListShowingAdapter extends RecyclerView.Adapter<BaseViewHolder>
     }
 
     public void onNewData(ArrayList<SongsPOJO> newData) {
-        if(this.songList.size() <= 0)
-        {
-            this.songList.addAll(newData);
-            notifyDataSetChanged();
-        }
-        else {
-            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new SongDiffUtilCallback(newData, (ArrayList<SongsPOJO>) songList));
-            this.songList.clear();
-            this.songList.addAll(newData);
-            notifyDataSetChanged();
-            diffResult.dispatchUpdatesTo(this);
+        removeLoading();
+        songList.addAll(newData);
+        notifyDataSetChanged();
 
-        }
+    }
 
+    public interface LastSongVisibilityListener{
+        void onLastSongVisible();
     }
 }

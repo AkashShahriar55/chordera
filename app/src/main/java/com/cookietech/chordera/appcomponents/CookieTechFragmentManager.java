@@ -48,7 +48,7 @@ public class CookieTechFragmentManager {
         fragmentTransaction.setCustomAnimations(enter,exit,popEnter,popExit);
         fragmentTransaction.add(containerViewId, fragment,tag);
         fragmentTransaction.addToBackStack(tag);
-        fragmentTransaction.commitAllowingStateLoss();
+        fragmentTransaction.commit();
     }
 
     public void addFragmentWithoutBackStack(Fragment fragment, String tag, int containerViewId) {

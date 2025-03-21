@@ -13,6 +13,11 @@ import androidx.multidex.MultiDexApplication;
 import com.cookietech.chordera.R;
 import com.cookietech.chordera.appcomponents.ConnectionManager;
 import com.cookietech.chordlibrary.ChordFactory;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,13 +40,19 @@ public class ChorderaApplication extends MultiDexApplication {
     public void onCreate() {
         APP_CONTEXT = this;
         super.onCreate();
-        chordFactory = new ChordFactory(this);
-        AppSharedComponents.roots = chordFactory.getRoots();
-        createNotificationChannels();
-        readTickTock();
-        networkReceiver = new ConnectionManager.NetworkReceiver();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.registerReceiver(networkReceiver, filter);
+//        chordFactory = new ChordFactory(this);
+//        chordFactory.decodeChordDatabase(null);
+//        AppSharedComponents.setRoots(chordFactory.getRoots());
+//        AppSharedComponents.setAllChords(chordFactory.getAllChordsList());
+//        createNotificationChannels();
+//        readTickTock();
+//        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                .setPersistenceEnabled(true)
+//                .build();
+//        FirebaseFirestore.getInstance().setFirestoreSettings(settings);
+//        networkReceiver = new ConnectionManager.NetworkReceiver();
+//        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+//        this.registerReceiver(networkReceiver, filter);
     }
 
     private void createNotificationChannels() {

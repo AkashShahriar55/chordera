@@ -13,6 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ProgressBar
+            android:id="@+id/chords_loader"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/display_scroll_view"
             android:layout_width="0dp"
@@ -124,7 +134,7 @@
                         app:layout_constraintTop_toBottomOf="@id/tv_key" />
 
                     <ImageView
-                        android:id="@+id/imageView10"
+                        android:id="@+id/download_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/todo"
@@ -132,6 +142,19 @@
                         app:layout_constraintBottom_toTopOf="@+id/tv_band_name"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tv_song_name" />
+
+                    <ProgressBar
+                        android:id="@+id/download_progress"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:padding="@dimen/_5sdp"
+                        android:progressDrawable="@drawable/seekbar_progress_drawable"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="@+id/download_btn"
+                        app:layout_constraintEnd_toEndOf="@+id/download_btn"
+                        app:layout_constraintStart_toStartOf="@+id/download_btn"
+                        app:layout_constraintTop_toTopOf="@+id/download_btn" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -170,52 +193,40 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingTop="@dimen/_15sdp"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/guideline4"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
-                    <TextView
+                    <com.cookietech.chordera.chordDisplay.TabulatorTextView
                         android:id="@+id/tv_song_chords"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:lineSpacingExtra="@dimen/_10sdp"
-                        android:text="[Chorus]\n
-Dm   Am     G      Dm\n
-Ei   obelay tomari akashe\n
-G     Dm     A\n
-nirob aposhe veshe jay\n
-F    C      G      Dm\n
-Shei vishon shitol veja chokh\n
-A#      G       Dm\n
-kokhono dekhaini tomay\n
- \n
-Dm   Am     G        Dm\n
-Keu  kothao valo nei jeno sei\n
-G          Dm       A\n
-kotokal ar hate hat obelay\n
-F          C    G        Dm\n
-Kotokal ar vul oboshonno bikele\n
-A#         G        Dm\n
-veja chokh dekhaini tomay\n
-"
+                        android:textSize="@dimen/_12ssp"
+                        android:padding="@dimen/_15sdp"
+                        android:clickable="true"
+                        android:letterSpacing="0.05"
+                        android:textColor="@color/colorPrimary"
+                        android:fontFamily="@font/roboto_regular"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <LinearLayout
-                        android:layout_width="300dp"
-                        android:layout_height="100dp"
+                        android:id="@+id/chord_native_ad_holder"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="20dp"
-                        android:background="#8BC34A"
                         android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_song_chords"></LinearLayout>
+                        app:layout_constraintTop_toBottomOf="@+id/tv_song_chords">
+
+                    </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -238,9 +249,11 @@ veja chokh dekhaini tomay\n
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/menu_selector"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:foreground="?selectableItemBackground"
                     android:src="@drawable/variant_selection"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/btn_back"
@@ -273,18 +286,16 @@ veja chokh dekhaini tomay\n
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Switch
-                    android:id="@+id/mode_switch"
+                <ImageView
+                    android:id="@+id/mode_switch_iv"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:switchMinWidth="@dimen/_30sdp"
-                    android:thumb="@drawable/switch_thumb"
-                    android:track="@drawable/switch_track"
+                    android:src="@drawable/switch_light"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btn_setting"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+                    android:contentDescription="@string/todo" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -304,6 +315,8 @@ veja chokh dekhaini tomay\n
         android:alpha="0"
         />
 
-    <include layout="@layout/layout_chord_display_bottom_sheet"/>
+    <include
+        android:id="@+id/bottom_sheet"
+        layout="@layout/layout_chord_display_bottom_sheet"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -33,6 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_song_tittle" />
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/view_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_6sdp"

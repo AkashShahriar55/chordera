@@ -11,7 +11,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
-import com.cookietech.chordlibrary.Chord;
+import com.cookietech.chordlibrary.Variation;
 import com.cookietech.chordlibrary.databinding.LayoutFretBoardViewBinding;
 
 import java.util.ArrayList;
@@ -40,14 +40,18 @@ public class FretBoardView extends ScrollView {
 
 
 
-    public void setChord(Chord chord){
+    public void setChord(Variation chord){
         binding.fretboardForeground.setChord(chord);
         int startFret = chord.getFirstFret();
         int scrollIngDistance = 0;
-        if(startFret > 2){
-            scrollIngDistance = allMiddlePosition.get(startFret - 2);
+        if(startFret > 3){
+            scrollIngDistance = allMiddlePosition.get(startFret - 3);
         }
         smoothScrollTo(0,scrollIngDistance);
+    }
+
+    public void setNotesVisible(Boolean bool){
+        binding.fretboardForeground.setNotesVisible(bool);
     }
 
 

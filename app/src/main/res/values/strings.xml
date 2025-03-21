@@ -6,6 +6,16 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="top_10">Top 10</string>
+    <string name="new_explore">Explore new songs</string>
+    <string name="saved_song">Saved Songs</string>
 
+
+    <string name="facebook_app_id">781485665786268</string>
+    <string name="fb_login_protocol_scheme">fb781485665786268</string>
+    <string name="collections">Collections</string>
+    <string name="delete_dialog_msg">Are You Sure To Delete This Song?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="you_don_t_have_saved_song">You Don\'t Have Saved Song</string>
 
 </resources>

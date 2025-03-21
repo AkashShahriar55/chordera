@@ -222,7 +222,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#D29A00"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.Guideline
@@ -276,27 +278,42 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ImageView
-                android:id="@+id/imageView"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/newExploreBtn"
+                android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/right_arrow_explore"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:text="Explore"
-                android:textColor="@color/text_color_highlight"
-                android:textSize="@dimen/_12ssp"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageView"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_explore"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="Explore"
+                    android:textColor="@color/text_color_highlight"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
             <TextView
                 android:id="@+id/tv_new"
@@ -316,7 +333,9 @@
             android:layout_height="0dp"
             android:layout_weight="3">
 
-
+            <include
+                android:id="@+id/new_error_message"
+                layout="@layout/layout_network_error"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_new_items"
                 android:layout_width="0dp"
@@ -327,6 +346,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -334,27 +354,40 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ImageView
-                android:id="@+id/imageView6"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/collectionExploreBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/right_arrow_explore"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:text="Explore"
-                android:textColor="@color/text_color_highlight"
-                android:textSize="@dimen/_12ssp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageView6"
-                app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/right_arrow_explore"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:text="Explore"
+                    android:textColor="@color/text_color_highlight"
+                    android:textSize="@dimen/_12ssp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView6"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_collection"
@@ -373,7 +406,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3">
-
+            <include
+                android:id="@+id/collection_error_message"
+                layout="@layout/layout_network_error"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_collection_items"
                 android:layout_width="0dp"

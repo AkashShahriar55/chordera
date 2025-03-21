@@ -1,42 +1,51 @@
 package com.cookietech.chordera.featureSongList.saved;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.cookietech.chordera.databinding.FragmentSongListAnythingBinding;
-import com.cookietech.chordera.featureSearchResult.utilities.PaginationListener;
-import com.cookietech.chordera.featureSongList.SongListShowingAdapter;
+import com.cookietech.chordera.R;
+import com.cookietech.chordera.Room.SongsEntity;
+import com.cookietech.chordera.appcomponents.Constants;
+import com.cookietech.chordera.appcomponents.NavigatorTags;
+import com.cookietech.chordera.databinding.FragmentSavedSongBinding;
+import com.cookietech.chordera.featureSelectionType.SelectionTypeFragment;
 import com.cookietech.chordera.fragments.ChorderaFragment;
-import com.cookietech.chordera.models.Song;
 import com.cookietech.chordera.models.SongsPOJO;
+import com.cookietech.chordera.repositories.DatabaseResponse;
 
 import java.util.ArrayList;
 
-import static com.cookietech.chordera.featureSearchResult.utilities.PaginationListener.PAGE_START;
-
 public class SavedSongListFragment extends ChorderaFragment implements SwipeRefreshLayout.OnRefreshListener{
-    FragmentSongListAnythingBinding binding;
+    FragmentSavedSongBinding binding;
     RecyclerView recyclerView;
-    SongListShowingAdapter adapter;
+    AllSavedSongPagedAdapter adapter;
     SwipeRefreshLayout swipeRefreshLayout;
-    int currentPage = PAGE_START;
+    /*int currentPage = PAGE_START;
     boolean isLastPage = false;
-    int totalPage = 10;
+    int totalPage = 10;*/
     boolean isLoading = false;
-    int itemCount = 0;
+    //int itemCount = 0;
     LinearLayoutManager layoutManager;
+    //ArrayList<SongsPOJO> songsList = new ArrayList<>();
+    private String selectedSongIdForDelete = null;
+    private int songPositionForDelete = -1;
 
-    public SavedSongListFragment(){};
+    public SavedSongListFragment(){}
 
-    public static SavedSongListFragment newInstance(){return new SavedSongListFragment();};
+    public static SavedSongListFragment newInstance(){return new SavedSongListFragment();}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +55,7 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentSongListAnythingBinding.inflate(getLayoutInflater(),container,false);
+        binding = FragmentSavedSongBinding.inflate(getLayoutInflater(),container,false);
         return binding.getRoot();
     }
 
@@ -55,19 +64,90 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
         super.onViewCreated(view, savedInstanceState);
         initializeVariable();
         initialize();
+        initializeObservers();
+    }
+
+    private void initializeObservers() {
+
+        mainViewModel.getObservableAllSavedSongs().observe(fragmentLifecycleOwner, songsEntities -> {
+            Log.d("download_debug", "onChanged: " + songsEntities.size());
+            if (songsEntities.size() > 0){
+                binding.defaultText.setVisibility(View.GONE);
+            }
+            adapter.submitList(songsEntities);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+
+        mainViewModel.getObservableDeleteSongDataResponse().observe(fragmentLifecycleOwner, databaseResponse -> {
+            switch (databaseResponse.getResponse()){
+                case Deleting:
+                    Log.d("delete_debug", " Song Data Deleting: ");
+                    break;
+                case Deleted:
+
+                    if (selectedSongIdForDelete != null){
+                        mainViewModel.roomDeleteSong(selectedSongIdForDelete);
+                        selectedSongIdForDelete = null;
+                    }
+                    else {
+                        Toast.makeText(requireContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                    }
+                    Log.d("delete_debug", " Song Data Deleted: ");
+
+                    break;
+                case Error:
+                    Toast.makeText(requireContext(), "Something Went wrong", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        mainViewModel.getObservableDeleteSongResponse().observe(fragmentLifecycleOwner, new Observer<DatabaseResponse>() {
+            @Override
+            public void onChanged(DatabaseResponse databaseResponse) {
+
+                switch (databaseResponse.getResponse()){
+                    case Deleting:
+                        Log.d("delete_debug", " Song Deleting: ");
+                        break;
+                    case Deleted:
+                        Toast.makeText(requireContext(), "Deleted Successfully", Toast.LENGTH_SHORT).show();
+                        Log.d("delete_debug", " Song Deleted: ");
+                        if (songPositionForDelete >= 0){
+                            adapter.notifyItemRemoved(songPositionForDelete);
+                        }
+                        else {
+                            Toast.makeText(requireContext(), "Something Went wrong", Toast.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                    case Error:
+                        Toast.makeText(requireContext(), "Something Went wrong", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        break;
+                }
+
+
+
+            }
+        });
     }
 
     private void initializeVariable() {
-        currentPage = PAGE_START;
-        isLastPage = false;
-        totalPage = 5;
         isLoading = false;
-        itemCount = 0;
+        //itemCount = 0;
+        getData();
+    }
+
+    private void getData() {
+        isLoading = true;
+        mainViewModel.fetchAllSavedSongs();
     }
 
     private void initialize() {
-        binding.headerTittle.setText("Saved Songs");
-        binding.collectionName.setVisibility(View.GONE);
+        binding.headerTittle.setText(R.string.saved_song);
         recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefresh;
 
@@ -75,65 +155,64 @@ public class SavedSongListFragment extends ChorderaFragment implements SwipeRefr
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new SongListShowingAdapter(new ArrayList<SongsPOJO>(), binding.recyclerView, mainViewModel);
-        getData();
+        adapter = new AllSavedSongPagedAdapter(requireContext(),new AllSavedSongPagedAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(SongsPOJO song) {
+                mainViewModel.setNavigation(NavigatorTags.SELECTION_TYPE_FRAGMENT, SelectionTypeFragment.createBundle(song));
+                mainViewModel.setSelectedSong(song);
+            }
+        });
         recyclerView.setAdapter(adapter);
-
-        recyclerView.addOnScrollListener(new PaginationListener(layoutManager) {
+        //getData();
+        mainViewModel.setSongListShowingCalledFrom(Constants.FROM_OFFLINE);
+        adapter.setOnItemLongClickListener(new AllSavedSongPagedAdapter.OnItemLongClickListener() {
             @Override
-            protected void loadMoreItems() {
-                isLoading = true;
-                currentPage++;
-                getData();
-            }
-
-            @Override
-            public boolean isLastPage() {
-                return isLastPage;
-            }
-
-            @Override
-            public boolean isLoading() {
-                return isLoading;
+            public void onItemLogClick(SongsEntity songsEntity, int position) {
+                //Toast.makeText(requireContext(), "Clicked", Toast.LENGTH_SHORT).show();
+                showDeleteDialog(songsEntity,position);
             }
         });
 
-    }
-    private void getData() {
-       /* ArrayList<Song> items = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            itemCount++;
-            Song song = new Song();
-            song.setTittle("Koshto" + itemCount);
-            song.setBandName("Avoid Rafa");
-            song.setTotalView("120");
-            items.add(song);
-        }
-        *//**
-         * manage progress view
-         *//*
-        if (currentPage != PAGE_START) adapter.removeLoading();
-        //adapter.addItems(items);
-        ArrayList<Song> allData = new ArrayList<Song>(adapter.getData());
-        allData.addAll(items);
-        adapter.onNewData(allData);
-        swipeRefreshLayout.setRefreshing(false);
+        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
 
-        // check weather is last page or not
-        if (currentPage < totalPage) {
-            adapter.addLoading();
-        } else {
-            isLastPage = true;
-        }
-        isLoading = false;*/
     }
+
 
     @Override
     public void onRefresh() {
-        itemCount = 0;
-        currentPage = PAGE_START;
-        isLastPage = false;
-        adapter.clear();
-        getData();
+        //adapter.clear();
+        //getData();
+        mainViewModel.refreshSavedSong();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showDeleteDialog(SongsEntity songsEntity, int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setTitle(songsEntity.getSong_name());
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Log.d("delete_debug", "song_data: " + songsEntity.getSong_data());
+                selectedSongIdForDelete = songsEntity.getSong_id();
+                songPositionForDelete = position;
+                ArrayList<String> song_data_ids = new ArrayList<>(songsEntity.getSong_data().values());
+                //Log.d("delete_debug", "song_data: " + song_data_ids);
+                mainViewModel.roomDeleteSongData(song_data_ids);
+                dialog.dismiss();
+
+            }
+        });
+
+        builder.show();
     }
 }

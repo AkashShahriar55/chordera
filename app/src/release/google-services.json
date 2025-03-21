@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "909502784822",
+    "firebase_url": "https://chordera-e5018.firebaseio.com",
+    "project_id": "chordera-e5018",
+    "storage_bucket": "chordera-e5018.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909502784822:android:a763aa8b0a5d37b6c27f97",
+        "android_client_info": {
+          "package_name": "com.cookietech.chordera"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909502784822-4l8f21djd7tp0lerusenj5e3lboghqfv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cookietech.chordera",
+            "certificate_hash": "fffdbe5c879f82c71a2f986bff9cb86fd5f1b7bc"
+          }
+        },
+        {
+          "client_id": "909502784822-hfoe5p3rnpbup2m1gjlq1lmgtkhif8f4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKBS_kgWv6FevK513L-d_0N2vklvV8Rv4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "909502784822-hfoe5p3rnpbup2m1gjlq1lmgtkhif8f4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
